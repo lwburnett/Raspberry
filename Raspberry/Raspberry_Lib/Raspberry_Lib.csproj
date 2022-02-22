@@ -7,4 +7,7 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nez\Nez.Portable\Nez.csproj" />
+  </ItemGroup>
 </Project>
