@@ -33,12 +33,12 @@ namespace Raspberry_Lib.Scenes
             
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
             playButton.OnClicked += OnPlayClicked;
-            playButton.GetLabel().SetFontScale(2);
+            playButton.GetLabel().SetFontScale(2.5f);
             table.Add(playButton).SetFillX().SetMinHeight(30);
             table.Row().SetPadTop(20);
 
             var exitButton = new TextButton("Exit", Skin.CreateDefaultSkin());
-            exitButton.GetLabel().SetFontScale(2);
+            exitButton.GetLabel().SetFontScale(2.5f);
             exitButton.OnClicked += OnExitClicked;
             table.Add(exitButton).SetFillX().SetMinHeight(30);
         }
