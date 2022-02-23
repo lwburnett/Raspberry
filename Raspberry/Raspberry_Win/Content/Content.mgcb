@@ -13,3 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Levels/PrototypeTileMap.ldtk
+/copy:Levels/PrototypeTileMap.ldtk
+
