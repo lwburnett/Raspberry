@@ -22,7 +22,7 @@
 	"defaultLevelBgColor": "#696A79",
 	"minifyJson": false,
 	"externalLevels": false,
-	"exportTiled": false,
+	"exportTiled": true,
 	"imageExportMode": "None",
 	"pngFilePattern": null,
 	"backupOnSave": false,
@@ -522,7 +522,7 @@
 					"layerDefUid": 4,
 					"pxOffsetX": 0,
 					"pxOffsetY": 0,
-					"visible": true,
+					"visible": false,
 					"optionalRules": [],
 					"intGrid": [
 						{ "coordId": 0, "v": 0 },

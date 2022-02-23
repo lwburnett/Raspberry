@@ -16,7 +16,8 @@ namespace Raspberry_Lib
 #if DEBUG
             Window.AllowUserResizing = true;
             ExitOnEscapeKeypress = true;
-            
+            PauseOnFocusLost = false;
+
             // Dumb work around to make it so the debug window isn't so annoyingly obtrusive
             Screen.SetSize(1910, 1075);
 #else
@@ -29,7 +30,7 @@ namespace Raspberry_Lib
             Screen.ApplyChanges();
 #endif
 
-            Scene = new MainMenuScene(() => { }, Exit);
+            Scene = new MainMenuScene(() => { Scene = new PrototypeScene(); }, Exit);
         }
     }
 }
