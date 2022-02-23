@@ -3,7 +3,7 @@ using Nez.UI;
 
 namespace Raspberry_Lib.Scenes
 {
-    public class MainMenuScene : SceneBase
+    internal class MainMenuScene : SceneBase
     {
         public MainMenuScene(System.Action iOnStart, System.Action iOnExit)
         {

@@ -2,7 +2,7 @@
 
 namespace Raspberry_Lib.Scenes
 {
-    public class SceneBase : Scene
+    internal class SceneBase : Scene
     {
         public SceneBase()
         {
