@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{147FD97F-6E57-4FB7-AB31-3A1A3225B04C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez", "Nez\Nez.Portable\Nez.csproj", "{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Win", "Raspberry_Win\Raspberry_Win.csproj", "{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{F6DA5228-7382-49E2-9248-A271DB073D65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{147FD97F-6E57-4FB7-AB31-3A1A3225B04C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{147FD97F-6E57-4FB7-AB31-3A1A3225B04C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{147FD97F-6E57-4FB7-AB31-3A1A3225B04C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{147FD97F-6E57-4FB7-AB31-3A1A3225B04C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6DA5228-7382-49E2-9248-A271DB073D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6DA5228-7382-49E2-9248-A271DB073D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6DA5228-7382-49E2-9248-A271DB073D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6DA5228-7382-49E2-9248-A271DB073D65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
