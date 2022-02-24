@@ -9,10 +9,11 @@ namespace Raspberry_Lib.Scenes
         public override void Initialize()
         {
             base.Initialize();
-
-            CreateEntity("map").AddComponent(new LDtkMapRenderer(Raspberry_Lib.Content.Content.Prototype.Tilemap, Content));
-            //mapEntity.RenderLayer = -1;
             
+            var map = CreateEntity("map");
+            map.AddComponent(new LDtkMapRenderer(Raspberry_Lib.Content.Content.Prototype.Tilemap, Content));
+            map.Transform.SetLocalScale(4);
+
             var character = CreateEntity("character", new Vector2(0,0));
             
             Camera.Entity.AddComponent(new FollowCamera(character));

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using LDtk;
 using Microsoft.Xna.Framework;
@@ -24,7 +25,8 @@ namespace Raspberry_Lib.Renderers
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
             var level = _world.Levels[0];
-            
+            System.Diagnostics.Debug.Assert(Math.Abs(Entity.Transform.Scale.X - Entity.Transform.Scale.Y) < .001);
+            var scale = Entity.Transform.Scale.X;
             for (var index = level.LayerInstances.Length - 1; index >= 0; --index)
             {
                 var layer = level.LayerInstances[index];
@@ -44,10 +46,10 @@ namespace Raspberry_Lib.Renderers
                                     {
                                         var current = enumerator.Current;
                                         System.Diagnostics.Debug.Assert(current != null);
-                                        var position = new Vector2(current.Px.X + layer._PxTotalOffsetX, current.Px.Y + layer._PxTotalOffsetY);
+                                        var position = new Vector2((current.Px.X + layer._PxTotalOffsetX) * scale , (current.Px.Y + layer._PxTotalOffsetY) * scale);
                                         var rectangle = new Rectangle(current.Src.X, current.Src.Y, layer._GridSize, layer._GridSize);
                                         var f = (SpriteEffects)current.F;
-                                        iBatcher.Draw(texture, position, rectangle, Color.White, 0.0f, Vector2.Zero, 1f, f, 0.0f);
+                                        iBatcher.Draw(texture, position, rectangle, Color.White, 0.0f, Vector2.Zero, scale, f, 0.0f);
                                     }
                                     continue;
                                 }
@@ -61,10 +63,10 @@ namespace Raspberry_Lib.Renderers
                                 {
                                     var current = enumerator.Current;
                                     System.Diagnostics.Debug.Assert(current != null);
-                                    var position = new Vector2(current.Px.X + layer._PxTotalOffsetX, current.Px.Y + layer._PxTotalOffsetY);
+                                    var position = new Vector2((current.Px.X + layer._PxTotalOffsetX) * scale, (current.Px.Y + layer._PxTotalOffsetY) * scale);
                                     var rectangle = new Rectangle(current.Src.X, current.Src.Y, layer._GridSize, layer._GridSize);
                                     var f = (SpriteEffects)current.F;
-                                    iBatcher.Draw(texture, position, rectangle, Color.White, 0.0f, Vector2.Zero, 1f, f, 0.0f);
+                                    iBatcher.Draw(texture, position, rectangle, Color.White, 0.0f, Vector2.Zero, scale, f, 0.0f);
                                 }
                                 continue;
                             }
