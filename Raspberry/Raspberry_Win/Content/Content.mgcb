@@ -25,15 +25,3 @@
 /processorParam:TextureFormat=Color
 /build:Levels/PrototypeSpriteSheet.png
 
-#begin Levels/PrototypeTileMap.ldtk
-/copy:Levels/PrototypeTileMap.ldtk
-
-#begin Levels/PrototypeTileMap/tiled/IntGrid.intgrid.png
-/copy:Levels/PrototypeTileMap/tiled/IntGrid.intgrid.png
-
-#begin Levels/PrototypeTileMap/tiled/Level_0.tmx
-/copy:Levels/PrototypeTileMap/tiled/Level_0.tmx
-
-#begin Levels/PrototypeTileMap/tiled/PrototypeTileMap.world
-/copy:Levels/PrototypeTileMap/tiled/PrototypeTileMap.world
-
