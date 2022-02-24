@@ -32,8 +32,6 @@ namespace Raspberry_Lib.Renderers
                 {
                     var texturePath = Path.Combine(GetParentPath(_path), layer._TilesetRelPath);
                     var texture = this.LoadTexture(texturePath);
-                    var renderTarget = new RenderTarget2D(Core.GraphicsDevice, layer._CWid * layer._GridSize, layer._CHei * layer._GridSize, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Core.GraphicsDevice.SetRenderTarget(renderTarget);
                     switch (layer._Type)
                     {
                         case LayerType.IntGrid:

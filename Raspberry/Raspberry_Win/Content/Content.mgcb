@@ -14,7 +14,16 @@
 #---------------------------------- Content ---------------------------------#
 
 #begin Levels/PrototypeSpriteSheet.png
-/copy:Levels/PrototypeSpriteSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Levels/PrototypeSpriteSheet.png
 
 #begin Levels/PrototypeTileMap.ldtk
 /copy:Levels/PrototypeTileMap.ldtk
