@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Nez;
+using Raspberry_Lib.Components;
 using Raspberry_Lib.Renderers;
 
 namespace Raspberry_Lib.Scenes
@@ -14,8 +15,9 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent(new LDtkMapRenderer(Raspberry_Lib.Content.Content.Prototype.Tilemap, Content));
             map.Transform.SetLocalScale(4);
 
-            var character = CreateEntity("character", new Vector2(0,0));
-            
+            var character = CreateEntity("character", new Vector2(64 * 4,256 * 4));
+            character.Transform.SetLocalScale(4);
+            character.AddComponent(new PrototypeCharacterComponent());
             Camera.Entity.AddComponent(new FollowCamera(character));
         }
     }
