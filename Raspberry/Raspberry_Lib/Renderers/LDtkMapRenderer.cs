@@ -22,13 +22,12 @@ namespace Raspberry_Lib.Renderers
             System.Diagnostics.Debug.Assert(_world != null);
             System.Diagnostics.Debug.Assert(0 <= _level && _level < _world.Levels.Length);
             System.Diagnostics.Debug.Assert(_contentManager != null);
-            _layerToTileMap = PreloadLevelTilesets();
+            _layersToTileMap = PreloadLevelTilesets();
         }
 
         public override float Width => _world.Levels[_level].PxWid;
         public override float Height => _world.Levels[_level].PxHei;
-
-        // ReSharper disable once IdentifierTypo
+        
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
             var level = _world.Levels[0];
@@ -37,10 +36,10 @@ namespace Raspberry_Lib.Renderers
             for (var ii = level.LayerInstances.Length - 1; ii >= 0; --ii)
             {
                 var thisLayer = level.LayerInstances[ii];
-                if (thisLayer._TilesetRelPath == null || thisLayer._Type == LayerType.Entities || _layerToTileMap[ii] == null)
+                if (thisLayer._TilesetRelPath == null || thisLayer._Type == LayerType.Entities || _layersToTileMap[ii] == null)
                     continue;
 
-                var thisTileSet = _layerToTileMap[ii];
+                var thisTileSet = _layersToTileMap[ii];
 
                 IEnumerable<TileInstance> tilesToRender;
                 if (thisLayer._Type == LayerType.AutoLayer || thisLayer._Type == LayerType.IntGrid)
@@ -58,7 +57,7 @@ namespace Raspberry_Lib.Renderers
         private readonly ContentManager _contentManager;
         private readonly LDtkWorld _world;
         private readonly int _level;
-        private Dictionary<int, Texture2D> _layerToTileMap;
+        private readonly Dictionary<int, Texture2D> _layersToTileMap;
 
         Dictionary<int, Texture2D> PreloadLevelTilesets()
         {
