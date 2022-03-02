@@ -1,34 +1,10 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Input;
 using Nez;
 using Nez.Sprites;
 using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class PrototypeCharacterComponent : Component
-    {
-        public enum State
-        {
-            Idle,
-            RunLeft,
-            RunRight
-        }
-
-        public override void OnAddedToEntity()
-        {
-            _animationComponent = Entity.AddComponent(new CharacterAnimationComponent());
-            Entity.AddComponent(new CharacterInputController(OnCharacterStateChanged));
-        }
-
-        private CharacterAnimationComponent _animationComponent;
-
-        private void OnCharacterStateChanged(State iNewState)
-        {
-            _animationComponent.SetState(iNewState);
-        }
-    }
-
     internal class CharacterAnimationComponent : Component
     {
         public override void OnAddedToEntity()
@@ -71,33 +47,5 @@ namespace Raspberry_Lib.Components
 
         private PrototypeCharacterComponent.State _currentState;
         private SpriteAnimator _animator;
-    }
-
-    internal class CharacterInputController: Component, IUpdatable
-    {
-        public CharacterInputController(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
-        {
-            _onStateChangedCallback = iOnStateChangedCallback;
-        }
-
-        public override void OnAddedToEntity()
-        {
-            _xAxisInput = new VirtualIntegerAxis(new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.Left, Keys.Right));
-        }
-
-        public void Update()
-        {
-            var inputX = _xAxisInput.Value;
-
-            if (inputX == 0)
-                _onStateChangedCallback(PrototypeCharacterComponent.State.Idle);
-            else if (inputX > 0)
-                _onStateChangedCallback(PrototypeCharacterComponent.State.RunRight);
-            else
-                _onStateChangedCallback(PrototypeCharacterComponent.State.RunLeft);
-        }
-
-        private VirtualIntegerAxis _xAxisInput;
-        private readonly Action<PrototypeCharacterComponent.State> _onStateChangedCallback;
     }
 }
