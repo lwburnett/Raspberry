@@ -51,6 +51,8 @@ namespace Raspberry_Lib.Renderers
 
                 RenderTiles(thisLayer, tilesToRender, thisTileSet, iBatcher, scale);
             }
+
+            //_colliders.ForEach(iC => iC.DebugRender(iBatcher));
         }
 
         public override void OnAddedToEntity() => AddColliders();
@@ -169,7 +171,7 @@ namespace Raspberry_Lib.Renderers
                 {
                     if (collidableIdArray.Contains(thisTile.T))
                     {
-                        var rectangle = new Rectangle((int)(thisTile.Src.X * scale), (int)(thisTile.Src.Y * scale), (int)(thisLayer._GridSize * scale), (int)(thisLayer._GridSize * scale));
+                        var rectangle = new Rectangle((int)((thisTile.Px.X + thisLayer._PxTotalOffsetX)), (int)((thisTile.Px.Y + thisLayer._PxTotalOffsetY)), (int)(thisLayer._GridSize), (int)(thisLayer._GridSize));
                         var collider = new BoxCollider(rectangle)
                         {
                             PhysicsLayer = PhysicsLayer,
