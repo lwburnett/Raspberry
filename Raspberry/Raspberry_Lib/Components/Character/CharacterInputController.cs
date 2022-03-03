@@ -6,7 +6,14 @@ namespace Raspberry_Lib.Components
 {
     internal class CharacterInputController: Component, IUpdatable
     {
-        public CharacterInputController(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
+        public enum InputAction
+        {
+            Nothing,
+            Left,
+            Right
+        }
+
+        public CharacterInputController(Action<InputAction> iOnStateChangedCallback)
         {
             _onStateChangedCallback = iOnStateChangedCallback;
         }
@@ -21,14 +28,14 @@ namespace Raspberry_Lib.Components
             var inputX = _xAxisInput.Value;
 
             if (inputX == 0)
-                _onStateChangedCallback(PrototypeCharacterComponent.State.Idle);
+                _onStateChangedCallback(InputAction.Nothing);
             else if (inputX > 0)
-                _onStateChangedCallback(PrototypeCharacterComponent.State.RunRight);
+                _onStateChangedCallback(InputAction.Right);
             else
-                _onStateChangedCallback(PrototypeCharacterComponent.State.RunLeft);
+                _onStateChangedCallback(InputAction.Left);
         }
 
         private VirtualIntegerAxis _xAxisInput;
-        private readonly Action<PrototypeCharacterComponent.State> _onStateChangedCallback;
+        private readonly Action<InputAction> _onStateChangedCallback;
     }
 }
