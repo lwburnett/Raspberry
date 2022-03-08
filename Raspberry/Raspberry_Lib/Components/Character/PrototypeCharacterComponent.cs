@@ -17,6 +17,7 @@ namespace Raspberry_Lib.Components
             _animationComponent = Entity.AddComponent<CharacterAnimationComponent>();
             _movementComponent = Entity.AddComponent(new CharacterMovementComponent(OnCharacterStateChanged));
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
+            Entity.AddComponent(new BoxCollider(16, 24));
         }
 
         private CharacterAnimationComponent _animationComponent;
