@@ -10,7 +10,9 @@ namespace Raspberry_Lib.Components
         {
             _stateChangedCallback = iOnStateChangedCallback;
             _currentState = PrototypeCharacterComponent.State.Idle;
-            _moveSpeed = 500f;
+            _moveSpeed = 300f;
+            _gravityForce = 100f;
+            _currentVelocity = Vector2.Zero;
             _subPixelV2 = new SubpixelVector2();
         }
 
@@ -49,10 +51,12 @@ namespace Raspberry_Lib.Components
             if (_currentState != previousState)
                 _stateChangedCallback(_currentState);
 
-            var movement = moveDir * _moveSpeed * Time.DeltaTime;
-            _mover.CalculateMovement(ref movement, out _);
-            _subPixelV2.Update(ref movement);
-            _mover.ApplyMovement(movement);
+            _currentVelocity.X = moveDir.X * _moveSpeed * Time.DeltaTime;
+            _currentVelocity.Y += _gravityForce * Time.DeltaTime;
+
+            _mover.CalculateMovement(ref _currentVelocity, out _);
+            _subPixelV2.Update(ref _currentVelocity);
+            _mover.ApplyMovement(_currentVelocity);
         }
 
         public void OnPlayerInput(CharacterInputController.InputAction iInput)
@@ -65,6 +69,8 @@ namespace Raspberry_Lib.Components
         private CharacterInputController.InputAction _currentInput;
         private PrototypeCharacterComponent.State _currentState;
         private readonly float _moveSpeed;
+        private readonly float _gravityForce;
+        private Vector2 _currentVelocity;
         private Mover _mover;
         SubpixelVector2 _subPixelV2;
     }
