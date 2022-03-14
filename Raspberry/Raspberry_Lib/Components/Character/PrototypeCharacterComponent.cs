@@ -1,4 +1,5 @@
-﻿using Nez;
+﻿using System.Collections.Generic;
+using Nez;
 
 namespace Raspberry_Lib.Components
 {
@@ -17,15 +18,15 @@ namespace Raspberry_Lib.Components
             _animationComponent = Entity.AddComponent<CharacterAnimationComponent>();
             _movementComponent = Entity.AddComponent(new CharacterMovementComponent(OnCharacterStateChanged));
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
-            Entity.AddComponent(new BoxCollider(16, 24));
+            Entity.AddComponent(new BoxCollider(12, 24));
         }
 
         private CharacterAnimationComponent _animationComponent;
         private CharacterMovementComponent _movementComponent;
 
-        private void OnPlayerInput(CharacterInputController.InputAction iInput)
+        private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {
-            _movementComponent.OnPlayerInput(iInput);
+            _movementComponent.OnPlayerInput(iInputDescription);
         }
 
         private void OnCharacterStateChanged(State iNewState)
