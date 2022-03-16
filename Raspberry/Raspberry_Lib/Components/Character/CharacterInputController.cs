@@ -59,7 +59,7 @@ namespace Raspberry_Lib.Components
             else
                 movementInput = MovementInputAction.Left;
 
-            var jumpPressed = _jumpInput.IsDown;
+            var jumpPressed = _jumpInput.IsPressed;
 
             _onStateChangedCallback(new InputDescription(movementInput, jumpPressed));
         }
