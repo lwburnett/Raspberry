@@ -12,7 +12,8 @@ namespace Raspberry_Lib.Components
             _currentInput = new CharacterInputController.InputDescription();
             _currentState = PrototypeCharacterComponent.State.Idle;
             _currentCollision = new CollisionResult();
-            _moveSpeed = 300f;
+            _walkSpeed = 300f;
+            _sprintSpeed = 400f;
             _gravityForce = 75f;
             _jumpHeight = 3f;
             _currentVelocity = Vector2.Zero;
@@ -60,7 +61,15 @@ namespace Raspberry_Lib.Components
             if (_currentState != previousState)
                 _stateChangedCallback(_currentState);
 
-            _currentVelocity.X = moveDir.X * _moveSpeed * Time.DeltaTime;
+            if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Nothing)
+            {
+                _currentVelocity.X = moveDir.X * _walkSpeed * Time.DeltaTime;
+            }
+            else if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Sprint)
+            {
+                _currentVelocity.X = moveDir.X * _sprintSpeed * Time.DeltaTime;
+            }
+
             _currentVelocity.Y += _gravityForce * Time.DeltaTime;
 
             _mover.CalculateMovement(ref _currentVelocity, out _currentCollision);
@@ -78,7 +87,8 @@ namespace Raspberry_Lib.Components
         private CharacterInputController.InputDescription _currentInput;
         private PrototypeCharacterComponent.State _currentState;
         private CollisionResult _currentCollision;
-        private readonly float _moveSpeed;
+        private readonly float _walkSpeed;
+        private readonly float _sprintSpeed;
         private readonly float _gravityForce;
         private readonly float _jumpHeight;
         private Vector2 _currentVelocity;

@@ -14,14 +14,16 @@ namespace Raspberry_Lib.Components
                 JumpInput = false;
             }
 
-            public InputDescription(MovementInputAction iMovementInput, bool iJumpInput)
+            public InputDescription(MovementInputAction iMovementInput, bool iJumpInput, SprollInputAction iSprollInput)
             {
                 MovementInput = iMovementInput;
                 JumpInput = iJumpInput;
+                SprollInput = iSprollInput;
             }
 
             public MovementInputAction MovementInput { get; }
             public bool JumpInput { get; }
+            public SprollInputAction SprollInput { get; }
         }
 
         public enum MovementInputAction
@@ -31,19 +33,31 @@ namespace Raspberry_Lib.Components
             Right
         }
 
+        public enum SprollInputAction
+        {
+            Nothing,
+            Sprint,
+            Roll
+        }
+
         public CharacterInputController(Action<InputDescription> iOnStateChangedCallback)
         {
             _onStateChangedCallback = iOnStateChangedCallback;
+            _lastSprollPressTime = null;
         }
 
         public override void OnAddedToEntity()
         {
             _xAxisInput = new VirtualIntegerAxis(
-                new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.Left, Keys.Right),
+                new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.A, Keys.D),
                 new VirtualAxis.GamePadLeftStickX());
             _jumpInput = new VirtualButton(
-                new VirtualButton.KeyboardKey(Keys.Up),
+                new VirtualButton.KeyboardKey(Keys.Space),
                 new VirtualButton.GamePadButton(0, Buttons.A));
+
+            _sprollInput = new VirtualButton(
+                new VirtualButton.KeyboardKey(Keys.LeftShift),
+                new VirtualButton.GamePadButton(0, Buttons.B));
         }
 
         public void Update()
@@ -61,11 +75,39 @@ namespace Raspberry_Lib.Components
 
             var jumpPressed = _jumpInput.IsPressed;
 
-            _onStateChangedCallback(new InputDescription(movementInput, jumpPressed));
+            var sprollInput = SprollInputAction.Nothing;
+            if (_sprollInput.IsDown)
+            {
+                if (_lastSprollPressTime.HasValue)
+                {
+                    if (Time.TotalTime - _lastSprollPressTime.Value > CSecondsTillSprint)
+                    {
+                        sprollInput = SprollInputAction.Sprint;
+                    }
+                }
+                else
+                {
+                    _lastSprollPressTime = Time.TotalTime;
+                }
+            }
+            else
+            {
+                if (_lastSprollPressTime.HasValue && Time.TotalTime - _lastSprollPressTime.Value < CSecondsTillSprint)
+                {
+                    sprollInput = SprollInputAction.Roll;
+                }
+                _lastSprollPressTime = null;
+            }
+
+            _onStateChangedCallback(new InputDescription(movementInput, jumpPressed, sprollInput));
         }
 
         private VirtualIntegerAxis _xAxisInput;
         private VirtualButton _jumpInput;
+        private VirtualButton _sprollInput;
+        private float? _lastSprollPressTime;
         private readonly Action<InputDescription> _onStateChangedCallback;
+
+        private const float CSecondsTillSprint = .5f;
     }
 }
