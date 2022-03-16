@@ -38,8 +38,12 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToEntity()
         {
-            _xAxisInput = new VirtualIntegerAxis(new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.Left, Keys.Right));
-            _jumpInput = new VirtualButton(new VirtualButton.KeyboardKey(Keys.Up));
+            _xAxisInput = new VirtualIntegerAxis(
+                new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.Left, Keys.Right),
+                new VirtualAxis.GamePadLeftStickX());
+            _jumpInput = new VirtualButton(
+                new VirtualButton.KeyboardKey(Keys.Up),
+                new VirtualButton.GamePadButton(0, Buttons.A));
         }
 
         public void Update()
