@@ -14,7 +14,7 @@ namespace Raspberry_Lib.Components
             _currentCollision = new CollisionResult();
             _moveSpeed = 300f;
             _gravityForce = 75f;
-            _jumpHeight = 4f;
+            _jumpHeight = 3f;
             _currentVelocity = Vector2.Zero;
             _subPixelV2 = new SubpixelVector2();
         }
@@ -52,7 +52,7 @@ namespace Raspberry_Lib.Components
                     break;
             }
 
-            if (_currentCollision.Collider != null && _currentCollision.Normal.X < .1 && _currentInput.JumpInput)
+            if (_currentCollision.Collider != null && _currentCollision.Normal.X < .1f && _currentCollision.Normal.Y < 0f && _currentInput.JumpInput)
             {
                 _currentVelocity.Y = -Mathf.Sqrt(2f * _jumpHeight * _gravityForce);
             }
