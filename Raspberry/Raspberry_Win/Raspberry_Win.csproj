@@ -31,8 +31,14 @@
     <ProjectReference Include="..\Raspberry_Lib\Raspberry_Lib.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\Characters\PrototypeCharacter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Levels\PrototypeSpriteSheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Levels\PrototypeTileMap.ldtk">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
