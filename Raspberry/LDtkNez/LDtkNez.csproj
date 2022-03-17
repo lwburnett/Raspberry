@@ -5,12 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="LDtkMonogame" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LDtkNez\LDtkNez.csproj" />
     <ProjectReference Include="..\Nez\Nez.Portable\Nez.csproj" />
   </ItemGroup>
 

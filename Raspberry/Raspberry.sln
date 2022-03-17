@@ -5,9 +5,11 @@ VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez", "Nez\Nez.Portable\Nez.csproj", "{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Win", "Raspberry_Win\Raspberry_Win.csproj", "{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Win", "Raspberry_Win\Raspberry_Win.csproj", "{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{F6DA5228-7382-49E2-9248-A271DB073D65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{F6DA5228-7382-49E2-9248-A271DB073D65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LDtkNez", "LDtkNez\LDtkNez.csproj", "{9B644CBB-E49A-4B17-8721-66050859FAB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{F6DA5228-7382-49E2-9248-A271DB073D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6DA5228-7382-49E2-9248-A271DB073D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6DA5228-7382-49E2-9248-A271DB073D65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,11 +9,11 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 
-namespace Raspberry_Lib.Renderers
+namespace LDtkNez
 {
-    internal class LDtkMapRenderer : RenderableComponent
+    public class LDtkNezRenderer : RenderableComponent
     {
-        public LDtkMapRenderer(string iPath, ContentManager iContentManager, int iLevelIndex = 0)
+        public LDtkNezRenderer(string iPath, ContentManager iContentManager, int iLevelIndex = 0)
         {
             _path = iPath;
             _contentManager = iContentManager;
@@ -29,7 +29,7 @@ namespace Raspberry_Lib.Renderers
         public int PhysicsLayer = 1 << 0;
         public override float Width => _world.Levels[_level].PxWid;
         public override float Height => _world.Levels[_level].PxHei;
-        
+
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
             var level = _world.Levels[_level];
@@ -142,7 +142,7 @@ namespace Raspberry_Lib.Renderers
             _colliders = new List<Collider>();
             var level = _world.Levels[_level];
             var scale = Entity.Transform.Scale.X;
-            
+
             for (var ii = level.LayerInstances.Length - 1; ii >= 0; --ii)
             {
                 var thisLayer = level.LayerInstances[ii];
@@ -154,7 +154,7 @@ namespace Raspberry_Lib.Renderers
                 var collidableTag = tileSet.EnumTags.FirstOrDefault(iEt => ((JsonElement)iEt["enumValueId"]).GetString() == CollisionEnum.Collidable.ToString());
                 System.Diagnostics.Debug.Assert(collidableTag != null);
 
-                var collidableIdArray = new List<int>(); 
+                var collidableIdArray = new List<int>();
                 var enumerator = ((JsonElement)collidableTag["tileIds"]).EnumerateArray();
                 while (enumerator.MoveNext())
                 {
