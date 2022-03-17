@@ -15,8 +15,8 @@ namespace Raspberry_Lib.Components
             _animator = Entity.AddComponent<SpriteAnimator>();
 
             _animator.AddAnimation(PrototypeCharacterComponent.State.Idle.ToString(), new[] { sprites[0], sprites[1], sprites[2], sprites[3] });
-            _animator.AddAnimation(PrototypeCharacterComponent.State.RunLeft.ToString(), new []{sprites[5]});
-            _animator.AddAnimation(PrototypeCharacterComponent.State.RunRight.ToString(), new []{sprites[4]});
+            _animator.AddAnimation(PrototypeCharacterComponent.State.WalkLeft.ToString(), new []{sprites[5]});
+            _animator.AddAnimation(PrototypeCharacterComponent.State.WalkRight.ToString(), new []{sprites[4]});
 
             _currentState = PrototypeCharacterComponent.State.Idle;
             _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.PingPong);
@@ -34,10 +34,12 @@ namespace Raspberry_Lib.Components
                     _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.PingPong);
                     break;
                 case PrototypeCharacterComponent.State.RunLeft:
-                    _animator.Play(PrototypeCharacterComponent.State.RunLeft.ToString(), SpriteAnimator.LoopMode.ClampForever);
+                case PrototypeCharacterComponent.State.WalkLeft:
+                    _animator.Play(PrototypeCharacterComponent.State.WalkLeft.ToString(), SpriteAnimator.LoopMode.ClampForever);
                     break;
                 case PrototypeCharacterComponent.State.RunRight:
-                    _animator.Play(PrototypeCharacterComponent.State.RunRight.ToString(), SpriteAnimator.LoopMode.ClampForever);
+                case PrototypeCharacterComponent.State.WalkRight:
+                    _animator.Play(PrototypeCharacterComponent.State.WalkRight.ToString(), SpriteAnimator.LoopMode.ClampForever);
                     break;
                 default:
                     System.Diagnostics.Debug.Fail($"Unknown value of enum {typeof(PrototypeCharacterComponent.State)}: {iNewState}");

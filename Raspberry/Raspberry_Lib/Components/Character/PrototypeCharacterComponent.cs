@@ -8,6 +8,8 @@ namespace Raspberry_Lib.Components
         public enum State
         {
             Idle,
+            WalkLeft,
+            WalkRight,
             RunLeft,
             RunRight
         }

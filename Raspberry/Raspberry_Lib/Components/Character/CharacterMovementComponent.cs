@@ -30,47 +30,76 @@ namespace Raspberry_Lib.Components
         public void Update()
         {
             var previousState = _currentState;
-            Vector2 moveDir;
+            var moveVec = Vector2.Zero;
 
-            switch (_currentInput.MovementInput)
+            if (_currentInput.MovementInput == CharacterInputController.MovementInputAction.Nothing)
             {
-                case CharacterInputController.MovementInputAction.Nothing:
-                    _currentState = PrototypeCharacterComponent.State.Idle;
-                    moveDir = Vector2.Zero;
-                    break;
-                case CharacterInputController.MovementInputAction.Left:
-                    _currentState = PrototypeCharacterComponent.State.RunLeft;
-                    moveDir = -1.0f * Vector2.UnitX;
-                    break;
-                case CharacterInputController.MovementInputAction.Right:
-                    _currentState = PrototypeCharacterComponent.State.RunRight;
-                    moveDir = Vector2.UnitX;
-                    break;
-                default:
-                    moveDir = Vector2.Zero;
-                    System.Diagnostics.Debug.Fail(
-                        $"Unknown value of enum type {typeof(CharacterInputController.MovementInputAction)}: {_currentInput}");
-                    break;
+                moveVec = Vector2.Zero;
+                _currentState = PrototypeCharacterComponent.State.Idle;
             }
+            else if (_currentInput.MovementInput == CharacterInputController.MovementInputAction.Left)
+            {
+                if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Nothing)
+                {
+                    moveVec = new Vector2(-1 * _walkSpeed, 0);
+                    _currentState = PrototypeCharacterComponent.State.WalkLeft;
+                }
+                else if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Roll)
+                {
+                    moveVec = new Vector2(-1 * _walkSpeed, 0);
+                    _currentState = PrototypeCharacterComponent.State.WalkLeft;
+                }
+                else if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Sprint)
+                {
+                    moveVec = new Vector2(-1 * _sprintSpeed, 0);
+                    _currentState = PrototypeCharacterComponent.State.RunLeft;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.Fail(
+                        $"Unknown value of enum type {typeof(CharacterInputController.SprollInputAction)}: {_currentInput.SprollInput}");
+                }
+            }
+            else if (_currentInput.MovementInput == CharacterInputController.MovementInputAction.Right)
+            {
+                if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Nothing)
+                {
+                    moveVec = new Vector2(_walkSpeed, 0);
+                    _currentState = PrototypeCharacterComponent.State.WalkRight;
+                }
+                else if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Roll)
+                {
+                    moveVec = new Vector2(_walkSpeed, 0);
+                    _currentState = PrototypeCharacterComponent.State.WalkRight;
+                }
+                else if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Sprint)
+                {
+                    moveVec = new Vector2(_sprintSpeed, 0);
+                    _currentState = PrototypeCharacterComponent.State.RunRight;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.Fail(
+                        $"Unknown value of enum type {typeof(CharacterInputController.SprollInputAction)}: {_currentInput.SprollInput}");
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.Fail(
+                    $"Unknown value of enum type {typeof(CharacterInputController.MovementInputAction)}: {_currentInput.MovementInput}");
+            }
+
+            _currentVelocity.X = moveVec.X * Time.DeltaTime;
 
             if (_currentCollision.Collider != null && _currentCollision.Normal.X < .1f && _currentCollision.Normal.Y < 0f && _currentInput.JumpInput)
             {
                 _currentVelocity.Y = -Mathf.Sqrt(2f * _jumpHeight * _gravityForce);
             }
 
+            _currentVelocity.Y += _gravityForce * Time.DeltaTime;
+
             if (_currentState != previousState)
                 _stateChangedCallback(_currentState);
-
-            if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Nothing)
-            {
-                _currentVelocity.X = moveDir.X * _walkSpeed * Time.DeltaTime;
-            }
-            else if (_currentInput.SprollInput == CharacterInputController.SprollInputAction.Sprint)
-            {
-                _currentVelocity.X = moveDir.X * _sprintSpeed * Time.DeltaTime;
-            }
-
-            _currentVelocity.Y += _gravityForce * Time.DeltaTime;
 
             _mover.CalculateMovement(ref _currentVelocity, out _currentCollision);
             _subPixelV2.Update(ref _currentVelocity);
