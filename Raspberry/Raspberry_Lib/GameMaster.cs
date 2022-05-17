@@ -1,34 +1,49 @@
-﻿using Nez;
+﻿using Microsoft.Xna.Framework;
+using Nez;
 using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib
 {
     public class GameMaster : Core
     {
-        public GameMaster() : base(windowTitle: "Raspberry")
+        private static class Settings
         {
+            public static readonly Vector2 TargetScreenSize = new(2340, 1080);
         }
+
+        public GameMaster(bool iFullScreen) : base(windowTitle: "Raspberry")
+        {
+            _fullScreen = iFullScreen;
+        }
+        
+        private readonly bool _fullScreen;
 
         protected override void Initialize()
         {
             base.Initialize();
 
-#if DEBUG
-            Window.AllowUserResizing = true;
-            ExitOnEscapeKeypress = true;
-            PauseOnFocusLost = false;
+            var windowBounds = GraphicsDevice.DisplayMode;
+            var renderScaleFactor = windowBounds.Width / Settings.TargetScreenSize.X;
+            RenderSetting.SetRenderScale(renderScaleFactor);
+            if (_fullScreen)
+            {
+                Window.AllowUserResizing = false;
+                ExitOnEscapeKeypress = false;
 
-            // Dumb work around to make it so the debug window isn't so annoyingly obtrusive
-            Screen.SetSize(1910, 1075);
-#else
-            Window.AllowUserResizing = false;
-            ExitOnEscapeKeypress = false;
+                Screen.IsFullscreen = true;
+                Screen.SetSize(windowBounds.Width, windowBounds.Height);
+                Screen.ApplyChanges();
+                renderScaleFactor = windowBounds.Width / Settings.TargetScreenSize.X;
+            }
+            else
+            {
+                Window.AllowUserResizing = true;
+                ExitOnEscapeKeypress = true;
+                PauseOnFocusLost = false;
 
-            Screen.IsFullscreen = true;
-            var windowBounds = Window.ClientBounds;
-            Screen.SetSize(windowBounds.Width, windowBounds.Height);
-            Screen.ApplyChanges();
-#endif
+                // Dumb work around to make it so the debug window isn't so annoyingly obtrusive
+                Screen.SetSize((int)(renderScaleFactor * Settings.TargetScreenSize.X), (int)(renderScaleFactor * Settings.TargetScreenSize.Y));
+            }
 
             Scene = new MainMenuScene(() => { Scene = new PrototypeScene(); }, Exit);
         }

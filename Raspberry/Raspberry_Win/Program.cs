@@ -8,7 +8,7 @@ namespace Raspberry_Win
         [STAThread]
         static void Main()
         {
-            using var game = new GameMaster();
+            using var game = new GameMaster(false);
             game.Run();
         }
     }

@@ -5,6 +5,13 @@ namespace Raspberry_Lib.Scenes
 {
     internal class MainMenuScene : SceneBase
     {
+        private static class Settings
+        {
+            public static readonly RenderSetting LabelTopPadding = new(20);
+            public static readonly RenderSetting FontScale = new(5);
+            public static readonly RenderSetting MinButtonHeight = new(30);
+        }
+
         public MainMenuScene(System.Action iOnStart, System.Action iOnExit)
         {
             _onStart = iOnStart;
@@ -21,18 +28,18 @@ namespace Raspberry_Lib.Scenes
 
             table.SetFillParent(true).Center();
             table.Add(new Label("Main Menu").SetFontScale(5));
-            table.Row().SetPadTop(20);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
             
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
             playButton.OnClicked += OnPlayClicked;
-            playButton.GetLabel().SetFontScale(2.5f);
-            table.Add(playButton).SetFillX().SetMinHeight(30);
-            table.Row().SetPadTop(20);
+            playButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(playButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
             var exitButton = new TextButton("Exit", Skin.CreateDefaultSkin());
-            exitButton.GetLabel().SetFontScale(2.5f);
+            exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             exitButton.OnClicked += OnExitClicked;
-            table.Add(exitButton).SetFillX().SetMinHeight(30);
+            table.Add(exitButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
         }
 
         private readonly System.Action _onStart;
