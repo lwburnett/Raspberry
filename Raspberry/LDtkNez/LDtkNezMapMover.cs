@@ -5,76 +5,7 @@ using Nez;
 
 namespace LDtkNez
 {
-	internal class LDtkNezTile
-	{
-		public int X { get; set; }
-		public int Y { get; set; }
-
-		public bool IsSlope()
-		{
-			throw new NotImplementedException();
-		}
-
-		public double GetSlope()
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool IsOneWayPlatform()
-		{
-			throw new NotImplementedException();
-		}
-
-		public Edge GetNearestEdge(int perpindicularPosition)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Edge GetHighestSlopeEdge()
-		{
-			throw new NotImplementedException();
-		}
-
-		public double GetSlopeOffset()
-		{
-			throw new NotImplementedException();
-		}
-	}
-
-	internal class LDtkNezMap
-    {
-        public int TileToWorldPositionX(int iXCoordinate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int TileToWorldPositionY(int iYCoordinate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int WorldToTilePositionX(float iXWorldCoordinate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int WorldToTilePositionY(float iYWorldCoordinate)
-        {
-            throw new NotImplementedException();
-        }
-	}
-
-    internal class LDtkNezLayer
-    {
-		public LDtkNezMap Map { get; }
-
-        public LDtkNezTile GetTile(int iColumn, int iRow)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-	internal class LDtkMapMover :
+    internal class LDtkMapMover :
 #if DEBUG_MOVER
 	RenderableComponent
 #else
