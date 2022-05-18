@@ -1,33 +1,16 @@
-﻿using System.Diagnostics;
-
-namespace Raspberry_Lib
+﻿namespace Raspberry_Lib
 {
+    /// <summary>
+    /// A simple wrapper of a float that scales itself by PlatformUtils.GetRenderScale()
+    /// </summary>
     internal class RenderSetting
     {
-        #region Scale
-
-        public static void SetRenderScale(float iRenderScale)
+        public RenderSetting(float iRawValue)
         {
-            Debug.Assert(iRenderScale > 0);
-            Debug.Assert(!sIsRenderScaleSet);
-
-            sRenderScale = iRenderScale;
-            sIsRenderScaleSet = true;
-
+            RawValue = iRawValue;
         }
 
-        private static bool sIsRenderScaleSet;
-        private static float sRenderScale = 1;
-
-        #endregion
-
-        public RenderSetting(float iValue)
-        {
-            _value = iValue;
-        }
-
-        public float Value => _value * sRenderScale;
-        private readonly float _value;
-
+        public float Value => RawValue * PlatformUtils.GetRenderScale();
+        public float RawValue { get; }
     }
 }

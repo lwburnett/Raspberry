@@ -24,7 +24,8 @@ namespace Raspberry_Lib
 
             var windowBounds = GraphicsDevice.DisplayMode;
             var renderScaleFactor = windowBounds.Width / Settings.TargetScreenSize.X;
-            RenderSetting.SetRenderScale(renderScaleFactor);
+            PlatformUtils.SetRenderScale(renderScaleFactor);
+
             if (_fullScreen)
             {
                 Window.AllowUserResizing = false;
