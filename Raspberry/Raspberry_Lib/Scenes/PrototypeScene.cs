@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using LDtkNez;
+using Microsoft.Xna.Framework;
 using Nez;
 using Raspberry_Lib.Components;
-using LDtkNez;
 
 namespace Raspberry_Lib.Scenes
 {
@@ -17,15 +17,20 @@ namespace Raspberry_Lib.Scenes
         public override void Initialize()
         {
             base.Initialize();
-            
+
+            var characterStartingPos = new Vector2(Settings.CharacterStartPositionX.Value, Settings.CharacterStartPositionY.Value);
+            _generator = new ProceduralGenerator(characterStartingPos);
+
             var map = CreateEntity("map");
-            map.AddComponent(new LDtkNezRenderer(Raspberry_Lib.Content.Content.Prototype.Tilemap, Content));
+            map.AddComponent(new ProceduralRenderer(_generator));
             map.Transform.SetLocalScale(Settings.MapScale.Value);
 
-            var character = CreateEntity("character", new Vector2(Settings.CharacterStartPositionX.Value, Settings.CharacterStartPositionY.Value));
+            var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value);
             character.AddComponent(new PrototypeCharacterComponent());
             Camera.Entity.AddComponent(new FollowCamera(character));
         }
+
+        private ProceduralGenerator _generator;
     }
 }
