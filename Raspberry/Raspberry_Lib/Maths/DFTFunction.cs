@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 
-namespace Raspberry_Lib
+namespace Raspberry_Lib.Maths
 {
     /// <summary>
     /// Discrete Fourier Transform class that handles the computation for the fit line of the random walks
     /// </summary>
-    internal class DFT
+    internal class DFTFunction : IFunction
     {
-        public DFT(IEnumerable<Vector2> iPoints, int iNumTerms)
+        public DFTFunction(IEnumerable<Vector2> iPoints, int iNumTerms)
         {
+            System.Diagnostics.Debug.Assert(iPoints != null);
+
             var pointsList = iPoints.ToList();
+
+            System.Diagnostics.Debug.Assert(pointsList.Any());
+
             _numPoints = pointsList.Count;
             _avgY = pointsList.Average(p => p.Y);
             _startingX = pointsList[0].X;
@@ -20,11 +25,6 @@ namespace Raspberry_Lib
             PrecomputeCoefficients(pointsList, iNumTerms);
         }
 
-        /// <summary>
-        /// For this DTF, give you the y value for a given x AKA F(x)
-        /// </summary>
-        /// <param name="iX">The value for x for which you want y</param>
-        /// <returns>The y value for a given x AKA F(x)</returns>
         public float GetYForX(float iX)
         {
             var transformedX = iX - _startingX;
@@ -40,11 +40,6 @@ namespace Raspberry_Lib
             return yValue;
         }
 
-        /// <summary>
-        /// For this DTF, give you the slope for a given x AKA F'(x)
-        /// </summary>
-        /// <param name="iX">The value for x for which you want the slope</param>
-        /// <returns>The slope for a given x AKA F'(x)</returns>
         public float GetYPrimeForX(float iX)
         {
             var transformedX = iX - _startingX;

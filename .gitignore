@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+/Raspberry/Raspberry.sln.DotSettings
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

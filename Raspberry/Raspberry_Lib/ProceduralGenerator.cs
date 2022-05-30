@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Raspberry_Lib.Maths;
 
 namespace Raspberry_Lib
 {
@@ -10,23 +11,18 @@ namespace Raspberry_Lib
         {
             public static readonly RenderSetting DeltaX = new(16f);
             public static readonly RenderSetting DeltaY = new(16f);
-            public static readonly int NumPointsPerBlock = 50;
+            public const int NumPointsPerBlock = 50;
+
+            public const int NumDTFTerms = 5;
         }
 
         public ProceduralGenerator(Vector2 iCharacterStartingPos)
         {
-            _points = new List<List<Vector2>>();
+            _functions = new List<IFunction>();
 
-            var leadingPoints = new List<Vector2>();
-            for (var ii = 0; ii < 4; ii++)
-            {
-                var thisPoint = new Vector2(iCharacterStartingPos.X - ((4 - ii) * Settings.DeltaX.Value), iCharacterStartingPos.Y);
-                leadingPoints.Add(thisPoint);
-            }
+            _functions.Add(LeadingPoints(iCharacterStartingPos));
 
-            _points.Add(leadingPoints);
-
-            _points.Add(RandomWalk(iCharacterStartingPos));
+            _functions.Add(RandomWalk(iCharacterStartingPos));
 
             // TODO: Finish this class
             // Fit line to points
@@ -35,9 +31,21 @@ namespace Raspberry_Lib
             //      Use this function in ProceduralRenderer to render tiles
         }
 
-        private List<List<Vector2>> _points;
+        private List<IFunction> _functions;
 
-        private static List<Vector2> RandomWalk(Vector2 iStartingPoint)
+        private static IFunction LeadingPoints(Vector2 iStartingPoint)
+        {
+            var leadingPoints = new List<Vector2>();
+            for (var ii = 0; ii < 4; ii++)
+            {
+                var thisPoint = new Vector2(iStartingPoint.X - ((4 - ii) * Settings.DeltaX.Value), iStartingPoint.Y);
+                leadingPoints.Add(thisPoint);
+            }
+
+            return new LinearFunction(leadingPoints);
+        }
+
+        private static IFunction RandomWalk(Vector2 iStartingPoint)
         {
             var rng = new Random();
             var walkPoints = new List<Vector2>();
@@ -65,7 +73,7 @@ namespace Raspberry_Lib
                 walkPoints.Add(thisPoint);
             }
 
-            return walkPoints;
+            return new DFTFunction(walkPoints, Settings.NumDTFTerms);
         }
     }
 }
