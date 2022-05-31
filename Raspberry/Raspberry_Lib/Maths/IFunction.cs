@@ -15,5 +15,15 @@
         /// <param name="iX">The value for x for which you want the slope</param>
         /// <returns>The slope for a given x AKA F'(x)</returns>
         float GetYPrimeForX(float iX);
+
+        /// <summary>
+        /// Beginning X value of this function's domain
+        /// </summary>
+        float DomainStart { get; }
+
+        /// <summary>
+        /// Ending X value of this function's domain
+        /// </summary>
+        float DomainEnd { get; }
     }
 }

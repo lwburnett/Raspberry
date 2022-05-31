@@ -19,10 +19,9 @@ namespace Raspberry_Lib.Scenes
             base.Initialize();
 
             var characterStartingPos = new Vector2(Settings.CharacterStartPositionX.Value, Settings.CharacterStartPositionY.Value);
-            _generator = new ProceduralGenerator(characterStartingPos);
 
             var map = CreateEntity("map");
-            map.AddComponent(new ProceduralRenderer(_generator));
+            map.AddComponent(new ProceduralRenderer(characterStartingPos));
             map.Transform.SetLocalScale(Settings.MapScale.Value);
 
             var character = CreateEntity("character", characterStartingPos);
@@ -30,7 +29,5 @@ namespace Raspberry_Lib.Scenes
             character.AddComponent(new PrototypeCharacterComponent());
             Camera.Entity.AddComponent(new FollowCamera(character));
         }
-
-        private ProceduralGenerator _generator;
     }
 }

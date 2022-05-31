@@ -96,7 +96,7 @@ namespace Raspberry_Lib.Components
                 _currentVelocity.Y = -Mathf.Sqrt(2f * _jumpHeight * _gravityForce);
             }
 
-            _currentVelocity.Y += _gravityForce * Time.DeltaTime;
+            //_currentVelocity.Y += _gravityForce * Time.DeltaTime;
 
             if (_currentState != previousState)
                 _stateChangedCallback(_currentState);

@@ -17,7 +17,10 @@ namespace Raspberry_Lib.Maths
             var point1 = pointsList[0];
             var point2 = pointsList[1];
             _slope = (point2.Y - point1.Y) / (point2.X - point1.X);
-            _intercept = point1.Y - _slope * point1.X;
+            _intercept = point1.Y - _slope * point1.X; 
+            
+            DomainStart = pointsList.First().X;
+            DomainEnd = pointsList.Last().X;
         }
 
         public float GetYForX(float iX)
@@ -29,6 +32,9 @@ namespace Raspberry_Lib.Maths
         {
             return _slope;
         }
+
+        public float DomainStart { get; }
+        public float DomainEnd { get; }
 
         private readonly float _slope;
         private readonly float _intercept;
