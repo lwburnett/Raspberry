@@ -5,23 +5,44 @@ using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
 
-namespace Raspberry_Lib
+namespace Raspberry_Lib.Components
 {
-    internal class ProceduralRenderer : RenderableComponent
+    internal class ProceduralRenderer : RenderableComponent, IBeginPlay
     {
-        public ProceduralRenderer(Vector2 iCharacterStartingPos)
+        public ProceduralRenderer()
         {
-            _characterStartingPos = iCharacterStartingPos;
             _tiles = new List<Tile>();
         }
 
-        public override void OnAddedToEntity()
+        public int PhysicsLayer = 1 << 0;
+        public override float Width => 100000;
+        public override float Height => 20000;
+
+        public override void Render(Batcher iBatcher, Camera iCamera)
+        {
+            foreach (var tile in _tiles)
+            {
+                iBatcher.Draw(
+                    tile.Texture,
+                    tile.Position,
+                    Color.White,
+                    0.0f,
+                    Vector2.Zero,
+                    Entity.Transform.Scale.X,
+                    SpriteEffects.None,
+                    0.0f);
+            }
+        }
+
+        public int BeginPlayOrder => 1;
+
+        public void OnBeginPlay()
         {
             var textureAtlas = Entity.Scene.Content.LoadTexture("Levels/PrototypeSpriteSheet");
             var texture = Sprite.SpritesFromAtlas(textureAtlas, 16, 16)[15];
 
             var increment = texture.SourceRect.Width * Entity.Transform.Scale.X;
-            _generator = new ProceduralGenerator(_characterStartingPos, increment);
+            _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
             foreach (var function in _generator.Functions)
             {
                 var xPos = function.DomainStart;
@@ -45,26 +66,6 @@ namespace Raspberry_Lib
             }
         }
 
-        public int PhysicsLayer = 1 << 0; 
-        public override float Width => _generator.Functions.Last().DomainEnd;
-        public override float Height => 20000;
-
-        public override void Render(Batcher iBatcher, Camera iCamera)
-        {
-            foreach (var tile in _tiles)
-            {
-                iBatcher.Draw(
-                    tile.Texture, 
-                    tile.Position, 
-                    Color.White, 
-                    0.0f, 
-                    Vector2.Zero, 
-                    Entity.Transform.Scale.X,
-                    SpriteEffects.None, 
-                    0.0f);
-            }
-        }
-
         private class Tile
         {
             public Tile(Sprite iTexture, Vector2 iPosition)
@@ -78,7 +79,6 @@ namespace Raspberry_Lib
         }
 
         private readonly List<Tile> _tiles;
-        private readonly Vector2 _characterStartingPos;
-        private ProceduralGenerator _generator;
+        private ProceduralGeneratorComponent _generator;
     }
 }

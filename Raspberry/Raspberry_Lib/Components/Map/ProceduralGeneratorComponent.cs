@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Nez;
+using Nez.Textures;
 using Raspberry_Lib.Maths;
+using Random = System.Random;
 
-namespace Raspberry_Lib
+namespace Raspberry_Lib.Components
 {
-    internal class ProceduralGenerator
+    internal class ProceduralGeneratorComponent : Component, IBeginPlay
     {
         private static class Settings
         {
@@ -14,30 +16,44 @@ namespace Raspberry_Lib
             public const int NumDTFTerms = 5;
         }
 
-        public ProceduralGenerator(Vector2 iCharacterStartingPos, float iScale)
+        public ProceduralGeneratorComponent()
         {
-            _scale = iScale;
+        }
+
+        public override void OnAddedToEntity()
+        {
+            base.OnAddedToEntity();
+
+            var textureAtlas = Entity.Scene.Content.LoadTexture("Levels/PrototypeSpriteSheet");
+            var texture = Sprite.SpritesFromAtlas(textureAtlas, 16, 16)[15];
+
+            _scale = texture.SourceRect.Width * Entity.Transform.Scale.X;
+        }
+
+        public List<IFunction> Functions { get; private set; }
+
+        public int BeginPlayOrder => 0;
+
+        public void OnBeginPlay()
+        {
+            var characterEntity = Entity.Scene.Entities.FindEntity("character");
+            var startingPos = characterEntity.Position;
 
             Functions = new List<IFunction>
             {
-                LeadingPoints(iCharacterStartingPos),
-                RandomWalk(iCharacterStartingPos)
+                LeadingPoints(startingPos),
+                RandomWalk(startingPos)
             };
-
-            // Write function to give Y based on passed-in X point
-            //      Use this function in ProceduralRenderer to render tiles
         }
 
-        public List<IFunction> Functions { get; }
-
-        private readonly float _scale;
+        private float _scale;
 
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
             var leadingPoints = new List<Vector2>();
             for (var ii = 0; ii < 4; ii++)
             {
-                var thisPoint = new Vector2(iStartingPoint.X - ((4 - ii) * _scale), iStartingPoint.Y);
+                var thisPoint = new Vector2(iStartingPoint.X - (4 - ii) * _scale, iStartingPoint.Y);
                 leadingPoints.Add(thisPoint);
             }
 
@@ -65,7 +81,7 @@ namespace Raspberry_Lib
                 var thisPoint = new Vector2(ii, dy);
                 walkPoints.Add(thisPoint);
             }
-            
+
             return new DFTFunction(walkPoints, Settings.NumDTFTerms, iStartingPoint, _scale);
         }
     }

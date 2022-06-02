@@ -1,5 +1,4 @@
-﻿using LDtkNez;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Nez;
 using Raspberry_Lib.Components;
 
@@ -21,8 +20,9 @@ namespace Raspberry_Lib.Scenes
             var characterStartingPos = new Vector2(Settings.CharacterStartPositionX.Value, Settings.CharacterStartPositionY.Value);
 
             var map = CreateEntity("map");
-            map.AddComponent(new ProceduralRenderer(characterStartingPos));
             map.Transform.SetLocalScale(Settings.MapScale.Value);
+            map.AddComponent<ProceduralGeneratorComponent>();
+            map.AddComponent<ProceduralRenderer>();
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value);
