@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Nez;
 using Nez.Textures;
 using Raspberry_Lib.Maths;
-using Random = System.Random;
 
 namespace Raspberry_Lib.Components
 {
@@ -14,10 +13,8 @@ namespace Raspberry_Lib.Components
             public const int NumPointsPerBlock = 100;
 
             public const int NumDTFTerms = 5;
-        }
 
-        public ProceduralGeneratorComponent()
-        {
+            public const int NumLeadingPoints = 20;
         }
 
         public override void OnAddedToEntity()
@@ -51,9 +48,9 @@ namespace Raspberry_Lib.Components
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
             var leadingPoints = new List<Vector2>();
-            for (var ii = 0; ii < 4; ii++)
+            for (var ii = 0; ii < Settings.NumLeadingPoints; ii++)
             {
-                var thisPoint = new Vector2(iStartingPoint.X - (4 - ii) * _scale, iStartingPoint.Y);
+                var thisPoint = new Vector2(iStartingPoint.X - (Settings.NumLeadingPoints - ii - 1) * _scale, iStartingPoint.Y);
                 leadingPoints.Add(thisPoint);
             }
 
@@ -62,7 +59,7 @@ namespace Raspberry_Lib.Components
 
         private IFunction RandomWalk(Vector2 iStartingPoint)
         {
-            var rng = new Random();
+            var rng = new System.Random();
             var walkPoints = new List<Vector2>();
 
             for (var ii = 0; ii < Settings.NumPointsPerBlock; ii++)

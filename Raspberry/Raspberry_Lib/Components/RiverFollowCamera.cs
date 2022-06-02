@@ -56,7 +56,7 @@ namespace Raspberry_Lib.Components
 
             if (!setCameraPos)
             {
-                _camera.FocusOffset = Vector2.Zero;
+                _camera.FocusOffset = new Vector2(-Settings.LeadingDeltaX.Value, 0.0f);
                 //System.Diagnostics.Debug.Fail("Failed to set camera position.");
             }
         }
