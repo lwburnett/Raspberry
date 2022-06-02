@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
@@ -9,9 +8,15 @@ namespace Raspberry_Lib.Components
 {
     internal class ProceduralRenderer : RenderableComponent, IBeginPlay
     {
+        private static class Settings
+        {
+            public const bool RenderCollidersDebug = false;
+        }
+
         public ProceduralRenderer()
         {
             _tiles = new List<Tile>();
+            _colliders = new List<Collider>();
         }
 
         public int PhysicsLayer = 1 << 0;
@@ -32,6 +37,16 @@ namespace Raspberry_Lib.Components
                     SpriteEffects.None,
                     0.0f);
             }
+
+#if DEBUG
+            if (Settings.RenderCollidersDebug)
+            {
+                foreach (var collider in _colliders)
+                {
+                    collider.DebugRender(iBatcher);
+                }
+            }
+#endif
         }
 
         public int BeginPlayOrder => 1;
@@ -42,6 +57,7 @@ namespace Raspberry_Lib.Components
             var texture = Sprite.SpritesFromAtlas(textureAtlas, 16, 16)[15];
 
             var increment = texture.SourceRect.Width * Entity.Transform.Scale.X;
+            var unscaledIncrement = texture.SourceRect.Width;
             _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
             foreach (var function in _generator.Functions)
             {
@@ -50,16 +66,26 @@ namespace Raspberry_Lib.Components
                 {
                     var yPos = function.GetYForX(xPos);
 
-                    var upperTile = new Tile(texture, new Vector2(xPos, yPos - increment * 2));
-                    var lowerTile = new Tile(texture, new Vector2(xPos, yPos + increment * 2));
+                    var upperTile = new Tile(texture, new Vector2(xPos, yPos - increment * 4));
+                    var lowerTile = new Tile(texture, new Vector2(xPos, yPos + increment * 4));
 
                     _tiles.Add(upperTile);
                     _tiles.Add(lowerTile);
 
-                    var upperTileRectangle = new Rectangle(upperTile.Position.ToPoint(), new Point((int)increment, (int)increment));
-                    var lowerTileRectangle = new Rectangle(upperTile.Position.ToPoint(), new Point((int)increment, (int)increment));
-                    Physics.AddCollider(new BoxCollider(upperTileRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity });
-                    Physics.AddCollider(new BoxCollider(lowerTileRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity });
+                    // BoxCollider reapplies the entity transform so I have to pass in position & size without that scaling
+                    var unscaledUpperTilePosition = new Vector2(upperTile.Position.X / Entity.Transform.Scale.X, upperTile.Position.Y / Entity.Transform.Scale.X);
+                    var unscaledLowerTilePosition = new Vector2(lowerTile.Position.X / Entity.Transform.Scale.X, lowerTile.Position.Y / Entity.Transform.Scale.X);
+
+                    var upperTileColliderRectangle = new Rectangle(unscaledUpperTilePosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
+                    var lowerTileColliderRectangle = new Rectangle(unscaledLowerTilePosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
+
+                    var upperCollider = new BoxCollider(upperTileColliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };
+                    var lowerCollider = new BoxCollider(lowerTileColliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };
+                    _colliders.Add(upperCollider);
+                    _colliders.Add(lowerCollider);
+
+                    Physics.AddCollider(new BoxCollider(upperTileColliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity });
+                    Physics.AddCollider(new BoxCollider(lowerTileColliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity });
 
                     xPos += increment;
                 }
@@ -79,6 +105,7 @@ namespace Raspberry_Lib.Components
         }
 
         private readonly List<Tile> _tiles;
+        private readonly List<Collider> _colliders;
         private ProceduralGeneratorComponent _generator;
     }
 }
