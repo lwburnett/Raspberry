@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Nez;
 using Raspberry_Lib.Components;
 
 namespace Raspberry_Lib.Scenes
