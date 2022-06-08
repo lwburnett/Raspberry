@@ -46,8 +46,8 @@ namespace Raspberry_Lib.Components
 
                     var desiredFocusPoint = new Vector2(cameraDesiredX, function.GetYForX(cameraDesiredX));
                     var focusOffset = new Vector2(
-                        playerPosition.X + playerBounds.Width / 2 - desiredFocusPoint.X,
-                        playerPosition.Y + playerBounds.Height / 2 - desiredFocusPoint.Y);
+                        playerBounds.X + playerBounds.Width / 2 - desiredFocusPoint.X,
+                        playerBounds.Y + playerBounds.Height / 2 - desiredFocusPoint.Y);
 
                     _camera.FocusOffset = focusOffset;
                     setCameraPos = true;
