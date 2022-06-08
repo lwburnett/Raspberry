@@ -9,7 +9,7 @@ namespace Raspberry_Lib.Components
         Component
 #endif
     {
-        private class Settings
+        private static class Settings
         {
 #if DEBUG
             public const bool DebugRenderHitBox = false;
