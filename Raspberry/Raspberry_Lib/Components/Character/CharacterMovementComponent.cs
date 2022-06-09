@@ -103,8 +103,8 @@ namespace Raspberry_Lib.Components
             }
             else
             {
-                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - .75f * dotProduct) * 
-                                currentParallelSpeed * currentParallelSpeed;
+                var speedDif = currentParallelSpeed - currentTopSpeedParallel;
+                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - .75f * dotProduct) * speedDif * speedDif;
 
                 var dragForceVec = - dragForceMag * flowDirectionVector;
 
