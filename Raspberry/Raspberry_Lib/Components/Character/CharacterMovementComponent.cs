@@ -13,8 +13,9 @@ namespace Raspberry_Lib.Components
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(50);
 
-            public const float RotationRateDegreesPerSecond = 90f;
+            public const float RotationRateDegreesPerSecond = 45f;
             public static readonly RenderSetting RowForce = new(100);
+            public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -25,6 +26,7 @@ namespace Raspberry_Lib.Components
             _currentCollision = new CollisionResult();
             _currentVelocity = new Vector2(.01f, 0.0f);
             _subPixelV2 = new SubpixelVector2();
+            _lastRowTimeSeconds = float.MinValue;
         }
 
         public int BeginPlayOrder => 98;
@@ -40,6 +42,37 @@ namespace Raspberry_Lib.Components
         {
             var previousState = _currentState;
             var forceVec = Vector2.Zero;
+
+            var rotationDegreesToApply = _currentInput.Rotation * Settings.RotationRateDegreesPerSecond * Time.DeltaTime;
+            Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
+
+            var directionVector = GetRotationAsDirectionVector();
+            directionVector.Normalize();
+
+            if (_currentInput.Rotation > 0.01f)
+                _currentState = PrototypeCharacterComponent.State.TurnCw;
+            else if (_currentInput.Rotation < -0.01f)
+                _currentState = PrototypeCharacterComponent.State.TurnCcw;
+            else
+                _currentState = PrototypeCharacterComponent.State.Idle;
+
+            if (Time.TotalTime - _lastRowTimeSeconds < Settings.RowTime.TotalSeconds)
+            {
+                forceVec += directionVector * Settings.RowForce.Value;
+
+                _currentState = PrototypeCharacterComponent.State.Row;
+            }
+            else
+            {
+                if (previousState == PrototypeCharacterComponent.State.Row)
+                    _currentState = PrototypeCharacterComponent.State.Idle;
+                if (_currentInput.Row)
+                {
+                    _lastRowTimeSeconds = Time.TotalTime; 
+                    if (previousState == PrototypeCharacterComponent.State.Idle)
+                        _currentState = PrototypeCharacterComponent.State.Row;
+                }
+            }
             
             if (_generator == null)
                 return;
@@ -56,9 +89,6 @@ namespace Raspberry_Lib.Components
             
             var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
             flowDirectionVector.Normalize();
-
-            var directionVector = GetRotationAsDirectionVector();
-            directionVector.Normalize();
 
             var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
             
@@ -98,6 +128,7 @@ namespace Raspberry_Lib.Components
         //private Mover _mover;
         private SubpixelVector2 _subPixelV2;
         private ProceduralGeneratorComponent _generator;
+        private float _lastRowTimeSeconds;
 
         private Vector2 GetRotationAsDirectionVector()
         {
