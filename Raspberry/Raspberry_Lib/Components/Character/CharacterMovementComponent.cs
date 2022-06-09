@@ -9,12 +9,12 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeed = new(50);
+            public static readonly RenderSetting FlowSpeed = new(75);
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(50);
 
             public const float RotationRateDegreesPerSecond = 45f;
-            public static readonly RenderSetting RowForce = new(100);
+            public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
         }
 
