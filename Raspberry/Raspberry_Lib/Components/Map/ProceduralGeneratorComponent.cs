@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.Textures;
@@ -6,7 +7,7 @@ using Raspberry_Lib.Maths;
 
 namespace Raspberry_Lib.Components
 {
-    internal class ProceduralGeneratorComponent : Component, IBeginPlay
+    internal class ProceduralGeneratorComponent : Component, IUpdatable, IBeginPlay
     {
         private static class Settings
         {
@@ -33,17 +34,49 @@ namespace Raspberry_Lib.Components
 
         public void OnBeginPlay()
         {
-            var characterEntity = Entity.Scene.Entities.FindEntity("character");
-            var startingPos = characterEntity.Position;
+            _playerCharacter = Entity.Scene.Entities.FindEntity("character");
+            System.Diagnostics.Debug.Assert(_playerCharacter != null);
 
+            var startingPos = _playerCharacter.Position;
+
+            var randomWalk = RandomWalk(startingPos);
             Functions = new List<IFunction>
             {
                 LeadingPoints(startingPos),
-                RandomWalk(startingPos)
+                randomWalk
             };
+
+            _nextGenerationPointX = (randomWalk.DomainEnd + randomWalk.DomainStart) / 2f;
+
+            _renderer = Entity.GetComponent<ProceduralRenderer>();
+            System.Diagnostics.Debug.Assert(_renderer != null);
+        }
+
+        public void Update()
+        {
+            if (_playerCharacter == null)
+                return;
+
+            if (_playerCharacter.Position.X > _nextGenerationPointX)
+            {
+                Functions.RemoveAt(0);
+                var lastFunc = Functions.Last();
+                var nextStartingPoint = new Vector2(lastFunc.DomainEnd, lastFunc.GetYForX(lastFunc.DomainEnd));
+
+                var newWalk = RandomWalk(nextStartingPoint);
+
+                Functions.Add(newWalk);
+
+                _nextGenerationPointX = (newWalk.DomainEnd + newWalk.DomainStart) / 2f;
+
+                _renderer.OnNewGeneration(newWalk);
+            }
         }
 
         private float _scale;
+        private ProceduralRenderer _renderer;
+        private Entity _playerCharacter;
+        private float _nextGenerationPointX;
 
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
