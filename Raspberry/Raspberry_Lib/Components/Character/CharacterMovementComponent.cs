@@ -48,6 +48,7 @@ namespace Raspberry_Lib.Components
             var previousState = _currentState;
             var forceVec = Vector2.Zero;
 
+            // Apply rotation input
             var rotationDegreesToApply = _currentInput.Rotation * Settings.RotationRateDegreesPerSecond * Time.DeltaTime;
             Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
 
@@ -61,6 +62,7 @@ namespace Raspberry_Lib.Components
             else
                 _currentState = PrototypeCharacterComponent.State.Idle;
 
+            // Apply row input
             if (Time.TotalTime - _lastRowTimeSeconds < Settings.RowTime.TotalSeconds)
             {
                 forceVec += directionVector * Settings.RowForce.Value;
@@ -79,6 +81,7 @@ namespace Raspberry_Lib.Components
                 }
             }
             
+            // Apply river flow force
             var thisFunction = _generator.Functions.
                 FirstOrDefault(f => 
                     f.DomainStart < Entity.Position.X &&
@@ -111,11 +114,13 @@ namespace Raspberry_Lib.Components
                 _currentVelocity += dragForceVec;
             }
             
+            // Apply accumulated forces
             _currentVelocity += forceVec * Time.DeltaTime;
             
             if (_currentState != previousState)
                 _stateChangedCallback(_currentState);
             
+            // Update position based on current velocity
             var newPosition = Entity.Position + _currentVelocity * Time.DeltaTime;
             Entity.SetPosition(newPosition);
             _subPixelV2.Update(ref _currentVelocity);
