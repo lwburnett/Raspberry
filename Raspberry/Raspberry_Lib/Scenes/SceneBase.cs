@@ -28,11 +28,10 @@ namespace Raspberry_Lib.Scenes
 
         public void OnBeginPlay()
         {
-            base.OnStart();
-            
             for (var ii = 0; ii < Entities.Count; ii++)
             {
                 var thisEntity = Entities[ii];
+                thisEntity.Update();
 
                 var startableComponents = new List<IBeginPlay>();
                 for (var jj = 0; jj < thisEntity.Components.Count; jj++)

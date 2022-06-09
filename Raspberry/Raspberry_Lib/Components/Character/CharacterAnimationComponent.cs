@@ -14,9 +14,10 @@ namespace Raspberry_Lib.Components
 
             _animator = Entity.AddComponent<SpriteAnimator>();
 
-            _animator.AddAnimation(PrototypeCharacterComponent.State.Idle.ToString(), new[] { sprites[0], sprites[1], sprites[2], sprites[3] });
-            _animator.AddAnimation(PrototypeCharacterComponent.State.WalkLeft.ToString(), new []{sprites[5]});
-            _animator.AddAnimation(PrototypeCharacterComponent.State.WalkRight.ToString(), new []{sprites[4]});
+            _animator.AddAnimation(PrototypeCharacterComponent.State.Idle.ToString(), new[] { sprites[0] });
+            _animator.AddAnimation(PrototypeCharacterComponent.State.Row.ToString(), new[] { sprites[1], sprites[2], sprites[3], sprites[0] });
+            _animator.AddAnimation(PrototypeCharacterComponent.State.TurnCcw.ToString(), new []{ sprites[4] });
+            _animator.AddAnimation(PrototypeCharacterComponent.State.TurnCw.ToString(), new []{sprites[5]});
 
             _currentState = PrototypeCharacterComponent.State.Idle;
             _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.PingPong);
@@ -31,15 +32,17 @@ namespace Raspberry_Lib.Components
             switch (iNewState)
             {
                 case PrototypeCharacterComponent.State.Idle:
-                    _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.PingPong);
+                    _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.ClampForever);
                     break;
-                case PrototypeCharacterComponent.State.RunLeft:
-                case PrototypeCharacterComponent.State.WalkLeft:
-                    _animator.Play(PrototypeCharacterComponent.State.WalkLeft.ToString(), SpriteAnimator.LoopMode.ClampForever);
+                case PrototypeCharacterComponent.State.Row:
+                    _animator.Play(PrototypeCharacterComponent.State.Row.ToString(), SpriteAnimator.LoopMode.ClampForever);
                     break;
-                case PrototypeCharacterComponent.State.RunRight:
-                case PrototypeCharacterComponent.State.WalkRight:
-                    _animator.Play(PrototypeCharacterComponent.State.WalkRight.ToString(), SpriteAnimator.LoopMode.ClampForever);
+
+                case PrototypeCharacterComponent.State.TurnCcw:
+                    _animator.Play(PrototypeCharacterComponent.State.TurnCcw.ToString(), SpriteAnimator.LoopMode.ClampForever);
+                    break;
+                case PrototypeCharacterComponent.State.TurnCw:
+                    _animator.Play(PrototypeCharacterComponent.State.TurnCw.ToString(), SpriteAnimator.LoopMode.ClampForever);
                     break;
                 default:
                     System.Diagnostics.Debug.Fail($"Unknown value of enum {typeof(PrototypeCharacterComponent.State)}: {iNewState}");

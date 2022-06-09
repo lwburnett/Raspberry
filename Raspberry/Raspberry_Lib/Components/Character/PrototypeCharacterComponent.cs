@@ -4,7 +4,7 @@ namespace Raspberry_Lib.Components
 {
     internal class PrototypeCharacterComponent :
 #if DEBUG
-    RenderableComponent
+        RenderableComponent
 #else
         Component
 #endif
@@ -19,10 +19,9 @@ namespace Raspberry_Lib.Components
         public enum State
         {
             Idle,
-            WalkLeft,
-            WalkRight,
-            RunLeft,
-            RunRight
+            TurnCw,
+            TurnCcw,
+            Row
         }
 
 

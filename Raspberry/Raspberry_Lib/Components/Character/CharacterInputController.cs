@@ -10,104 +10,39 @@ namespace Raspberry_Lib.Components
         {
             public InputDescription()
             {
-                MovementInput = MovementInputAction.Nothing;
-                JumpInput = false;
+                Rotation = 0.0f;
+                Row = false;
             }
 
-            public InputDescription(MovementInputAction iMovementInput, bool iJumpInput, SprollInputAction iSprollInput)
+            public InputDescription(float iRotationInputAction, bool iJumpInput)
             {
-                MovementInput = iMovementInput;
-                JumpInput = iJumpInput;
-                SprollInput = iSprollInput;
+                Rotation = iRotationInputAction;
+                Row = iJumpInput;
             }
 
-            public MovementInputAction MovementInput { get; }
-            public bool JumpInput { get; }
-            public SprollInputAction SprollInput { get; }
-        }
-
-        public enum MovementInputAction
-        {
-            Nothing,
-            Left,
-            Right
-        }
-
-        public enum SprollInputAction
-        {
-            Nothing,
-            Sprint,
-            Roll
+            // Left thumb with domain [-1, 1] for how high or low their thumb is on the Y axis of the touch screen
+            public float Rotation { get; }
+            public bool Row { get; }
         }
 
         public CharacterInputController(Action<InputDescription> iOnStateChangedCallback)
         {
             _onStateChangedCallback = iOnStateChangedCallback;
-            _lastSprollPressTime = null;
         }
 
         public override void OnAddedToEntity()
         {
-            _xAxisInput = new VirtualIntegerAxis(
-                new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.A, Keys.D),
-                new VirtualAxis.GamePadLeftStickX());
-            _jumpInput = new VirtualButton(
-                new VirtualButton.KeyboardKey(Keys.Space),
-                new VirtualButton.GamePadButton(0, Buttons.A));
-
-            _sprollInput = new VirtualButton(
-                new VirtualButton.KeyboardKey(Keys.LeftShift),
-                new VirtualButton.GamePadButton(0, Buttons.B));
+            _rotationInput = new VirtualAxis(new VirtualAxis.GamePadLeftStickY());
+            _rowInput = new VirtualButton(new VirtualButton.GamePadButton(0, Buttons.A));
         }
 
         public void Update()
         {
-            MovementInputAction movementInput;
-
-            var inputX = _xAxisInput.Value;
-
-            if (inputX == 0)
-                movementInput = MovementInputAction.Nothing;
-            else if (inputX > 0)
-                movementInput = MovementInputAction.Right;
-            else
-                movementInput = MovementInputAction.Left;
-
-            var jumpPressed = _jumpInput.IsPressed;
-
-            var sprollInput = SprollInputAction.Nothing;
-            if (_sprollInput.IsDown)
-            {
-                if (_lastSprollPressTime.HasValue)
-                {
-                    if (Time.TotalTime - _lastSprollPressTime.Value > CSecondsTillSprint)
-                    {
-                        sprollInput = SprollInputAction.Sprint;
-                    }
-                }
-                else
-                {
-                    _lastSprollPressTime = Time.TotalTime;
-                }
-            }
-            else
-            {
-                if (_lastSprollPressTime.HasValue && Time.TotalTime - _lastSprollPressTime.Value < CSecondsTillSprint)
-                {
-                    sprollInput = SprollInputAction.Roll;
-                }
-                _lastSprollPressTime = null;
-            }
-
-            _onStateChangedCallback(new InputDescription(movementInput, jumpPressed, sprollInput));
+            _onStateChangedCallback(new InputDescription(_rotationInput.Value, _rowInput.IsPressed));
         }
 
-        private VirtualIntegerAxis _xAxisInput;
-        private VirtualButton _jumpInput;
-        private VirtualButton _sprollInput;
-        private float? _lastSprollPressTime;
+        private VirtualAxis _rotationInput;
+        private VirtualButton _rowInput;
         private readonly Action<InputDescription> _onStateChangedCallback;
-
-        private const float CSecondsTillSprint = .5f;
     }
 }
