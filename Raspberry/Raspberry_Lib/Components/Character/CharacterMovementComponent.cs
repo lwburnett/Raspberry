@@ -16,6 +16,8 @@ namespace Raspberry_Lib.Components
             public const float RotationRateDegreesPerSecond = 45f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
+
+            public static readonly RenderSetting DragCoefficient = new(.0005f);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -40,6 +42,9 @@ namespace Raspberry_Lib.Components
 
         public void Update()
         {
+            if (_generator == null)
+                return;
+
             var previousState = _currentState;
             var forceVec = Vector2.Zero;
 
@@ -74,9 +79,6 @@ namespace Raspberry_Lib.Components
                 }
             }
             
-            if (_generator == null)
-                return;
-            
             var thisFunction = _generator.Functions.
                 FirstOrDefault(f => 
                     f.DomainStart < Entity.Position.X &&
@@ -101,7 +103,12 @@ namespace Raspberry_Lib.Components
             }
             else
             {
-                forceVec += -Settings.Acceleration.Value * flowDirectionVector;
+                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - .75f * dotProduct) * 
+                                currentParallelSpeed * currentParallelSpeed;
+
+                var dragForceVec = - dragForceMag * flowDirectionVector;
+
+                _currentVelocity += dragForceVec;
             }
             
             _currentVelocity += forceVec * Time.DeltaTime;
