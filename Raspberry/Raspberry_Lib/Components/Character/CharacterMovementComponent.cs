@@ -9,9 +9,12 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeed = new(100);
+            public static readonly RenderSetting FlowSpeed = new(50);
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(50);
+
+            public const float RotationRateDegreesPerSecond = 90f;
+            public static readonly RenderSetting RowForce = new(100);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -53,11 +56,11 @@ namespace Raspberry_Lib.Components
             
             var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
             flowDirectionVector.Normalize();
-            
-            var currentVelocityVector = _currentVelocity;
-            currentVelocityVector.Normalize();
-            
-            var dotProduct = Vector2.Dot(currentVelocityVector, flowDirectionVector);
+
+            var directionVector = GetRotationAsDirectionVector();
+            directionVector.Normalize();
+
+            var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
             
             var currentTopSpeedParallel = (Settings.FlowSpeed.Value * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProduct + 1f);
             
@@ -65,6 +68,10 @@ namespace Raspberry_Lib.Components
             if (currentParallelSpeed < currentTopSpeedParallel)
             {
                 forceVec += Settings.Acceleration.Value * flowDirectionVector;
+            }
+            else
+            {
+                forceVec += -Settings.Acceleration.Value * flowDirectionVector;
             }
             
             _currentVelocity += forceVec * Time.DeltaTime;
@@ -91,5 +98,12 @@ namespace Raspberry_Lib.Components
         //private Mover _mover;
         private SubpixelVector2 _subPixelV2;
         private ProceduralGeneratorComponent _generator;
+
+        private Vector2 GetRotationAsDirectionVector()
+        {
+            var rotation = Entity.Transform.Rotation;
+
+            return new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation));
+        }
     }
 }
