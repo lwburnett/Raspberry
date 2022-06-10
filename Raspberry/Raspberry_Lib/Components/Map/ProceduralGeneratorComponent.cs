@@ -16,6 +16,8 @@ namespace Raspberry_Lib.Components
             public const int NumDTFTerms = 5;
 
             public const int NumLeadingPoints = 20;
+
+            public static readonly RenderSetting RiverWidth = new(200);
         }
 
         public override void OnAddedToEntity()
@@ -28,7 +30,7 @@ namespace Raspberry_Lib.Components
             _scale = texture.SourceRect.Width * Entity.Transform.Scale.X;
         }
 
-        public List<IFunction> Functions { get; private set; }
+        public List<LevelBlock> Blocks { get; private set; }
 
         public int BeginPlayOrder => 0;
 
@@ -40,10 +42,10 @@ namespace Raspberry_Lib.Components
             var startingPos = _playerCharacter.Position;
 
             var randomWalk = RandomWalk(startingPos);
-            Functions = new List<IFunction>
+            Blocks = new List<LevelBlock>
             {
-                LeadingPoints(startingPos),
-                randomWalk
+                new (LeadingPoints(startingPos), Settings.RiverWidth.Value, new List<Vector2>()),
+                new (randomWalk, Settings.RiverWidth.Value, new List<Vector2>())
             };
 
             _nextGenerationPointX = (randomWalk.DomainEnd + randomWalk.DomainStart) / 2f;
@@ -59,17 +61,18 @@ namespace Raspberry_Lib.Components
 
             if (_playerCharacter.Position.X > _nextGenerationPointX)
             {
-                Functions.RemoveAt(0);
-                var lastFunc = Functions.Last();
-                var nextStartingPoint = new Vector2(lastFunc.DomainEnd, lastFunc.GetYForX(lastFunc.DomainEnd));
+                Blocks.RemoveAt(0);
+                var lastBlock = Blocks.Last();
+                var nextStartingPoint = new Vector2(lastBlock.Function.DomainEnd, lastBlock.Function.GetYForX(lastBlock.Function.DomainEnd));
 
                 var newWalk = RandomWalk(nextStartingPoint);
+                var newBlock = new LevelBlock(newWalk, Settings.RiverWidth.Value, new List<Vector2>());
 
-                Functions.Add(newWalk);
+                Blocks.Add(newBlock);
 
                 _nextGenerationPointX = (newWalk.DomainEnd + newWalk.DomainStart) / 2f;
 
-                _renderer.OnNewGeneration(newWalk);
+                _renderer.OnNewGeneration(newBlock);
             }
         }
 

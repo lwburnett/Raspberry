@@ -57,19 +57,19 @@ namespace Raspberry_Lib.Components
         {
             //var unscaledIncrement = texture.SourceRect.Width;
             _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
-            foreach (var function in _generator.Functions)
+            foreach (var block in _generator.Blocks)
             {
-                var theseTiles = GetTilesForFunction(function);
+                var theseTiles = GetTilesForLevelBlock(block);
 
                 _tiles.Add(theseTiles);
             }
         }
 
-        public void OnNewGeneration(IFunction iNewFunction)
+        public void OnNewGeneration(LevelBlock iNewBlock)
         {
             _tiles.RemoveAt(0);
 
-            _tiles.Add(GetTilesForFunction(iNewFunction));
+            _tiles.Add(GetTilesForLevelBlock(iNewBlock));
         }
 
         private class Tile
@@ -88,7 +88,7 @@ namespace Raspberry_Lib.Components
         //private readonly List<Collider> _colliders;
         private ProceduralGeneratorComponent _generator;
 
-        private List<Tile> GetTilesForFunction(IFunction iFunc)
+        private List<Tile> GetTilesForLevelBlock(LevelBlock iBlock)
         {
             var tiles = new List<Tile>();
             var textureAtlas = Entity.Scene.Content.LoadTexture("Levels/PrototypeSpriteSheet");
@@ -96,10 +96,10 @@ namespace Raspberry_Lib.Components
 
             var increment = texture.SourceRect.Width * Entity.Transform.Scale.X;
 
-            var xPos = iFunc.DomainStart;
-            while (xPos <= iFunc.DomainEnd)
+            var xPos = iBlock.Function.DomainStart;
+            while (xPos <= iBlock.Function.DomainEnd)
             {
-                var yPos = iFunc.GetYForX(xPos);
+                var yPos = iBlock.Function.GetYForX(xPos);
 
                 var upperTile = new Tile(texture, new Vector2(xPos, yPos - increment * 4));
                 var lowerTile = new Tile(texture, new Vector2(xPos, yPos + increment * 4));

@@ -82,15 +82,15 @@ namespace Raspberry_Lib.Components
             }
             
             // Apply river flow force
-            var thisFunction = _generator.Functions.
+            var thisFunction = _generator.Blocks.
                 FirstOrDefault(f => 
-                    f.DomainStart < Entity.Position.X &&
-                    Entity.Position.X <= f.DomainEnd);
+                    f.Function.DomainStart < Entity.Position.X &&
+                    Entity.Position.X <= f.Function.DomainEnd);
             
             if (thisFunction == null)
                 return;
             
-            var flowDirectionScalar = thisFunction.GetYPrimeForX(Entity.Position.X);
+            var flowDirectionScalar = thisFunction.Function.GetYPrimeForX(Entity.Position.X);
             
             var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
             flowDirectionVector.Normalize();

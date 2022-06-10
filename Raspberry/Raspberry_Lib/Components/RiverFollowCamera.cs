@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 using Raspberry_Lib.Maths;
@@ -24,7 +25,7 @@ namespace Raspberry_Lib.Components
             var playerPosition = _targetEntity.Position;
 
             var setCameraPos = false;
-            foreach (var function in _proceduralGenerator.Functions ?? new List<IFunction>())
+            foreach (var function in _proceduralGenerator.Blocks?.Select(b => b.Function) ?? new List<IFunction>())
             {
                 var cameraDesiredX = playerPosition.X + Settings.LeadingDeltaX.Value;
 
