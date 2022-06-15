@@ -17,7 +17,7 @@ namespace Raspberry_Lib.Components
 
             public const int NumLeadingPoints = 20;
 
-            public static readonly RenderSetting RiverWidth = new(200);
+            public static readonly RenderSetting RiverWidth = new(800);
         }
 
         public override void OnAddedToEntity()

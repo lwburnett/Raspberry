@@ -101,8 +101,8 @@ namespace Raspberry_Lib.Components
             {
                 var yPos = iBlock.Function.GetYForX(xPos);
 
-                var upperTile = new Tile(texture, new Vector2(xPos, yPos - increment * 4));
-                var lowerTile = new Tile(texture, new Vector2(xPos, yPos + increment * 4));
+                var upperTile = new Tile(texture, new Vector2(xPos, yPos - iBlock.RiverWidth / 2));
+                var lowerTile = new Tile(texture, new Vector2(xPos, yPos + iBlock.RiverWidth / 2));
 
                 tiles.Add(upperTile);
                 tiles.Add(lowerTile);
