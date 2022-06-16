@@ -7,7 +7,7 @@ namespace Raspberry_Lib.Components
         public CharacterCollisionComponent(System.Action iOnFatalCollision)
         {
             _onFatalCollision = iOnFatalCollision;
-            _collider = new BoxCollider(24, 12);
+            _collider = new BoxCollider(20, 6);
         }
 
         public override void OnAddedToEntity()
