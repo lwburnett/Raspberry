@@ -132,6 +132,21 @@ namespace Raspberry_Lib.Components
                 xPos += increment;
             }
 
+            foreach (var iObstacleLocation in iBlock.Obstacles)
+            {
+                var obstacle = new Tile(texture, iObstacleLocation);
+                tiles.Add(obstacle);
+
+                var unscaledPosition = new Vector2(iObstacleLocation.X / Entity.Transform.Scale.X, iObstacleLocation.Y / Entity.Transform.Scale.X);
+
+                var colliderRectangle = new Rectangle(unscaledPosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
+                var collider = new BoxCollider(colliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };
+
+                thisBlockColliders.Add(collider);
+
+                Physics.AddCollider(collider);
+            }
+
             _colliders.Add(thisBlockColliders);
 
             return tiles;

@@ -18,6 +18,9 @@ namespace Raspberry_Lib.Components
             public const int NumLeadingPoints = 20;
 
             public static readonly RenderSetting RiverWidth = new(800);
+
+            public static readonly RenderSetting ObstacleGapMin = new(800);
+            public static readonly RenderSetting ObstacleGapMax = new(1600);
         }
 
         public override void OnAddedToEntity()
@@ -45,7 +48,7 @@ namespace Raspberry_Lib.Components
             Blocks = new List<LevelBlock>
             {
                 new (LeadingPoints(startingPos), Settings.RiverWidth.Value, new List<Vector2>()),
-                new (randomWalk, Settings.RiverWidth.Value, new List<Vector2>())
+                new (randomWalk, Settings.RiverWidth.Value, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleGapMax.Value))
             };
 
             _nextGenerationPointX = (randomWalk.DomainEnd + randomWalk.DomainStart) / 2f;
@@ -66,7 +69,7 @@ namespace Raspberry_Lib.Components
                 var nextStartingPoint = new Vector2(lastBlock.Function.DomainEnd, lastBlock.Function.GetYForX(lastBlock.Function.DomainEnd));
 
                 var newWalk = RandomWalk(nextStartingPoint);
-                var newBlock = new LevelBlock(newWalk, Settings.RiverWidth.Value, new List<Vector2>());
+                var newBlock = new LevelBlock(newWalk, Settings.RiverWidth.Value, GetObstaclesForBlock(newWalk));
 
                 Blocks.Add(newBlock);
 
@@ -116,6 +119,31 @@ namespace Raspberry_Lib.Components
             }
 
             return new DFTFunction(walkPoints, Settings.NumDTFTerms, iStartingPoint, _scale);
+        }
+
+        private List<Vector2> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
+        {
+            var rng = new System.Random();
+            var obstacles = new List<Vector2>();
+
+            var lastPointX = iStartingPointX ?? iFunction.DomainStart;
+
+            while (lastPointX < iFunction.DomainEnd)
+            {
+                var thisPointX = lastPointX + 
+                                 Settings.ObstacleGapMin.Value + 
+                                 (float)rng.NextDouble() * (Settings.ObstacleGapMax.Value - Settings.ObstacleGapMin.Value);
+
+                var thisPointY = iFunction.GetYForX(thisPointX) -
+                                 (Settings.RiverWidth.Value / 2f) +
+                                 ((float)rng.NextDouble() * Settings.RiverWidth.Value);
+
+                obstacles.Add(new Vector2(thisPointX, thisPointY));
+
+                lastPointX = thisPointX;
+            }
+
+            return obstacles;
         }
     }
 }
