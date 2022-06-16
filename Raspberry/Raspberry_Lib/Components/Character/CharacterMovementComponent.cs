@@ -25,19 +25,27 @@ namespace Raspberry_Lib.Components
             _stateChangedCallback = iOnStateChangedCallback;
             _currentInput = new CharacterInputController.InputDescription();
             _currentState = PrototypeCharacterComponent.State.Idle;
-            _currentCollision = new CollisionResult();
             _currentVelocity = new Vector2(.01f, 0.0f);
+            _thisIterationMotion = Vector2.Zero;
+            _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
             _lastRowTimeSeconds = float.MinValue;
         }
 
         public int BeginPlayOrder => 98;
 
+        public override void OnAddedToEntity()
+        {
+            Entity.AddComponent(_mover);
+        }
+
         public void OnBeginPlay()
         {
             _generator = Entity.Scene.FindEntity("map")?.GetComponent<ProceduralGeneratorComponent>();
 
             System.Diagnostics.Debug.Assert(_generator != null);
+
+            _collisionComponent = Entity.GetComponent<CharacterCollisionComponent>();
         }
 
         public void Update()
@@ -119,11 +127,13 @@ namespace Raspberry_Lib.Components
             
             if (_currentState != previousState)
                 _stateChangedCallback(_currentState);
+
+            _thisIterationMotion = _currentVelocity * Time.DeltaTime;
+            _mover.CalculateMovement(ref _thisIterationMotion, out var collisionResult);
+            _subPixelV2.Update(ref _thisIterationMotion);
+            _mover.ApplyMovement(_thisIterationMotion);
             
-            // Update position based on current velocity
-            var newPosition = Entity.Position + _currentVelocity * Time.DeltaTime;
-            Entity.SetPosition(newPosition);
-            _subPixelV2.Update(ref _currentVelocity);
+            _collisionComponent.HandleCollision(collisionResult);
         }
 
         public void OnPlayerInput(CharacterInputController.InputDescription iInput)
@@ -135,12 +145,13 @@ namespace Raspberry_Lib.Components
         private readonly Action<PrototypeCharacterComponent.State> _stateChangedCallback;
         private CharacterInputController.InputDescription _currentInput;
         private PrototypeCharacterComponent.State _currentState;
-        private CollisionResult _currentCollision;
         private Vector2 _currentVelocity;
-        //private Mover _mover;
+        private Vector2 _thisIterationMotion;
+        private readonly Mover _mover;
         private SubpixelVector2 _subPixelV2;
         private ProceduralGeneratorComponent _generator;
         private float _lastRowTimeSeconds;
+        private CharacterCollisionComponent _collisionComponent;
 
         private Vector2 GetRotationAsDirectionVector()
         {

@@ -1,4 +1,5 @@
 ﻿using Nez;
+using Nez.AI.GOAP;
 
 namespace Raspberry_Lib.Components
 {
@@ -16,6 +17,11 @@ namespace Raspberry_Lib.Components
 #endif
         }
 
+        public PrototypeCharacterComponent(System.Action iOnFatalCollision)
+        {
+            _collisionComponent = new CharacterCollisionComponent(iOnFatalCollision);
+        }
+
         public enum State
         {
             Idle,
@@ -30,7 +36,7 @@ namespace Raspberry_Lib.Components
             _animationComponent = Entity.AddComponent<CharacterAnimationComponent>();
             _movementComponent = Entity.AddComponent(new CharacterMovementComponent(OnCharacterStateChanged));
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
-            Entity.AddComponent(new BoxCollider(24, 12));
+            Entity.AddComponent(_collisionComponent);
         }
 
 #if DEBUG
@@ -49,6 +55,7 @@ namespace Raspberry_Lib.Components
 
         private CharacterAnimationComponent _animationComponent;
         private CharacterMovementComponent _movementComponent;
+        private readonly CharacterCollisionComponent _collisionComponent;
 
         private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {

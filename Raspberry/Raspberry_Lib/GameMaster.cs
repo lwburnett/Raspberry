@@ -46,7 +46,17 @@ namespace Raspberry_Lib
                 Screen.SetSize((int)(renderScaleFactor * Settings.TargetScreenSize.X), (int)(renderScaleFactor * Settings.TargetScreenSize.Y));
             }
 
-            Scene = new MainMenuScene(() => { Scene = new PrototypeScene(); }, Exit);
+            Scene = new MainMenuScene(() => { Scene = new PrototypeScene(OnMainMenu); }, Exit);
+        }
+
+        private void OnMainMenu()
+        {
+            Scene = new MainMenuScene(OnPlay, Exit);
+        }
+
+        private void OnPlay()
+        {
+            Scene = new PrototypeScene(OnMainMenu);
         }
     }
 }

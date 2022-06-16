@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Nez.AI.GOAP;
 using Raspberry_Lib.Components;
 
 namespace Raspberry_Lib.Scenes
@@ -10,6 +11,11 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting MapScale = new(6);
             public static readonly RenderSetting CharacterStartPositionX = new(64 * 4);
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
+        }
+
+        public PrototypeScene(System.Action iOnFatalCollision)
+        {
+            _onFatalCollision = iOnFatalCollision;
         }
 
         public override void Initialize()
@@ -26,8 +32,15 @@ namespace Raspberry_Lib.Scenes
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value);
-            character.AddComponent(new PrototypeCharacterComponent());
+            character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
+        }
+
+        private readonly System.Action _onFatalCollision;
+
+        private void OnFatalCollision()
+        {
+            _onFatalCollision();
         }
     }
 }
