@@ -9,7 +9,8 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeed = new(75);
+            public static readonly RenderSetting FlowSpeedLower = new(75);
+            public static readonly RenderSetting FlowSpeedUpper = new(150);
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(50);
 
@@ -104,8 +105,13 @@ namespace Raspberry_Lib.Components
             flowDirectionVector.Normalize();
 
             var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
+
+            var flowSpeed = MathHelper.Lerp(
+                Settings.FlowSpeedLower.Value, 
+                Settings.FlowSpeedUpper.Value, 
+                1 - _generator.PlayerScoreRating / 9f);
             
-            var currentTopSpeedParallel = (Settings.FlowSpeed.Value * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProduct + 1f);
+            var currentTopSpeedParallel = (flowSpeed * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProduct + 1f);
             
             var currentParallelSpeed = Vector2.Dot(_currentVelocity, flowDirectionVector);
             if (currentParallelSpeed < currentTopSpeedParallel)
