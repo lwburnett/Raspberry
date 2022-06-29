@@ -9,12 +9,15 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeedLower = new(75);
-            public static readonly RenderSetting FlowSpeedUpper = new(150);
+            public static readonly RenderSetting FlowSpeedLower = new(100);
+            public static readonly RenderSetting FlowSpeedUpper = new(200);
+            public static readonly RenderSetting SpeedDifMax = new(150);
+
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(50);
 
-            public const float RotationRateDegreesPerSecond = 45f;
+            public const float RotationRateDegreesPerSecondMin = 30f;
+            public const float RotationRateDegreesPerSecondMax = 60f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
 
@@ -54,11 +57,29 @@ namespace Raspberry_Lib.Components
             if (_generator == null)
                 return;
 
+            var thisFunction = _generator.Blocks.
+                FirstOrDefault(f =>
+                    f.Function.DomainStart < Entity.Position.X &&
+                    Entity.Position.X <= f.Function.DomainEnd);
+
+            if (thisFunction == null)
+                return;
+
             var previousState = _currentState;
             var forceVec = Vector2.Zero;
 
+            var flowDirectionScalar = thisFunction.Function.GetYPrimeForX(Entity.Position.X);
+
+            var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
+            flowDirectionVector.Normalize();
+
+            var parallelVelocityDiff = ScalarProject(_currentVelocity, flowDirectionVector) - flowDirectionScalar;
+
             // Apply rotation input
-            var rotationDegreesToApply = _currentInput.Rotation * Settings.RotationRateDegreesPerSecond * Time.DeltaTime;
+            var lerpValue = Math.Clamp(parallelVelocityDiff / Settings.SpeedDifMax.Value, 0, 1);
+            float rotationSpeed = MathHelper.Lerp(Settings.RotationRateDegreesPerSecondMin, Settings.RotationRateDegreesPerSecondMax, lerpValue);
+            var rotationDegreesToApply = _currentInput.Rotation * rotationSpeed * Time.DeltaTime;
+
             Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
 
             var directionVector = GetRotationAsDirectionVector();
@@ -91,19 +112,6 @@ namespace Raspberry_Lib.Components
             }
             
             // Apply river flow force
-            var thisFunction = _generator.Blocks.
-                FirstOrDefault(f => 
-                    f.Function.DomainStart < Entity.Position.X &&
-                    Entity.Position.X <= f.Function.DomainEnd);
-            
-            if (thisFunction == null)
-                return;
-            
-            var flowDirectionScalar = thisFunction.Function.GetYPrimeForX(Entity.Position.X);
-            
-            var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
-            flowDirectionVector.Normalize();
-
             var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
 
             var flowSpeed = MathHelper.Lerp(
@@ -165,5 +173,7 @@ namespace Raspberry_Lib.Components
 
             return new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation));
         }
+
+        private float ScalarProject(Vector2 iVecA, Vector2 iVecB) => Vector2.Dot(iVecA, iVecB) / iVecB.Length();
     }
 }
