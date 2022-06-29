@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
@@ -17,10 +18,19 @@ namespace Raspberry_Lib.Components
 
             public const int NumLeadingPoints = 20;
 
-            public static readonly RenderSetting RiverWidth = new(800);
+            public static readonly RenderSetting RiverWidthUpper = new(800);
+            public static readonly RenderSetting RiverWidthLower = new(400);
 
-            public static readonly RenderSetting ObstacleGapMin = new(800);
-            public static readonly RenderSetting ObstacleGapMax = new(1600);
+            public static readonly RenderSetting ObstacleXGapMinUpper = new(800);
+            public static readonly RenderSetting ObstacleXGapMinLower = new(200);
+
+            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1600);
+            public static readonly RenderSetting ObstacleXGapMaxLower = new(800);
+        }
+
+        public ProceduralGeneratorComponent()
+        {
+            _playerScoreRating = 0f;
         }
 
         public override void OnAddedToEntity()
@@ -44,11 +54,13 @@ namespace Raspberry_Lib.Components
 
             var startingPos = _playerCharacter.Position;
 
+            var riverWidth = Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / 9f);
+
             var randomWalk = RandomWalk(startingPos);
             Blocks = new List<LevelBlock>
             {
-                new (LeadingPoints(startingPos), Settings.RiverWidth.Value, new List<Vector2>()),
-                new (randomWalk, Settings.RiverWidth.Value, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleGapMax.Value))
+                new (LeadingPoints(startingPos), riverWidth, new List<Vector2>()),
+                new (randomWalk, riverWidth, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleXGapMaxUpper.Value))
             };
 
             _nextGenerationPointX = (randomWalk.DomainEnd + randomWalk.DomainStart) / 2f;
@@ -68,14 +80,21 @@ namespace Raspberry_Lib.Components
                 var lastBlock = Blocks.Last();
                 var nextStartingPoint = new Vector2(lastBlock.Function.DomainEnd, lastBlock.Function.GetYForX(lastBlock.Function.DomainEnd));
 
+                var riverWidth = Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / 9f);
+                
                 var newWalk = RandomWalk(nextStartingPoint);
-                var newBlock = new LevelBlock(newWalk, Settings.RiverWidth.Value, GetObstaclesForBlock(newWalk));
+                var newBlock = new LevelBlock(newWalk, riverWidth, GetObstaclesForBlock(newWalk));
 
                 Blocks.Add(newBlock);
 
                 _nextGenerationPointX = (newWalk.DomainEnd + newWalk.DomainStart) / 2f;
 
                 _renderer.OnNewGeneration(newBlock);
+
+                if (_playerScoreRating < 9f)
+                    _playerScoreRating += 1f;
+                else
+                    _playerScoreRating = 9f;
             }
         }
 
@@ -83,6 +102,7 @@ namespace Raspberry_Lib.Components
         private ProceduralRenderer _renderer;
         private Entity _playerCharacter;
         private float _nextGenerationPointX;
+        private float _playerScoreRating;
 
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
@@ -118,7 +138,8 @@ namespace Raspberry_Lib.Components
                 walkPoints.Add(thisPoint);
             }
 
-            return new DFTFunction(walkPoints, Settings.NumDTFTerms, iStartingPoint, _scale);
+            var numTerms = _playerScoreRating < 5f ? Settings.NumDTFTerms : Settings.NumDTFTerms + 1;
+            return new DFTFunction(walkPoints, numTerms, iStartingPoint, _scale);
         }
 
         private List<Vector2> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
@@ -128,15 +149,16 @@ namespace Raspberry_Lib.Components
 
             var lastPointX = iStartingPointX ?? iFunction.DomainStart;
 
+            var gapMin = Lerp(Settings.ObstacleXGapMinLower.Value, Settings.ObstacleXGapMinUpper.Value, 1 - _playerScoreRating / 9f);
+            var gapMax = Lerp(Settings.ObstacleXGapMaxLower.Value, Settings.ObstacleXGapMaxUpper.Value, 1 - _playerScoreRating / 9f);
+            var riverWidth = Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / 9f);
+
             while (lastPointX < iFunction.DomainEnd)
             {
-                var thisPointX = lastPointX + 
-                                 Settings.ObstacleGapMin.Value + 
-                                 (float)rng.NextDouble() * (Settings.ObstacleGapMax.Value - Settings.ObstacleGapMin.Value);
+                var thisPointX = lastPointX + gapMin + 
+                                 (float)rng.NextDouble() * (gapMax - gapMin);
 
-                var thisPointY = iFunction.GetYForX(thisPointX) -
-                                 (Settings.RiverWidth.Value / 2f) +
-                                 ((float)rng.NextDouble() * Settings.RiverWidth.Value);
+                var thisPointY = iFunction.GetYForX(thisPointX) - (riverWidth / 2f) + _scale + ((float)rng.NextDouble() * (riverWidth - 2 * _scale));
 
                 obstacles.Add(new Vector2(thisPointX, thisPointY));
 
@@ -144,6 +166,14 @@ namespace Raspberry_Lib.Components
             }
 
             return obstacles;
+        }
+
+        private static float Lerp(float iLower, float iUpper, float iVal)
+        {
+            System.Diagnostics.Debug.Assert(iLower < iUpper);
+            System.Diagnostics.Debug.Assert(0 <= iVal && iVal <= 1f);
+            var clampedVal = Math.Clamp(iVal, 0f, 1f);
+            return iLower + (iUpper - iLower) * clampedVal;
         }
     }
 }
