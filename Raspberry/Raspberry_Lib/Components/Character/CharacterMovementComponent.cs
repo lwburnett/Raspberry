@@ -20,6 +20,7 @@ namespace Raspberry_Lib.Components
             public const float RotationRateDegreesPerSecondMax = 60f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
+            public static readonly RenderSetting RotationDragGrowthSlope = new(2f);
 
             public static readonly RenderSetting DragCoefficient = new(.0005f);
         }
@@ -78,10 +79,10 @@ namespace Raspberry_Lib.Components
                 Settings.FlowSpeedUpper.Value,
                 1 - _generator.PlayerScoreRating / 9f);
 
-            var playerVelocityToWaterSpeedDiff = _currentVelocity.Length() - ScalarProject(flowDirectionVector, _currentVelocity);
+            var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowDirectionVector, _currentVelocity);
 
             // Apply rotation input
-            var lerpValue = Math.Clamp(playerVelocityToWaterSpeedDiff / Settings.SpeedDifMax.Value, 0, 1);
+            var lerpValue = Math.Clamp(playerVelocityToWaterSpeedDiffInPlayerFrame / Settings.SpeedDifMax.Value, 0, 1);
             float rotationSpeed = MathHelper.Lerp(Settings.RotationRateDegreesPerSecondMin, Settings.RotationRateDegreesPerSecondMax, lerpValue);
             var rotationDegreesToApply = _currentInput.Rotation * rotationSpeed * Time.DeltaTime;
 
@@ -115,7 +116,25 @@ namespace Raspberry_Lib.Components
                         _currentState = PrototypeCharacterComponent.State.Row;
                 }
             }
-            
+
+            // Apply rotation drag force
+            if (Math.Abs(rotationSpeed) > 0f)
+            {
+                var playerVelocityToWaterSpeedDiffInRiverFrame = ScalarProject(_currentVelocity, flowDirectionVector) - flowSpeed;
+
+                float rotationDragForce;
+                if (playerVelocityToWaterSpeedDiffInRiverFrame <= 0)
+                {
+                    rotationDragForce = 0;
+                }
+                else
+                {
+                    rotationDragForce = Settings.RotationDragGrowthSlope.Value * playerVelocityToWaterSpeedDiffInRiverFrame;
+                }
+                
+                forceVec += -flowDirectionVector * rotationDragForce * Math.Abs(_currentInput.Rotation);
+            }
+
             // Apply river flow force
             var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
             
