@@ -73,10 +73,15 @@ namespace Raspberry_Lib.Components
             var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
             flowDirectionVector.Normalize();
 
-            var parallelVelocityDiff = ScalarProject(_currentVelocity, flowDirectionVector) - flowDirectionScalar;
+            var flowSpeed = MathHelper.Lerp(
+                Settings.FlowSpeedLower.Value,
+                Settings.FlowSpeedUpper.Value,
+                1 - _generator.PlayerScoreRating / 9f);
+
+            var playerVelocityToWaterSpeedDiff = _currentVelocity.Length() - ScalarProject(flowDirectionVector, _currentVelocity);
 
             // Apply rotation input
-            var lerpValue = Math.Clamp(parallelVelocityDiff / Settings.SpeedDifMax.Value, 0, 1);
+            var lerpValue = Math.Clamp(playerVelocityToWaterSpeedDiff / Settings.SpeedDifMax.Value, 0, 1);
             float rotationSpeed = MathHelper.Lerp(Settings.RotationRateDegreesPerSecondMin, Settings.RotationRateDegreesPerSecondMax, lerpValue);
             var rotationDegreesToApply = _currentInput.Rotation * rotationSpeed * Time.DeltaTime;
 
@@ -113,11 +118,6 @@ namespace Raspberry_Lib.Components
             
             // Apply river flow force
             var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
-
-            var flowSpeed = MathHelper.Lerp(
-                Settings.FlowSpeedLower.Value, 
-                Settings.FlowSpeedUpper.Value, 
-                1 - _generator.PlayerScoreRating / 9f);
             
             var currentTopSpeedParallel = (flowSpeed * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProduct + 1f);
             
