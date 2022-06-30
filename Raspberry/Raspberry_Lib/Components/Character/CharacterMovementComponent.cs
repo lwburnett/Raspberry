@@ -143,7 +143,6 @@ namespace Raspberry_Lib.Components
             var currentParallelSpeed = Vector2.Dot(_currentVelocity, flowDirectionVector);
             if (currentParallelSpeed < currentTopSpeedParallel)
             {
-                // Parallel
                 forceVec += Settings.Acceleration.Value * directionVector * dotProduct;
             }
             else
