@@ -193,6 +193,6 @@ namespace Raspberry_Lib.Components
             return new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation));
         }
 
-        private float ScalarProject(Vector2 iVecA, Vector2 iVecB) => Vector2.Dot(iVecA, iVecB) / iVecB.Length();
+        private static float ScalarProject(Vector2 iVecA, Vector2 iVecB) => Vector2.Dot(iVecA, iVecB) / iVecB.Length();
     }
 }
