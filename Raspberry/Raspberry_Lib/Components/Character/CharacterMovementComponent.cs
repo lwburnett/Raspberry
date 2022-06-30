@@ -82,7 +82,7 @@ namespace Raspberry_Lib.Components
             var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowDirectionVector, _currentVelocity);
 
             // Apply rotation input
-            var lerpValue = Math.Clamp(playerVelocityToWaterSpeedDiffInPlayerFrame / Settings.SpeedDifMax.Value, 0, 1);
+            var lerpValue = MathHelper.Clamp(playerVelocityToWaterSpeedDiffInPlayerFrame / Settings.SpeedDifMax.Value, 0, 1);
             float rotationSpeed = MathHelper.Lerp(Settings.RotationRateDegreesPerSecondMin, Settings.RotationRateDegreesPerSecondMax, lerpValue);
             var rotationDegreesToApply = _currentInput.Rotation * rotationSpeed * Time.DeltaTime;
 

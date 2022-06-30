@@ -1,4 +1,5 @@
-﻿using Nez;
+﻿using Microsoft.Xna.Framework;
+using Nez;
 using Raspberry_Lib.Scenes;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
@@ -10,6 +11,8 @@ namespace Raspberry_Lib
         {
             public static readonly Vector2 TargetScreenSize = new(2340, 1080);
         }
+
+        public GameServiceContainer Service => Core.Services;
 
         public GameMaster(bool iFullScreen) : base(windowTitle: "Raspberry")
         {

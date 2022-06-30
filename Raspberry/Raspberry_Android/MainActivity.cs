@@ -3,7 +3,6 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Microsoft.Xna.Framework;
-using Nez;
 using Raspberry_Lib;
 
 namespace Raspberry_Android
@@ -27,7 +26,7 @@ namespace Raspberry_Android
             base.OnCreate(bundle);
 
             _game = new GameMaster(true);
-            _view = Core.Services.GetService(typeof(View)) as View;
+            _view = _game.Service.GetService(typeof(View)) as View;
 
             SetContentView(_view);
             _game.Run();

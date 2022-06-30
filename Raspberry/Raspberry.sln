@@ -5,11 +5,11 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Win", "Raspberry_Win\Raspberry_Win.csproj", "{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Android", "Raspberry_Android\Raspberry_Android.csproj", "{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Android", "Raspberry_Android\Raspberry_Android.csproj", "{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{A6057B92-B9C9-4CE9-BB02-432A28AC8120}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{DAC8AEDC-2C66-4B3A-B9AF-2FF2F009A63B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez", "Nez\Nez.csproj", "{6AD69836-3318-43C2-B7B5-2D7F35F625A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez", "Nez\Nez.csproj", "{311D9619-848C-48D1-B5B4-B248616F27AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,20 +21,20 @@ Global
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A2206E2-84C7-423D-B57D-B28EAA11BE1E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{DAC8AEDC-2C66-4B3A-B9AF-2FF2F009A63B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAC8AEDC-2C66-4B3A-B9AF-2FF2F009A63B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAC8AEDC-2C66-4B3A-B9AF-2FF2F009A63B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAC8AEDC-2C66-4B3A-B9AF-2FF2F009A63B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{311D9619-848C-48D1-B5B4-B248616F27AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{311D9619-848C-48D1-B5B4-B248616F27AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{311D9619-848C-48D1-B5B4-B248616F27AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{311D9619-848C-48D1-B5B4-B248616F27AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
