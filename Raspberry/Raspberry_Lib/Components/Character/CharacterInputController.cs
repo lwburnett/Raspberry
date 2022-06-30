@@ -32,13 +32,46 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToEntity()
         {
-            _rotationInput = new VirtualAxis(new VirtualAxis.GamePadLeftStickY());
-            _rowInput = new VirtualButton(new VirtualButton.GamePadButton(0, Buttons.A));
+            if (!Input.Touch.IsConnected)
+            {
+                _rotationInput = new VirtualAxis(new VirtualAxis.GamePadLeftStickY());
+                _rowInput = new VirtualButton(new VirtualButton.GamePadButton(0, Buttons.A));
+            }
         }
 
         public void Update()
         {
-            _onStateChangedCallback(new InputDescription(_rotationInput.Value, _rowInput.IsPressed));
+            if (Input.Touch.IsConnected)
+            {
+                var rotation = 0f;
+                var row = false;
+
+                var touchCollection = Input.Touch.CurrentTouches;
+                var screenSize = Screen.Size;
+
+                foreach (var touch in touchCollection)
+                {
+                    var touchPosRatioX = touch.Position.X / screenSize.X;
+
+                    if (touchPosRatioX <= .33f)
+                    {
+                        var touchPosRatioY = touch.Position.Y / screenSize.Y;
+
+                        var rotationAbs = (float)Math.Sqrt(Math.Abs((touchPosRatioY - .5f) * 2));
+                        rotation = touchPosRatioY > .5f ? rotationAbs : -rotationAbs;
+                    }
+                    else if (touchPosRatioX >= .66f)
+                    {
+                        row = true;
+                    }
+                }
+
+                _onStateChangedCallback(new InputDescription(rotation, row));
+            }
+            else
+            {
+                _onStateChangedCallback(new InputDescription(_rotationInput.Value, _rowInput.IsPressed));
+            }
         }
 
         private VirtualAxis _rotationInput;
