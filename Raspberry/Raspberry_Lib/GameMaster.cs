@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input.Touch;
 using Nez;
 using Raspberry_Lib.Scenes;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -14,16 +15,22 @@ namespace Raspberry_Lib
 
         public GameServiceContainer Service => Core.Services;
 
-        public GameMaster(bool iFullScreen) : base(windowTitle: "Raspberry")
+        public GameMaster(bool iFullScreen, bool iIsTouch) : base(windowTitle: "Raspberry")
         {
             _fullScreen = iFullScreen;
+            _isTouch = iIsTouch;
+            IsMouseVisible = !iIsTouch;
         }
         
         private readonly bool _fullScreen;
+        private readonly bool _isTouch;
 
         protected override void Initialize()
         {
             base.Initialize();
+
+            if (_isTouch)
+                Input.Touch.EnableTouchSupport();
 
             var windowBounds = GraphicsDevice.DisplayMode;
             var renderScaleFactor = windowBounds.Width / Settings.TargetScreenSize.X;

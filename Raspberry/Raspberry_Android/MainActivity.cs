@@ -31,7 +31,7 @@ namespace Raspberry_Android
 
             Window?.AddFlags(WindowManagerFlags.Fullscreen);
 
-            _game = new GameMaster(true);
+            _game = new GameMaster(true, true);
             _view = _game.Service.GetService(typeof(View)) as View;
 
             SetContentView(_view);
