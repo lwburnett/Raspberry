@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Nez;
 
@@ -56,9 +57,8 @@ namespace Raspberry_Lib.Components
                     if (touchPosRatioX <= .33f)
                     {
                         var touchPosRatioY = touch.Position.Y / screenSize.Y;
-
-                        var rotationAbs = (float)Math.Sqrt(Math.Abs((touchPosRatioY - .5f) * 2));
-                        rotation = touchPosRatioY > .5f ? rotationAbs : -rotationAbs;
+                        
+                        rotation = MathHelper.Clamp((touchPosRatioY - .5f) * 4, -1f, 1f);
                     }
                     else if (touchPosRatioX >= .66f)
                     {
