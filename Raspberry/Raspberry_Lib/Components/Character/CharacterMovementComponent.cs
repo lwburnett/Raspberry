@@ -143,7 +143,8 @@ namespace Raspberry_Lib.Components
             var currentParallelSpeed = Vector2.Dot(_currentVelocity, flowDirectionVector);
             if (currentParallelSpeed < currentTopSpeedParallel)
             {
-                forceVec += Settings.Acceleration.Value * flowDirectionVector;
+                // Parallel
+                forceVec += Settings.Acceleration.Value * directionVector * dotProduct;
             }
             else
             {
@@ -152,7 +153,7 @@ namespace Raspberry_Lib.Components
 
                 var dragForceVec = - dragForceMag * flowDirectionVector;
 
-                _currentVelocity += dragForceVec;
+                forceVec += dragForceVec;
             }
             
             // Apply accumulated forces
