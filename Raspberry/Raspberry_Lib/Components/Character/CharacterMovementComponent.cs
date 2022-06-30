@@ -9,7 +9,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeedLower = new(100);
+            public static readonly RenderSetting FlowSpeedLower = new(50);
             public static readonly RenderSetting FlowSpeedUpper = new(200);
             public static readonly RenderSetting SpeedDifMax = new(150);
 
@@ -20,9 +20,9 @@ namespace Raspberry_Lib.Components
             public const float RotationRateDegreesPerSecondMax = 60f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
-            public static readonly RenderSetting RotationDragGrowthSlope = new(2f);
+            public static readonly RenderSetting RotationDragGrowthSlope = new(.5f);
 
-            public static readonly RenderSetting DragCoefficient = new(.0005f);
+            public static readonly RenderSetting DragCoefficient = new(.0008f);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -74,6 +74,8 @@ namespace Raspberry_Lib.Components
             var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
             flowDirectionVector.Normalize();
 
+            var flowPerpendicularDirection = GetClockwisePerpendicularUnitVector(flowDirectionVector);
+
             var flowSpeed = MathHelper.Lerp(
                 Settings.FlowSpeedLower.Value,
                 Settings.FlowSpeedUpper.Value,
@@ -120,41 +122,58 @@ namespace Raspberry_Lib.Components
             // Apply rotation drag force
             if (Math.Abs(rotationSpeed) > 0f)
             {
-                var playerVelocityToWaterSpeedDiffInRiverFrame = ScalarProject(_currentVelocity, flowDirectionVector) - flowSpeed;
+                var playerParallelVelocityToWaterSpeedDiffInRiverFrame = ScalarProject(_currentVelocity, flowDirectionVector) - flowSpeed;
 
-                float rotationDragForce;
-                if (playerVelocityToWaterSpeedDiffInRiverFrame <= 0)
+                float rotationDragForceParallel;
+                if (playerParallelVelocityToWaterSpeedDiffInRiverFrame <= 0)
                 {
-                    rotationDragForce = 0;
+                    rotationDragForceParallel = 0;
                 }
                 else
                 {
-                    rotationDragForce = Settings.RotationDragGrowthSlope.Value * playerVelocityToWaterSpeedDiffInRiverFrame;
+                    rotationDragForceParallel = Settings.RotationDragGrowthSlope.Value * playerParallelVelocityToWaterSpeedDiffInRiverFrame;
                 }
                 
-                forceVec += -flowDirectionVector * rotationDragForce * Math.Abs(_currentInput.Rotation);
+                forceVec += -flowDirectionVector * rotationDragForceParallel * Math.Abs(_currentInput.Rotation);
+
+                var playerPerpendicularVelocityInRiverFrame = ScalarProject(_currentVelocity, flowPerpendicularDirection);
+                var rotationDragForcePerpendicular = Settings.RotationDragGrowthSlope.Value * playerPerpendicularVelocityInRiverFrame;
+                forceVec += -flowPerpendicularDirection * rotationDragForcePerpendicular * Math.Abs(_currentInput.Rotation);
             }
 
             // Apply river flow force
-            var dotProduct = Vector2.Dot(directionVector, flowDirectionVector);
+            var dotProductParallel = Vector2.Dot(directionVector, flowDirectionVector);
             
-            var currentTopSpeedParallel = (flowSpeed * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProduct + 1f);
+            var currentTopSpeedParallel = (flowSpeed * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProductParallel + 1f);
             
             var currentParallelSpeed = Vector2.Dot(_currentVelocity, flowDirectionVector);
-            if (currentParallelSpeed < currentTopSpeedParallel)
+            var speedDif = currentParallelSpeed - currentTopSpeedParallel;
+            if (speedDif < 0)
             {
-                forceVec += Settings.Acceleration.Value * directionVector * dotProduct;
+                forceVec += Settings.Acceleration.Value * flowDirectionVector * dotProductParallel;
             }
             else
             {
-                var speedDif = currentParallelSpeed - currentTopSpeedParallel;
-                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - .75f * dotProduct) * speedDif * speedDif;
+                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductParallel) * speedDif * speedDif;
 
                 var dragForceVec = - dragForceMag * flowDirectionVector;
 
                 forceVec += dragForceVec;
             }
-            
+
+            if (speedDif > 0)
+            {
+                var forwardConversionForce = .1f * (1 - dotProductParallel) * speedDif;
+                forceVec += forwardConversionForce * directionVector;
+
+                var dotProductPerpendicular = Vector2.Dot(directionVector, flowPerpendicularDirection);
+                var speedPerpendicular = Vector2.Dot(_currentVelocity, flowPerpendicularDirection);
+                var perpDragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductPerpendicular) *
+                                       speedPerpendicular * speedPerpendicular;
+                var perpDragForceVec = -perpDragForceMag * flowPerpendicularDirection;
+                forceVec += perpDragForceVec;
+            }
+
             // Apply accumulated forces
             _currentVelocity += forceVec * Time.DeltaTime;
             
@@ -194,5 +213,12 @@ namespace Raspberry_Lib.Components
         }
 
         private static float ScalarProject(Vector2 iVecA, Vector2 iVecB) => Vector2.Dot(iVecA, iVecB) / iVecB.Length();
+
+        private static Vector2 GetClockwisePerpendicularUnitVector(Vector2 iVec)
+        {
+            var newVec = new Vector2(iVec.Y, -iVec.X);
+            newVec.Normalize();
+            return newVec;
+        }
     }
 }
