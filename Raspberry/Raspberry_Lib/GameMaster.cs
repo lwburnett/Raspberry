@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Nez;
+﻿using Nez;
 using Raspberry_Lib.Scenes;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Raspberry_Lib
 {

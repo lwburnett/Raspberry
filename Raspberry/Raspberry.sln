@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32106.194
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez", "Nez\Nez.Portable\Nez.csproj", "{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Win", "Raspberry_Win\Raspberry_Win.csproj", "{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{F6DA5228-7382-49E2-9248-A271DB073D65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry_Android", "Raspberry_Android\Raspberry_Android.csproj", "{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LDtkNez", "LDtkNez\LDtkNez.csproj", "{9B644CBB-E49A-4B17-8721-66050859FAB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raspberry_Lib", "Raspberry_Lib\Raspberry_Lib.csproj", "{A6057B92-B9C9-4CE9-BB02-432A28AC8120}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nez", "Nez\Nez.csproj", "{6AD69836-3318-43C2-B7B5-2D7F35F625A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,22 +17,24 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1828585B-062A-4B31-AE0D-0BCF5E45ACAE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C67E9DF2-7A75-48BA-8F1D-0285EF7D37B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6DA5228-7382-49E2-9248-A271DB073D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6DA5228-7382-49E2-9248-A271DB073D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6DA5228-7382-49E2-9248-A271DB073D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6DA5228-7382-49E2-9248-A271DB073D65}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B644CBB-E49A-4B17-8721-66050859FAB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AEC6A06-6155-43C8-AAC2-E50FE1F8AE3E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6057B92-B9C9-4CE9-BB02-432A28AC8120}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AD69836-3318-43C2-B7B5-2D7F35F625A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
