@@ -9,6 +9,10 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
+#if DEBUG
+            public const bool DrawDebugMetrics = true;
+#endif
+
             public static readonly RenderSetting FlowSpeedLower = new(50);
             public static readonly RenderSetting FlowSpeedUpper = new(150);
             public static readonly RenderSetting SpeedDifMax = new(75);
@@ -20,9 +24,9 @@ namespace Raspberry_Lib.Components
             public const float RotationRateDegreesPerSecondMax = 60f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
-            public static readonly RenderSetting RotationDragGrowthSlope = new(.5f);
+            public static readonly RenderSetting RotationDragGrowthSlope = new(1f);
 
-            public static readonly RenderSetting DragCoefficient = new(.001f);
+            public static readonly RenderSetting DragCoefficient = new(.01f);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -35,6 +39,11 @@ namespace Raspberry_Lib.Components
             _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
             _lastRowTimeSeconds = float.MinValue;
+
+#if DEBUG
+            if (Settings.DrawDebugMetrics)
+                Core.DebugRenderEnabled = true;
+#endif
         }
 
         public int BeginPlayOrder => 98;
@@ -194,9 +203,16 @@ namespace Raspberry_Lib.Components
             _mover.ApplyMovement(_thisIterationMotion);
             
             _collisionComponent.HandleCollision(collisionResult);
-        }
 
-        public void OnPlayerInput(CharacterInputController.InputDescription iInput)
+#if DEBUG
+            if (Settings.DrawDebugMetrics)
+            {
+                Debug.DrawText($"Speed = {_currentVelocity.Length()}", Color.White, 1, 4);
+            }
+#endif
+    }
+
+    public void OnPlayerInput(CharacterInputController.InputDescription iInput)
         {
             _currentInput = iInput;
         }
