@@ -10,8 +10,8 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public static readonly RenderSetting FlowSpeedLower = new(50);
-            public static readonly RenderSetting FlowSpeedUpper = new(200);
-            public static readonly RenderSetting SpeedDifMax = new(150);
+            public static readonly RenderSetting FlowSpeedUpper = new(150);
+            public static readonly RenderSetting SpeedDifMax = new(75);
 
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(50);
@@ -22,7 +22,7 @@ namespace Raspberry_Lib.Components
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
             public static readonly RenderSetting RotationDragGrowthSlope = new(.5f);
 
-            public static readonly RenderSetting DragCoefficient = new(.0008f);
+            public static readonly RenderSetting DragCoefficient = new(.001f);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -141,37 +141,45 @@ namespace Raspberry_Lib.Components
                 forceVec += -flowPerpendicularDirection * rotationDragForcePerpendicular * Math.Abs(_currentInput.Rotation);
             }
 
-            // Apply river flow force
+            // Apply river drag force
             var dotProductParallel = Vector2.Dot(directionVector, flowDirectionVector);
-            
-            var currentTopSpeedParallel = (flowSpeed * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProductParallel + 1f);
-            
-            var currentParallelSpeed = Vector2.Dot(_currentVelocity, flowDirectionVector);
-            var speedDif = currentParallelSpeed - currentTopSpeedParallel;
-            if (speedDif < 0)
-            {
-                forceVec += Settings.Acceleration.Value * flowDirectionVector * dotProductParallel;
-            }
-            else
-            {
-                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductParallel) * speedDif * speedDif;
 
-                var dragForceVec = - dragForceMag * flowDirectionVector;
+            var currentTopSpeedParallel = (flowSpeed * Settings.MinimumSpeedAsPercentOfFlowSpeed) * (dotProductParallel + 1f);
+
+            var currentParallelSpeed = Vector2.Dot(_currentVelocity, flowDirectionVector);
+            var parallelSpeedDif = currentParallelSpeed - currentTopSpeedParallel;
+
+            if (parallelSpeedDif > 0f)
+            {
+                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductParallel) * parallelSpeedDif * parallelSpeedDif;
+
+                var dragForceVec = -dragForceMag * flowDirectionVector;
 
                 forceVec += dragForceVec;
             }
 
-            if (speedDif > 0)
-            {
-                var forwardConversionForce = .1f * (1 - dotProductParallel) * speedDif;
-                forceVec += forwardConversionForce * directionVector;
+            var dotProductPerp = Vector2.Dot(directionVector, flowPerpendicularDirection);
+            var perpendicularSpeed = Vector2.Dot(_currentVelocity, flowPerpendicularDirection);
+            var dragForcePerpMag = Settings.DragCoefficient.Value * (1 - dotProductPerp) * perpendicularSpeed * perpendicularSpeed;
 
-                var dotProductPerpendicular = Vector2.Dot(directionVector, flowPerpendicularDirection);
-                var speedPerpendicular = Vector2.Dot(_currentVelocity, flowPerpendicularDirection);
-                var perpDragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductPerpendicular) *
-                                       speedPerpendicular * speedPerpendicular;
-                var perpDragForceVec = -perpDragForceMag * flowPerpendicularDirection;
-                forceVec += perpDragForceVec;
+            Vector2 dragForcePerpVec;
+            if (perpendicularSpeed > 0f)
+                dragForcePerpVec = -flowPerpendicularDirection * dragForcePerpMag;
+            else
+                dragForcePerpVec = flowPerpendicularDirection * dragForcePerpMag;
+
+            forceVec += dragForcePerpVec;
+
+            // Apply river flow force
+            forceVec += Settings.Acceleration.Value * flowDirectionVector * dotProductParallel;
+
+            if (dotProductPerp > 0)
+            {
+                forceVec += .25f * Settings.Acceleration.Value * flowPerpendicularDirection * dotProductPerp;
+            }
+            else
+            {
+                forceVec += .25f * Settings.Acceleration.Value * -flowPerpendicularDirection * dotProductPerp;
             }
 
             // Apply accumulated forces
@@ -216,7 +224,7 @@ namespace Raspberry_Lib.Components
 
         private static Vector2 GetClockwisePerpendicularUnitVector(Vector2 iVec)
         {
-            var newVec = new Vector2(iVec.Y, -iVec.X);
+            var newVec = new Vector2(-iVec.Y, iVec.X);
             newVec.Normalize();
             return newVec;
         }

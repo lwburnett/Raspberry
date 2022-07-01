@@ -13,7 +13,7 @@ namespace Raspberry_Lib.Components
         {
             public const int NumPointsPerBlock = 100;
 
-            public const int NumDTFTerms = 5;
+            public const int NumDTFTerms = 4;
 
             public const int NumLeadingPoints = 20;
 

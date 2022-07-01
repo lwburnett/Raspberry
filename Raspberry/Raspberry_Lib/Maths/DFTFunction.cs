@@ -52,7 +52,7 @@ namespace Raspberry_Lib.Maths
 
         public float GetYPrimeForX(float iX)
         {
-            var transformedX = iX - _startingPoint.X;
+            var transformedX = (iX - _startingPoint.X) / _scale;
             var yValue = 0f;
 
             for (var ii = 0; ii < _aCoefficients.Count; ii++)
@@ -63,7 +63,7 @@ namespace Raspberry_Lib.Maths
                 yValue += term2 - term1;
             }
 
-            return yValue * _scale;
+            return yValue;
         }
 
         public float DomainStart { get; }
