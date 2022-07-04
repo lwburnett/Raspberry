@@ -200,7 +200,7 @@ namespace Raspberry_Lib.Components
             _collisionComponent.HandleCollision(collisionResult);
 
 #if VERBOSE
-            Debug.DrawText($"Speed = {_currentVelocity.Length()}", Color.White, 1, 4);
+            Debug.DrawText($"Speed = {_currentVelocity.Length()}", Color.White, .01, 8);
 #endif
     }
 
