@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input.Touch;
 using Nez;
 using Raspberry_Lib.Scenes;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -44,7 +43,6 @@ namespace Raspberry_Lib
                 Screen.IsFullscreen = true;
                 Screen.SetSize(windowBounds.Width, windowBounds.Height);
                 Screen.ApplyChanges();
-                renderScaleFactor = windowBounds.Width / Settings.TargetScreenSize.X;
             }
             else
             {
