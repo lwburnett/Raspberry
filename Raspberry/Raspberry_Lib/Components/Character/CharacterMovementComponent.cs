@@ -9,18 +9,18 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeedLower = new(50);
-            public static readonly RenderSetting FlowSpeedUpper = new(150);
-            public static readonly RenderSetting SpeedDifMax = new(75);
+            public static readonly RenderSetting FlowSpeedLower = new(40);
+            public static readonly RenderSetting FlowSpeedUpper = new(100);
+            public static readonly RenderSetting SpeedDifMax = new(25);
 
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
-            public static readonly RenderSetting Acceleration = new(50);
+            public static readonly RenderSetting Acceleration = new(10);
 
             public const float RotationRateDegreesPerSecondMin = 30f;
             public const float RotationRateDegreesPerSecondMax = 60f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
-            public static readonly RenderSetting RotationDragGrowthSlope = new(1f);
+            public static readonly RenderSetting RotationDragGrowthSlope = new(.25f);
 
             public static readonly RenderSetting DragCoefficient = new(.01f);
         }
@@ -85,7 +85,7 @@ namespace Raspberry_Lib.Components
                 Settings.FlowSpeedUpper.Value,
                 1 - _generator.PlayerScoreRating / 9f);
 
-            var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowDirectionVector, _currentVelocity);
+            var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowSpeed * flowDirectionVector, _currentVelocity);
 
             // Apply rotation input
             var lerpValue = MathHelper.Clamp(playerVelocityToWaterSpeedDiffInPlayerFrame / Settings.SpeedDifMax.Value, 0, 1);
@@ -155,7 +155,7 @@ namespace Raspberry_Lib.Components
 
             if (parallelSpeedDif > 0f)
             {
-                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductParallel) * parallelSpeedDif * parallelSpeedDif;
+                var dragForceMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductParallel / 2) * parallelSpeedDif * parallelSpeedDif;
 
                 var dragForceVec = -dragForceMag * flowDirectionVector;
 
@@ -179,11 +179,11 @@ namespace Raspberry_Lib.Components
 
             if (dotProductPerp > 0)
             {
-                forceVec += .25f * Settings.Acceleration.Value * flowPerpendicularDirection * dotProductPerp;
+                forceVec += .5f * Settings.Acceleration.Value * flowPerpendicularDirection * dotProductPerp;
             }
             else
             {
-                forceVec += .25f * Settings.Acceleration.Value * -flowPerpendicularDirection * dotProductPerp;
+                forceVec += .5f * Settings.Acceleration.Value * -flowPerpendicularDirection * dotProductPerp;
             }
 
             // Apply accumulated forces
