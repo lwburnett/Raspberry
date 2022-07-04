@@ -9,11 +9,6 @@ namespace Raspberry_Lib.Components
 {
     internal class ProceduralRenderer : RenderableComponent, IBeginPlay
     {
-        private static class Settings
-        {
-            public const bool RenderCollidersDebug = false;
-        }
-
         public ProceduralRenderer()
         {
             _tiles = new List<List<Tile>>();
@@ -39,13 +34,10 @@ namespace Raspberry_Lib.Components
                     0.0f);
             }
 
-#if DEBUG
-            if (Settings.RenderCollidersDebug)
+#if VERBOSE
+            foreach (var collider in _colliders.SelectMany(c => c))
             {
-                foreach (var collider in _colliders.SelectMany(c => c))
-                {
-                    collider.DebugRender(iBatcher);
-                }
+                collider.DebugRender(iBatcher);
             }
 #endif
         }

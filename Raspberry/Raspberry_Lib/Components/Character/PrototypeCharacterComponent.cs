@@ -3,19 +3,12 @@
 namespace Raspberry_Lib.Components
 {
     internal class PrototypeCharacterComponent :
-#if DEBUG
+#if VERBOSE
         RenderableComponent
 #else
         Component
 #endif
     {
-        private static class Settings
-        {
-#if DEBUG
-            public const bool DebugRenderHitBox = false;
-#endif
-        }
-
         public PrototypeCharacterComponent(System.Action iOnFatalCollision)
         {
             _collisionComponent = new CharacterCollisionComponent(iOnFatalCollision);
@@ -38,17 +31,14 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(_collisionComponent);
         }
 
-#if DEBUG
+#if VERBOSE
         public override float Width => 1000;
         public override float Height => 1000;
 
         public override void Render(Batcher batcher, Camera camera)
         {
-            if (Settings.DebugRenderHitBox)
-            {
-                var collider = Entity.GetComponent<Collider>();
-                collider?.DebugRender(batcher);
-            }
+            var collider = Entity.GetComponent<Collider>();
+            collider?.DebugRender(batcher);
         }
 #endif
 

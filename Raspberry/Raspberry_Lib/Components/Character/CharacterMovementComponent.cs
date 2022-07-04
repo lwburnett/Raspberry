@@ -9,10 +9,6 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-#if DEBUG
-            public const bool DrawDebugMetrics = true;
-#endif
-
             public static readonly RenderSetting FlowSpeedLower = new(50);
             public static readonly RenderSetting FlowSpeedUpper = new(150);
             public static readonly RenderSetting SpeedDifMax = new(75);
@@ -40,9 +36,8 @@ namespace Raspberry_Lib.Components
             _subPixelV2 = new SubpixelVector2();
             _lastRowTimeSeconds = float.MinValue;
 
-#if DEBUG
-            if (Settings.DrawDebugMetrics)
-                Core.DebugRenderEnabled = true;
+#if VERBOSE
+            Core.DebugRenderEnabled = true;
 #endif
         }
 
@@ -204,11 +199,8 @@ namespace Raspberry_Lib.Components
             
             _collisionComponent.HandleCollision(collisionResult);
 
-#if DEBUG
-            if (Settings.DrawDebugMetrics)
-            {
-                Debug.DrawText($"Speed = {_currentVelocity.Length()}", Color.White, 1, 4);
-            }
+#if VERBOSE
+            Debug.DrawText($"Speed = {_currentVelocity.Length()}", Color.White, 1, 4);
 #endif
     }
 
