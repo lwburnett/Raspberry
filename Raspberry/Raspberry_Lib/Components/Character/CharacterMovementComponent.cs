@@ -83,7 +83,7 @@ namespace Raspberry_Lib.Components
             var flowSpeed = MathHelper.Lerp(
                 Settings.FlowSpeedLower.Value,
                 Settings.FlowSpeedUpper.Value,
-                1 - _generator.PlayerScoreRating / 9f);
+                1 - _generator.PlayerScoreRating / _generator.PlayerScoreRatingMax);
 
             var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowSpeed * flowDirectionVector, _currentVelocity);
 
