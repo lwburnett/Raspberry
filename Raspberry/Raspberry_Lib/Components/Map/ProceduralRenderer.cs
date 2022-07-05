@@ -100,8 +100,8 @@ namespace Raspberry_Lib.Components
             {
                 var yPos = iBlock.Function.GetYForX(xPos);
 
-                var upperTile = new Tile(texture, new Vector2(xPos, yPos - iBlock.RiverWidth / 2));
-                var lowerTile = new Tile(texture, new Vector2(xPos, yPos + iBlock.RiverWidth / 2));
+                var upperTile = new Tile(texture, new Vector2(xPos - increment / 2, yPos - increment / 2 - iBlock.RiverWidth / 2));
+                var lowerTile = new Tile(texture, new Vector2(xPos - increment / 2, yPos - increment / 2 + iBlock.RiverWidth / 2));
 
                 tiles.Add(upperTile);
                 tiles.Add(lowerTile);
@@ -126,10 +126,12 @@ namespace Raspberry_Lib.Components
 
             foreach (var iObstacleLocation in iBlock.Obstacles)
             {
-                var obstacle = new Tile(texture, iObstacleLocation);
+                var adjustedLocation = new Vector2(iObstacleLocation.X - increment / 2, iObstacleLocation.Y - increment / 2);
+
+                var obstacle = new Tile(texture, adjustedLocation);
                 tiles.Add(obstacle);
 
-                var unscaledPosition = new Vector2(iObstacleLocation.X / Entity.Transform.Scale.X, iObstacleLocation.Y / Entity.Transform.Scale.X);
+                var unscaledPosition = new Vector2(adjustedLocation.X / Entity.Transform.Scale.X, adjustedLocation.Y / Entity.Transform.Scale.X);
 
                 var colliderRectangle = new Rectangle(unscaledPosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
                 var collider = new BoxCollider(colliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };
