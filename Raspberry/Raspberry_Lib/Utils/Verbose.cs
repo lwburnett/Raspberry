@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if VERBOSE
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,7 +8,6 @@ using Nez.BitmapFonts;
 
 namespace Raspberry_Lib
 {
-#if VERBOSE
     internal static class Verbose
     {
         private static Renderer sRendererInstance;
@@ -94,5 +94,5 @@ namespace Raspberry_Lib
             private readonly BitmapFont _font;
         }
     }
-#endif
 }
+#endif
