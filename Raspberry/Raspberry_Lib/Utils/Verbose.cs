@@ -74,7 +74,7 @@ namespace Raspberry_Lib
 
             public override void Render(Batcher iBatcher, Camera iCamera)
             {
-                var lastStringBottomY = 0f;
+                var lastStringBottomY = iCamera.Bounds.Y;
 
                 foreach (var metric in sMetrics)
                 {
@@ -82,8 +82,8 @@ namespace Raspberry_Lib
 
                     var size = _font.MeasureString(metric.GetText()) * Settings.Scale;
                     var thisStringPos = new Vector2(
-                        iCamera.Bounds.Left + Settings.MarginX.Value, 
-                        iCamera.Bounds.Top + lastStringBottomY + Settings.MarginY.Value);
+                        iCamera.Bounds.X + Settings.MarginX.Value, 
+                        lastStringBottomY + Settings.MarginY.Value);
 
                     lastStringBottomY = thisStringPos.Y + size.Y;
 

@@ -37,7 +37,9 @@ namespace Raspberry_Lib.Components
             _lastRowTimeSeconds = float.MinValue;
 
 #if VERBOSE
-            Verbose.TrackMetric(() => _currentVelocity.Length(), v => $"Speed: {v}");
+            Verbose.TrackMetric(() => _currentVelocity.Length(), v => $"SpeedT: {v:G6}");
+            Verbose.TrackMetric(() => _currentVelocity.X, v => $"SpeedX: {v:G6}");
+            Verbose.TrackMetric(() => _currentVelocity.Y, v => $"SpeedY: {v:G6}");
 #endif
         }
 
