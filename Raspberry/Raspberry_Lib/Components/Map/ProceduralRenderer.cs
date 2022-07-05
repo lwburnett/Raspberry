@@ -16,8 +16,8 @@ namespace Raspberry_Lib.Components
         }
 
         public int PhysicsLayer = 1 << 0;
-        public override float Width => 100000;
-        public override float Height => 20000;
+        public override float Width => float.MaxValue;
+        public override float Height => float.MaxValue;
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {

@@ -37,7 +37,7 @@ namespace Raspberry_Lib.Components
             _lastRowTimeSeconds = float.MinValue;
 
 #if VERBOSE
-            Core.DebugRenderEnabled = true;
+            Verbose.TrackMetric(() => _currentVelocity.Length(), v => $"Speed: {v}");
 #endif
         }
 
@@ -198,11 +198,7 @@ namespace Raspberry_Lib.Components
             _mover.ApplyMovement(_thisIterationMotion);
             
             _collisionComponent.HandleCollision(collisionResult);
-
-#if VERBOSE
-            Debug.DrawText($"Speed = {_currentVelocity.Length()}", Color.White, .01, 8);
-#endif
-    }
+        }
 
     public void OnPlayerInput(CharacterInputController.InputDescription iInput)
         {

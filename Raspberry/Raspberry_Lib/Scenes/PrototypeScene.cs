@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Nez.AI.GOAP;
+using Nez;
 using Raspberry_Lib.Components;
 
 namespace Raspberry_Lib.Scenes
@@ -34,6 +34,11 @@ namespace Raspberry_Lib.Scenes
             character.Transform.SetLocalScale(Settings.MapScale.Value);
             character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
+
+#if VERBOSE
+            var debugMetricRenderer = CreateEntity("metrics");
+            debugMetricRenderer.AddComponent(Verbose.GetRenderer());
+#endif
         }
 
         private readonly System.Action _onFatalCollision;
