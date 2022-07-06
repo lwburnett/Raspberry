@@ -7,7 +7,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting DistanceToMetersFactor = new(20);
+            public static readonly RenderSetting DistanceToMetersFactor = new(40);
             public static readonly RenderSetting Margin = new(100);
             public const int FontScale = 6;
         }

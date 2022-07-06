@@ -206,12 +206,14 @@ namespace Raspberry_Lib.Components
             // Publish distance traveled results
             if (_lastIterationPositionX.HasValue)
             {
-                if (Entity.Position.X > _lastIterationPositionX.Value)
+                var diffX = Entity.Position.X - _lastIterationPositionX.Value;
+
+                if (diffX > 0)
                 {
 
                     var lastIterationFlowScalar = thisBlock.Function.GetYPrimeForX(_lastIterationPositionX.Value);
 
-                    var arcLength = (float)Math.Sqrt(1 + lastIterationFlowScalar * lastIterationFlowScalar);
+                    var arcLength = (float)Math.Sqrt(1 + lastIterationFlowScalar * lastIterationFlowScalar) * diffX;
 
                     TotalDistanceTraveled += arcLength;
                 }
