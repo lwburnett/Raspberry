@@ -35,6 +35,8 @@ namespace Raspberry_Lib.Components
             _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
             _lastRowTimeSeconds = float.MinValue;
+            _lastIterationPositionX = null;
+            TotalDistanceTraveled = 0;
 
 #if VERBOSE
             Verbose.TrackMetric(() => _currentVelocity.Length(), v => $"SpeedT: {v:G6}");
@@ -64,18 +66,18 @@ namespace Raspberry_Lib.Components
             if (_generator == null)
                 return;
 
-            var thisFunction = _generator.Blocks.
+            var thisBlock = _generator.Blocks.
                 FirstOrDefault(f =>
                     f.Function.DomainStart < Entity.Position.X &&
                     Entity.Position.X <= f.Function.DomainEnd);
 
-            if (thisFunction == null)
+            if (thisBlock == null)
                 return;
 
             var previousState = _currentState;
             var forceVec = Vector2.Zero;
 
-            var flowDirectionScalar = thisFunction.Function.GetYPrimeForX(Entity.Position.X);
+            var flowDirectionScalar = thisBlock.Function.GetYPrimeForX(Entity.Position.X);
 
             var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
             flowDirectionVector.Normalize();
@@ -200,13 +202,30 @@ namespace Raspberry_Lib.Components
             _mover.ApplyMovement(_thisIterationMotion);
             
             _collisionComponent.HandleCollision(collisionResult);
+
+            // Publish distance traveled results
+            if (_lastIterationPositionX.HasValue)
+            {
+                if (Entity.Position.X > _lastIterationPositionX.Value)
+                {
+
+                    var lastIterationFlowScalar = thisBlock.Function.GetYPrimeForX(_lastIterationPositionX.Value);
+
+                    var arcLength = (float)Math.Sqrt(1 + lastIterationFlowScalar * lastIterationFlowScalar);
+
+                    TotalDistanceTraveled += arcLength;
+                }
+            }
+
+            _lastIterationPositionX = Entity.Position.X;
         }
 
-    public void OnPlayerInput(CharacterInputController.InputDescription iInput)
+        public void OnPlayerInput(CharacterInputController.InputDescription iInput)
         {
             _currentInput = iInput;
         }
 
+        public float TotalDistanceTraveled { get; private set; }
 
         private readonly Action<PrototypeCharacterComponent.State> _stateChangedCallback;
         private CharacterInputController.InputDescription _currentInput;
@@ -218,6 +237,7 @@ namespace Raspberry_Lib.Components
         private ProceduralGeneratorComponent _generator;
         private float _lastRowTimeSeconds;
         private CharacterCollisionComponent _collisionComponent;
+        private float? _lastIterationPositionX;
 
         private Vector2 GetRotationAsDirectionVector()
         {

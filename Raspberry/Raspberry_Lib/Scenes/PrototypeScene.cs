@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Nez;
+using Nez.UI;
 using Raspberry_Lib.Components;
 
 namespace Raspberry_Lib.Scenes
@@ -34,6 +35,9 @@ namespace Raspberry_Lib.Scenes
             character.Transform.SetLocalScale(Settings.MapScale.Value);
             character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
+
+            var uiEntity = CreateEntity("ui");
+            uiEntity.AddComponent(new PlayUiCanvasComponent());
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");
