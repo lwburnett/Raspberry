@@ -21,7 +21,14 @@ namespace Raspberry_Lib.Components
         public void HandleCollision(CollisionResult collisionResult)
         {
             if (collisionResult.Collider != null)
+            {
+#if VERBOSE
+                Verbose.ClearMetrics();
+#endif
+
                 _onFatalCollision();
+            }
+
         }
     }
 }

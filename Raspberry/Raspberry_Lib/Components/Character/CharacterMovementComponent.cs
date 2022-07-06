@@ -9,8 +9,8 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeedLower = new(40);
-            public static readonly RenderSetting FlowSpeedUpper = new(100);
+            public static readonly RenderSetting FlowSpeedLower = new(60);
+            public static readonly RenderSetting FlowSpeedUpper = new(120);
             public static readonly RenderSetting SpeedDifMax = new(25);
 
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
@@ -20,9 +20,9 @@ namespace Raspberry_Lib.Components
             public const float RotationRateDegreesPerSecondMax = 60f;
             public static readonly RenderSetting RowForce = new(75);
             public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
-            public static readonly RenderSetting RotationDragGrowthSlope = new(.25f);
+            public static readonly RenderSetting RotationDragGrowthSlope = new(.125f);
 
-            public static readonly RenderSetting DragCoefficient = new(.01f);
+            public static readonly RenderSetting DragCoefficient = new(.005f);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)

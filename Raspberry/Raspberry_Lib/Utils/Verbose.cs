@@ -21,6 +21,11 @@ namespace Raspberry_Lib
             sMetrics.Add(new Metric<T>(iSampleFunc, iToTextFunc));
         }
 
+        public static void ClearMetrics()
+        {
+            sMetrics.Clear();
+        }
+
         private static readonly List<IMetric> sMetrics = new();
 
         private interface IMetric
