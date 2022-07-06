@@ -8,13 +8,14 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public static readonly RenderSetting DistanceToMetersFactor = new(20);
+            public static readonly RenderSetting Margin = new(100);
         }
 
         public override void OnAddedToEntity()
         {
             var canvas = Entity.AddComponent(new UICanvas());
             _distanceLabel = canvas.Stage.AddElement(new Label("0 m"));
-            _distanceLabel.SetPosition(100f, 100f);
+            _distanceLabel.SetPosition(Screen.Width / 2f, Settings.Margin.Value);
             _distanceLabel.SetFontScale(4);
 
             // This needs to match the render layer of the ScreenSpaceRenderer in SceneBase ctor
