@@ -30,7 +30,7 @@ namespace Raspberry_Lib.Components
                     0.0f,
                     Vector2.Zero,
                     Entity.Transform.Scale.X,
-                    SpriteEffects.None,
+                    tile.Effects,
                     0.0f);
             }
 
@@ -46,6 +46,13 @@ namespace Raspberry_Lib.Components
 
         public void OnBeginPlay()
         {
+            var textureAtlas = Entity.Scene.Content.LoadTexture(Content.Content.LevelTileset);
+            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
+
+            _waterTexture = spriteList[0];
+            _obstacleTexture = spriteList[1];
+            _bankTexture = spriteList[2];
+
             _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
             foreach (var block in _generator.Blocks)
             {
@@ -70,29 +77,32 @@ namespace Raspberry_Lib.Components
 
         private class Tile
         {
-            public Tile(Sprite iTexture, Vector2 iPosition)
+            public Tile(Sprite iTexture, Vector2 iPosition, SpriteEffects iEffects = SpriteEffects.None)
             {
                 Texture = iTexture;
                 Position = iPosition;
+                Effects = iEffects;
             }
 
             public Sprite Texture { get; }
             public Vector2 Position { get; }
+            public SpriteEffects Effects { get; }
         }
 
         private readonly List<List<Tile>> _tiles;
         private readonly List<List<Collider>> _colliders;
         private ProceduralGeneratorComponent _generator;
+        private Sprite _waterTexture;
+        private Sprite _bankTexture;
+        private Sprite _obstacleTexture;
 
         private List<Tile> GetTilesForLevelBlock(LevelBlock iBlock)
         {
             var tiles = new List<Tile>();
-            var textureAtlas = Entity.Scene.Content.LoadTexture("Levels/PrototypeSpriteSheet");
-            var texture = Sprite.SpritesFromAtlas(textureAtlas, 16, 16)[15];
 
-            var increment = texture.SourceRect.Width * Entity.Transform.Scale.X;
+            var increment = _bankTexture.SourceRect.Width * Entity.Transform.Scale.X;
 
-            var unscaledIncrement = texture.SourceRect.Width;
+            var unscaledIncrement = _bankTexture.SourceRect.Width;
 
             var thisBlockColliders = new List<Collider>();
             var xPos = iBlock.Function.DomainStart;
@@ -100,8 +110,8 @@ namespace Raspberry_Lib.Components
             {
                 var yPos = iBlock.Function.GetYForX(xPos);
 
-                var upperTile = new Tile(texture, new Vector2(xPos - increment / 2, yPos - increment / 2 - iBlock.RiverWidth / 2));
-                var lowerTile = new Tile(texture, new Vector2(xPos - increment / 2, yPos - increment / 2 + iBlock.RiverWidth / 2));
+                var upperTile = new Tile(_bankTexture, new Vector2(xPos - increment / 2, yPos - increment / 2 - iBlock.RiverWidth / 2));
+                var lowerTile = new Tile(_bankTexture, new Vector2(xPos - increment / 2, yPos - increment / 2 + iBlock.RiverWidth / 2), SpriteEffects.FlipVertically);
 
                 tiles.Add(upperTile);
                 tiles.Add(lowerTile);
@@ -128,7 +138,7 @@ namespace Raspberry_Lib.Components
             {
                 var adjustedLocation = new Vector2(iObstacleLocation.X - increment / 2, iObstacleLocation.Y - increment / 2);
 
-                var obstacle = new Tile(texture, adjustedLocation);
+                var obstacle = new Tile(_obstacleTexture, adjustedLocation);
                 tiles.Add(obstacle);
 
                 var unscaledPosition = new Vector2(adjustedLocation.X / Entity.Transform.Scale.X, adjustedLocation.Y / Entity.Transform.Scale.X);

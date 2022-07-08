@@ -39,8 +39,8 @@ namespace Raspberry_Lib.Components
         {
             base.OnAddedToEntity();
 
-            var textureAtlas = Entity.Scene.Content.LoadTexture("Levels/PrototypeSpriteSheet");
-            var texture = Sprite.SpritesFromAtlas(textureAtlas, 16, 16)[15];
+            var textureAtlas = Entity.Scene.Content.LoadTexture(Content.Content.LevelTileset);
+            var texture = Sprite.SpritesFromAtlas(textureAtlas, 32, 32)[2];
 
             _scale = texture.SourceRect.Width * Entity.Transform.Scale.X;
         }

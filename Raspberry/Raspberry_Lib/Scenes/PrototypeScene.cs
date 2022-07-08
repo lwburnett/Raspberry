@@ -7,7 +7,7 @@ namespace Raspberry_Lib.Scenes
     {
         private static class Settings
         {
-            public static readonly RenderSetting MapScale = new(6);
+            public static readonly RenderSetting MapScale = new(3);
             public static readonly RenderSetting CharacterStartPositionX = new(64 * 4);
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
         }
@@ -30,7 +30,7 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent<ProceduralRenderer>();
 
             var character = CreateEntity("character", characterStartingPos);
-            character.Transform.SetLocalScale(Settings.MapScale.Value);
+            character.Transform.SetLocalScale(Settings.MapScale.Value * 2);
             character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 

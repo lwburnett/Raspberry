@@ -2,9 +2,7 @@
 {
     internal static class Content
     {
-        internal static class Prototype
-        {
-            public const string SpriteSheet = @"Levels/PrototypeSpriteSheet.png";
-        }
+        public const string LevelTileset = @"Levels/Tileset";
+        public const string CharacterSpriteSheet = @"Characters/PrototypeCharacter";
     }
 }
