@@ -26,7 +26,23 @@ namespace Raspberry_Lib
             sMetrics.Clear();
         }
 
+        public static void RenderCollider(Collider iCollider)
+        {
+            sCollidersToRender.Add(iCollider);
+        }
+
+        public static void RemoveColliderToRender(Collider iCollider)
+        {
+            sCollidersToRender.Remove(iCollider);
+        }
+
+        public static void ClearCollidersToRender()
+        {
+            sCollidersToRender.Clear();
+        }
+
         private static readonly List<IMetric> sMetrics = new();
+        private static readonly List<Collider> sCollidersToRender = new();
 
         private interface IMetric
         {
@@ -93,6 +109,11 @@ namespace Raspberry_Lib
                     lastStringBottomY = thisStringPos.Y + size.Y;
 
                     iBatcher.DrawString(_font, metric.GetText(), thisStringPos, Color.White, 0f, Vector2.Zero, Settings.Scale, SpriteEffects.None, 0f);
+                }
+
+                foreach (var collider in sCollidersToRender)
+                {
+                    collider.DebugRender(iBatcher);
                 }
             }
 

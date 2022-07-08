@@ -13,6 +13,10 @@ namespace Raspberry_Lib.Components
         public override void OnAddedToEntity()
         {
             Entity.AddComponent(_collider);
+
+#if VERBOSE
+            Verbose.RenderCollider(_collider);
+#endif
         }
 
         private readonly BoxCollider _collider;
@@ -23,6 +27,7 @@ namespace Raspberry_Lib.Components
             if (collisionResult.Collider != null)
             {
 #if VERBOSE
+                Verbose.ClearCollidersToRender();
                 Verbose.ClearMetrics();
 #endif
 

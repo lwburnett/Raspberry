@@ -2,12 +2,7 @@
 
 namespace Raspberry_Lib.Components
 {
-    internal class PrototypeCharacterComponent :
-#if VERBOSE
-        RenderableComponent
-#else
-        Component
-#endif
+    internal class PrototypeCharacterComponent : Component
     {
         public PrototypeCharacterComponent(System.Action iOnFatalCollision)
         {
@@ -30,17 +25,6 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
             Entity.AddComponent(_collisionComponent);
         }
-
-#if VERBOSE
-        public override float Width => 1000;
-        public override float Height => 1000;
-
-        public override void Render(Batcher batcher, Camera camera)
-        {
-            var collider = Entity.GetComponent<Collider>();
-            collider?.DebugRender(batcher);
-        }
-#endif
 
         private CharacterAnimationComponent _animationComponent;
         private CharacterMovementComponent _movementComponent;

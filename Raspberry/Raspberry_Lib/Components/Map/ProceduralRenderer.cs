@@ -13,9 +13,11 @@ namespace Raspberry_Lib.Components
         {
             _tiles = new List<List<Tile>>();
             _colliders = new List<List<Collider>>();
+            _obstacles = new List<List<Entity>>();
+            _obstacleCounter = 0;
         }
 
-        public int PhysicsLayer = 1 << 0;
+        public int PhysicsLayer = 1;
         public override float Width => float.MaxValue;
         public override float Height => float.MaxValue;
 
@@ -50,8 +52,7 @@ namespace Raspberry_Lib.Components
             var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
 
             _waterTexture = spriteList[0];
-            _obstacleTexture = spriteList[1];
-            _bankTexture = spriteList[2];
+            _bankTexture = spriteList[3];
 
             _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
             foreach (var block in _generator.Blocks)
@@ -69,8 +70,18 @@ namespace Raspberry_Lib.Components
             foreach (var collider in _colliders.First())
             {
                 Physics.RemoveCollider(collider);
+
+#if VERBOSE
+                Verbose.RemoveColliderToRender(collider);
+#endif
             }
             _colliders.RemoveAt(0);
+
+            foreach (var obstacle in _obstacles.First())
+            {
+                obstacle.Destroy();
+            }
+            _obstacles.RemoveAt(0);
 
             _tiles.Add(GetTilesForLevelBlock(iNewBlock));
         }
@@ -91,10 +102,11 @@ namespace Raspberry_Lib.Components
 
         private readonly List<List<Tile>> _tiles;
         private readonly List<List<Collider>> _colliders;
+        private readonly List<List<Entity>> _obstacles;
+        private int _obstacleCounter;
         private ProceduralGeneratorComponent _generator;
         private Sprite _waterTexture;
         private Sprite _bankTexture;
-        private Sprite _obstacleTexture;
 
         private List<Tile> GetTilesForLevelBlock(LevelBlock iBlock)
         {
@@ -131,26 +143,28 @@ namespace Raspberry_Lib.Components
                 Physics.AddCollider(upperCollider);
                 Physics.AddCollider(lowerCollider);
 
+#if VERBOSE
+                Verbose.RenderCollider(upperCollider);
+                Verbose.RenderCollider(lowerCollider);
+#endif
+
                 xPos += increment;
             }
 
+            var theseObstacles = new List<Entity>();
             foreach (var iObstacleLocation in iBlock.Obstacles)
             {
-                var adjustedLocation = new Vector2(iObstacleLocation.X - increment / 2, iObstacleLocation.Y - increment / 2);
+                var thisObstacle = new RockObstacleEntity($"obstacle_{_obstacleCounter}", iObstacleLocation)
+                {
+                    Scale = Entity.Scale
+                };
+                _obstacleCounter++;
 
-                var obstacle = new Tile(_obstacleTexture, adjustedLocation);
-                tiles.Add(obstacle);
-
-                var unscaledPosition = new Vector2(adjustedLocation.X / Entity.Transform.Scale.X, adjustedLocation.Y / Entity.Transform.Scale.X);
-
-                var colliderRectangle = new Rectangle(unscaledPosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
-                var collider = new BoxCollider(colliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };
-
-                thisBlockColliders.Add(collider);
-
-                Physics.AddCollider(collider);
+                theseObstacles.Add(thisObstacle);
+                Entity.Scene.AddEntity(thisObstacle);
             }
 
+            _obstacles.Add(theseObstacles);
             _colliders.Add(thisBlockColliders);
 
             return tiles;
