@@ -15,6 +15,7 @@ namespace Raspberry_Lib.Components
             _colliders = new List<List<Collider>>();
             _obstacles = new List<List<Entity>>();
             _obstacleCounter = 0;
+            RenderLayer = 5;
         }
 
         public int PhysicsLayer = 1;
@@ -52,7 +53,8 @@ namespace Raspberry_Lib.Components
             var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
 
             _waterTexture = spriteList[0];
-            _bankTexture = spriteList[3];
+            _waterBankTexture = spriteList[1];
+            _landBankTexture = spriteList[3];
 
             _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
             foreach (var block in _generator.Blocks)
@@ -106,15 +108,18 @@ namespace Raspberry_Lib.Components
         private int _obstacleCounter;
         private ProceduralGeneratorComponent _generator;
         private Sprite _waterTexture;
-        private Sprite _bankTexture;
+        private Sprite _waterBankTexture;
+        private Sprite _landBankTexture;
 
         private List<Tile> GetTilesForLevelBlock(LevelBlock iBlock)
         {
             var tiles = new List<Tile>();
 
-            var increment = _bankTexture.SourceRect.Width * Entity.Transform.Scale.X;
+            var increment = _landBankTexture.SourceRect.Width * Entity.Transform.Scale.X;
 
-            var unscaledIncrement = _bankTexture.SourceRect.Width;
+            var unscaledIncrement = _landBankTexture.SourceRect.Width;
+
+            var numVerticallyStackedTiles = (int)(iBlock.RiverWidth / increment);
 
             var thisBlockColliders = new List<Collider>();
             var xPos = iBlock.Function.DomainStart;
@@ -122,18 +127,32 @@ namespace Raspberry_Lib.Components
             {
                 var yPos = iBlock.Function.GetYForX(xPos);
 
-                var upperTile = new Tile(_bankTexture, new Vector2(xPos - increment / 2, yPos - increment / 2 - iBlock.RiverWidth / 2));
-                var lowerTile = new Tile(_bankTexture, new Vector2(xPos - increment / 2, yPos - increment / 2 + iBlock.RiverWidth / 2), SpriteEffects.FlipVertically);
+                var upperLandBankTile = new Tile(_landBankTexture, new Vector2(xPos - increment / 2, yPos - increment / 2 - iBlock.RiverWidth / 2));
+                var lowerLandBankTile = new Tile(_landBankTexture, new Vector2(xPos - increment / 2, yPos - increment / 2 + iBlock.RiverWidth / 2), SpriteEffects.FlipVertically);
 
-                tiles.Add(upperTile);
-                tiles.Add(lowerTile);
+                var upperWaterBankTile = new Tile(_waterBankTexture, new Vector2(upperLandBankTile.Position.X, upperLandBankTile.Position.Y + increment), SpriteEffects.FlipVertically);
+                var lowerWaterBankTile = new Tile(_waterBankTexture, new Vector2(upperLandBankTile.Position.X, lowerLandBankTile.Position.Y - increment));
+
+                var waterTileOffsetY = upperLandBankTile.Position.Y - numVerticallyStackedTiles / 2f;
+                for (var ii = 0; ii < numVerticallyStackedTiles; ii++)
+                {
+                    var thisWaterTilePosY = waterTileOffsetY + ii * increment;
+                    var thisWaterTilePos = new Vector2(upperLandBankTile.Position.X, thisWaterTilePosY);
+                    var thisWaterTile = new Tile(_waterTexture, thisWaterTilePos);
+                    tiles.Add(thisWaterTile);
+                }
+                
+                tiles.Add(upperLandBankTile);
+                tiles.Add(lowerLandBankTile);
+                tiles.Add(upperWaterBankTile);
+                tiles.Add(lowerWaterBankTile);
 
                 // BoxCollider reapplies the entity transform so I have to pass in position & size without that scaling
-                var unscaledUpperTilePosition = new Vector2(upperTile.Position.X / Entity.Transform.Scale.X, upperTile.Position.Y / Entity.Transform.Scale.X);
-                var unscaledLowerTilePosition = new Vector2(lowerTile.Position.X / Entity.Transform.Scale.X, lowerTile.Position.Y / Entity.Transform.Scale.X);
+                var unscaledUpperLandBankTilePosition = new Vector2(upperLandBankTile.Position.X / Entity.Transform.Scale.X, upperLandBankTile.Position.Y / Entity.Transform.Scale.X);
+                var unscaledLowerLandBankTilePosition = new Vector2(lowerLandBankTile.Position.X / Entity.Transform.Scale.X, lowerLandBankTile.Position.Y / Entity.Transform.Scale.X);
                 
-                var upperTileColliderRectangle = new Rectangle(unscaledUpperTilePosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
-                var lowerTileColliderRectangle = new Rectangle(unscaledLowerTilePosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
+                var upperTileColliderRectangle = new Rectangle(unscaledUpperLandBankTilePosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
+                var lowerTileColliderRectangle = new Rectangle(unscaledLowerLandBankTilePosition.ToPoint(), new Point(unscaledIncrement, unscaledIncrement));
                 
                 var upperCollider = new BoxCollider(upperTileColliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };
                 var lowerCollider = new BoxCollider(lowerTileColliderRectangle) { PhysicsLayer = PhysicsLayer, Entity = Entity };

@@ -10,7 +10,7 @@ namespace Raspberry_Lib.Components
         public RockObstacleEntity(string iName, Vector2 iPosition) :
             base(iName)
         {
-            Position = iPosition; 
+            Position = iPosition;
         }
 
 
@@ -23,6 +23,7 @@ namespace Raspberry_Lib.Components
             var texture = spriteList[4];
 
             _renderer = AddComponent<SpriteRenderer>();
+            _renderer.RenderLayer = 4;
             _renderer.Sprite = texture;
 
             _collider = new CircleCollider(texture.SourceRect.Width / 2f) {PhysicsLayer = PhysicsLayer, Entity = this};
