@@ -7,8 +7,7 @@ namespace Raspberry_Lib.Components
 {
     internal class RockObstacleEntity : Entity
     {
-        public RockObstacleEntity(string iName, Vector2 iPosition) :
-            base(iName)
+        public RockObstacleEntity(Vector2 iPosition)
         {
             Position = iPosition;
         }
