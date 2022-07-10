@@ -132,14 +132,14 @@ namespace Raspberry_Lib.Components
             var upperEntity = new Entity();
             upperEntity.SetPosition(new Vector2(iXPos, upperBankTileYPos));
             upperEntity.SetScale(iScale);
-            upperEntity.AddComponent(new SpriteRenderer(upperSprite));
+            upperEntity.AddComponent(new SpriteRenderer(upperSprite) { RenderLayer = 5 });
             //upperEntity.AddComponent(new PolygonCollider());
             tiles.Add(upperEntity);
 
             var lowerEntity = new Entity();
             lowerEntity.SetPosition(new Vector2(iXPos, lowerBankTileYPos));
             lowerEntity.SetScale(iScale);
-            lowerEntity.AddComponent(new SpriteRenderer(lowerSprite));
+            lowerEntity.AddComponent(new SpriteRenderer(lowerSprite){RenderLayer = 5});
             //lowerEntity.AddComponent(new PolygonCollider());
             tiles.Add(lowerEntity);
 

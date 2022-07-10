@@ -9,7 +9,7 @@ namespace Raspberry_Lib.Scenes
     {
         public SceneBase()
         {
-            AddRenderer(new DefaultRenderer());
+            AddRenderer(new DefaultRenderer(5));
             AddRenderer(new ScreenSpaceRenderer(2, -1));
             _isFirstUpdate = true;
         }
