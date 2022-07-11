@@ -50,9 +50,9 @@ namespace Raspberry_Lib.Components
                 var lowerBankY = riverY + thisBlock.RiverWidth / 2;
 
 #if VERBOSE
-                Debug.DrawPixel(vertex, 2, Color.Red);
-                Debug.DrawPixel(new Vector2(vertex.X, upperBankY), 2, Color.Yellow);
-                Debug.DrawPixel(new Vector2(vertex.X, lowerBankY), 2, Color.Yellow);
+                Debug.DrawPixel(vertex, 4, Color.Red);
+                Debug.DrawPixel(new Vector2(vertex.X, upperBankY), 4, Color.Yellow);
+                Debug.DrawPixel(new Vector2(vertex.X, lowerBankY), 4, Color.Yellow);
 #endif
 
                 if (upperBankY >= vertex.Y || lowerBankY <= vertex.Y)
