@@ -126,26 +126,14 @@ namespace Raspberry_Lib.Components
             var upperSprite = new Sprite(upperTexture);
             var lowerSprite = new Sprite(lowerTexture);
 
-            var upperBankTileYPos = yPos - (iBlock.RiverWidth / 2f) - ((numExtraUpTotal + 5) * pixelHeight);
-            var lowerBankTileYPos = yPos + (iBlock.RiverWidth / 2f) - ((numExtraUpTotal + 5) * pixelHeight);
-
-            var rhsYPos = iBlock.Function.GetYForX(iXPos + iTileWidth);
-
+            var upperBankTileYPos = yPos - (iBlock.RiverWidth / 2f);
+            var lowerBankTileYPos = yPos + (iBlock.RiverWidth / 2f);
+            
             var upperPosition = new Vector2(iXPos, upperBankTileYPos);
             var upperEntity = new Entity();
             upperEntity.SetPosition(upperPosition);
             upperEntity.SetScale(iScale);
             upperEntity.AddComponent(new SpriteRenderer(upperSprite));
-
-            // var upperCollisionVertices = new[]
-            // {
-            //     upperPosition,
-            //     upperPosition + new Vector2(0, (numExtraUpTotal + 5) * pixelHeight),
-            //     new Vector2(iXPos + iTileWidth, rhsYPos - iBlock.RiverWidth / 2),
-            //     upperPosition + new Vector2(iTileWidth, 0)
-            // };
-            // var upperCollider = new PolygonCollider(upperCollisionVertices);
-            // upperEntity.AddComponent(upperCollider);
 
             tiles.Add(upperEntity);
 
@@ -154,23 +142,8 @@ namespace Raspberry_Lib.Components
             lowerEntity.SetPosition(lowerPosition);
             lowerEntity.SetScale(iScale);
             lowerEntity.AddComponent(new SpriteRenderer(lowerSprite));
-            
-            // var lowerCollisionVertices = new[]
-            // {
-            //     lowerPosition + new Vector2(0, dataHeight * pixelHeight),
-            //     lowerPosition + new Vector2(iTileWidth, dataHeight * pixelHeight),
-            //     new Vector2(iXPos + iTileWidth, rhsYPos + iBlock.RiverWidth / 2),
-            //     lowerPosition + new Vector2(0, (numExtraUpTotal + 5) * pixelHeight),
-            // };
-            // var lowerCollider = new PolygonCollider(lowerCollisionVertices);
-            // lowerEntity.AddComponent(lowerCollider);
 
             tiles.Add(lowerEntity);
-
-// #if VERBOSE
-//             Verbose.RenderCollider(upperCollider);
-//             Verbose.RenderCollider(lowerCollider);
-// #endif
 
             return tiles;
         }
