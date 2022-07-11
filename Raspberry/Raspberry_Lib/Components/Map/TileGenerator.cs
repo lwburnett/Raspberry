@@ -137,15 +137,15 @@ namespace Raspberry_Lib.Components
             upperEntity.SetScale(iScale);
             upperEntity.AddComponent(new SpriteRenderer(upperSprite));
 
-            var upperCollisionVertices = new[]
-            {
-                upperPosition,
-                upperPosition + new Vector2(0, (numExtraUpTotal + 5) * pixelHeight),
-                new Vector2(iXPos + iTileWidth, rhsYPos - iBlock.RiverWidth / 2),
-                upperPosition + new Vector2(iTileWidth, 0)
-            };
-            var upperCollider = new PolygonCollider(upperCollisionVertices);
-            upperEntity.AddComponent(upperCollider);
+            // var upperCollisionVertices = new[]
+            // {
+            //     upperPosition,
+            //     upperPosition + new Vector2(0, (numExtraUpTotal + 5) * pixelHeight),
+            //     new Vector2(iXPos + iTileWidth, rhsYPos - iBlock.RiverWidth / 2),
+            //     upperPosition + new Vector2(iTileWidth, 0)
+            // };
+            // var upperCollider = new PolygonCollider(upperCollisionVertices);
+            // upperEntity.AddComponent(upperCollider);
 
             tiles.Add(upperEntity);
 
@@ -155,22 +155,22 @@ namespace Raspberry_Lib.Components
             lowerEntity.SetScale(iScale);
             lowerEntity.AddComponent(new SpriteRenderer(lowerSprite));
             
-            var lowerCollisionVertices = new[]
-            {
-                lowerPosition + new Vector2(0, dataHeight * pixelHeight),
-                lowerPosition + new Vector2(iTileWidth, dataHeight * pixelHeight),
-                new Vector2(iXPos + iTileWidth, rhsYPos + iBlock.RiverWidth / 2),
-                lowerPosition + new Vector2(0, (numExtraUpTotal + 5) * pixelHeight),
-            };
-            var lowerCollider = new PolygonCollider(lowerCollisionVertices);
-            lowerEntity.AddComponent(lowerCollider);
+            // var lowerCollisionVertices = new[]
+            // {
+            //     lowerPosition + new Vector2(0, dataHeight * pixelHeight),
+            //     lowerPosition + new Vector2(iTileWidth, dataHeight * pixelHeight),
+            //     new Vector2(iXPos + iTileWidth, rhsYPos + iBlock.RiverWidth / 2),
+            //     lowerPosition + new Vector2(0, (numExtraUpTotal + 5) * pixelHeight),
+            // };
+            // var lowerCollider = new PolygonCollider(lowerCollisionVertices);
+            // lowerEntity.AddComponent(lowerCollider);
 
             tiles.Add(lowerEntity);
 
-#if VERBOSE
-            Verbose.RenderCollider(upperCollider);
-            Verbose.RenderCollider(lowerCollider);
-#endif
+// #if VERBOSE
+//             Verbose.RenderCollider(upperCollider);
+//             Verbose.RenderCollider(lowerCollider);
+// #endif
 
             return tiles;
         }

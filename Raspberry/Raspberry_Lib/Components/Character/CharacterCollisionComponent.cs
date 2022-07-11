@@ -1,8 +1,11 @@
-﻿using Nez;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
+using Nez;
+using Nez.PhysicsShapes;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterCollisionComponent : Component
+    internal class CharacterCollisionComponent : Component, IUpdatable, IBeginPlay
     {
         public CharacterCollisionComponent(System.Action iOnFatalCollision)
         {
@@ -19,21 +22,67 @@ namespace Raspberry_Lib.Components
 #endif
         }
 
-        private readonly BoxCollider _collider;
-        private readonly System.Action _onFatalCollision;
+        public int BeginPlayOrder => 100;
+        public void OnBeginPlay()
+        {
+            _proceduralGenerator = Entity.Scene.FindEntity("map").GetComponent<ProceduralGeneratorComponent>();
+        }
+
+        public void Update()
+        {
+            if (_proceduralGenerator == null)
+                return;
+
+            if (_collider.Shape is not Polygon polygon)
+                return;
+
+            var points = polygon.Points;
+            var vertices = points.Select(p => Entity.Position + p);
+
+            foreach (var vertex in vertices)
+            {
+                var thisBlock = _proceduralGenerator.Blocks.
+                    First(b => b.Function.DomainStart <= vertex.X && b.Function.DomainEnd >= vertex.X);
+
+                var riverY = thisBlock.Function.GetYForX(vertex.X);
+
+                var upperBankY = riverY - thisBlock.RiverWidth / 2;
+                var lowerBankY = riverY + thisBlock.RiverWidth / 2;
+
+#if VERBOSE
+                Debug.DrawPixel(vertex, 2, Color.Red);
+                Debug.DrawPixel(new Vector2(vertex.X, upperBankY), 2, Color.Yellow);
+                Debug.DrawPixel(new Vector2(vertex.X, lowerBankY), 2, Color.Yellow);
+#endif
+
+                if (upperBankY >= vertex.Y || lowerBankY <= vertex.Y)
+                {
+                    OnFatalCollision();
+                    break;
+                }
+            }
+        }
 
         public void HandleCollision(CollisionResult collisionResult)
         {
             if (collisionResult.Collider != null)
             {
+                OnFatalCollision();
+            }
+        }
+
+        private readonly BoxCollider _collider;
+        private readonly System.Action _onFatalCollision;
+        private ProceduralGeneratorComponent _proceduralGenerator;
+
+        private void OnFatalCollision()
+        {
 #if VERBOSE
-                Verbose.ClearCollidersToRender();
-                Verbose.ClearMetrics();
+            Verbose.ClearCollidersToRender();
+            Verbose.ClearMetrics();
 #endif
 
-                _onFatalCollision();
-            }
-
+            _onFatalCollision();
         }
     }
 }

@@ -81,9 +81,9 @@ namespace Raspberry_Lib.Components
             {
                 entity.Destroy();
 
-#if VERBOSE
-                Verbose.RemoveColliderToRender(entity.GetComponent<Collider>());
-#endif
+// #if VERBOSE
+//                 Verbose.RemoveColliderToRender(entity.GetComponent<Collider>());
+// #endif
             }
             _entities.RemoveAt(0);
 

@@ -31,6 +31,10 @@ namespace Raspberry_Lib
             if (_isTouch)
                 Input.Touch.EnableTouchSupport();
 
+#if DEBUG
+            DebugRenderEnabled = true;
+#endif
+
             var windowBounds = GraphicsDevice.DisplayMode;
             var renderScaleFactor = windowBounds.Width / Settings.TargetScreenSize.X;
             PlatformUtils.SetRenderScale(renderScaleFactor);
