@@ -135,7 +135,7 @@ namespace Raspberry_Lib.Components
             var upperEntity = new Entity();
             upperEntity.SetPosition(upperPosition);
             upperEntity.SetScale(iScale);
-            upperEntity.AddComponent(new SpriteRenderer(upperSprite) { RenderLayer = 5 });
+            upperEntity.AddComponent(new SpriteRenderer(upperSprite));
 
             var upperCollisionVertices = new[]
             {
@@ -153,7 +153,7 @@ namespace Raspberry_Lib.Components
             var lowerEntity = new Entity();
             lowerEntity.SetPosition(lowerPosition);
             lowerEntity.SetScale(iScale);
-            lowerEntity.AddComponent(new SpriteRenderer(lowerSprite){RenderLayer = 5});
+            lowerEntity.AddComponent(new SpriteRenderer(lowerSprite));
             
             var lowerCollisionVertices = new[]
             {

@@ -77,9 +77,13 @@ namespace Raspberry_Lib.Components
 //             }
 //             _colliders.RemoveAt(0);
 
-            foreach (var obstacle in _entities.First())
+            foreach (var entity in _entities.First())
             {
-                obstacle.Destroy();
+                entity.Destroy();
+
+#if VERBOSE
+                Verbose.RemoveColliderToRender(entity.GetComponent<Collider>());
+#endif
             }
             _entities.RemoveAt(0);
 

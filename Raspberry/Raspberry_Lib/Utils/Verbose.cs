@@ -89,7 +89,7 @@ namespace Raspberry_Lib
             public Renderer()
             {
                 _font = Graphics.Instance.BitmapFont;
-                RenderLayer = -1;
+                RenderLayer = -2;
             }
             public override float Width => float.MaxValue;
             public override float Height => float.MaxValue;
