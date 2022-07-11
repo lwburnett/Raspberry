@@ -18,7 +18,7 @@ namespace Raspberry_Lib.Components
             public static readonly Color WaterColor = new(35, 101, 100);
         }
 
-        public static List<Entity> GenerateBankTiles(float iXPos, float iTileWidth, LevelBlock iBlock, float iScale)
+        public static List<Entity> GenerateRiverTiles(float iXPos, float iTileWidth, LevelBlock iBlock, float iScale)
         {
             var tiles = new List<Entity>();
 
@@ -144,6 +144,26 @@ namespace Raspberry_Lib.Components
             lowerEntity.AddComponent(new SpriteRenderer(lowerSprite));
 
             tiles.Add(lowerEntity);
+
+            var riverSpriteHeightPixels = (int)(1f + iBlock.RiverWidth / pixelHeight);
+
+            var waterData = new Color[riverSpriteHeightPixels * dataWidth];
+            for (var ii = 0; ii < riverSpriteHeightPixels * dataWidth; ii++)
+            {
+                waterData[ii] = Settings.WaterColor;
+            }
+
+            var waterTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, dataWidth, riverSpriteHeightPixels);
+            waterTexture.SetData(waterData);
+            var waterSprite = new Sprite(waterTexture);
+
+            //var waterYPos = upperBankTileYPos + (numExtraUpTotal + 10 + numExtraDownTotal) * pixelHeight;
+            var waterEntity = new Entity();
+            waterEntity.SetPosition(new Vector2(iXPos, yPos));
+            waterEntity.SetScale(iScale);
+            waterEntity.AddComponent(new SpriteRenderer(waterSprite){RenderLayer = 6});
+
+            tiles.Add(waterEntity);
 
             return tiles;
         }

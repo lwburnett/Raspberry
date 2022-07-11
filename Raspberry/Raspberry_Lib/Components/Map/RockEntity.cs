@@ -19,7 +19,7 @@ namespace Raspberry_Lib.Components
         {
             var textureAtlas = Scene.Content.LoadTexture(Content.Content.LevelTileset);
             var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
-            var texture = spriteList[4];
+            var texture = spriteList[0];
 
             _renderer = AddComponent<SpriteRenderer>();
             _renderer.RenderLayer = 4;

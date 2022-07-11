@@ -127,7 +127,7 @@ namespace Raspberry_Lib.Components
                 //     tiles.Add(thisWaterTile);
                 // }
 
-                var theseBankTiles = TileGenerator.GenerateBankTiles(xPos, increment, iBlock, Entity.Scale.X);
+                var theseBankTiles = TileGenerator.GenerateRiverTiles(xPos, increment, iBlock, Entity.Scale.X);
 
                 foreach (var tile in theseBankTiles)
                 {

@@ -15,6 +15,7 @@ namespace Raspberry_Lib.Scenes
         public PrototypeScene(System.Action iOnFatalCollision)
         {
             _onFatalCollision = iOnFatalCollision;
+            ClearColor = new Color(69, 198, 88);
         }
 
         public override void Initialize()

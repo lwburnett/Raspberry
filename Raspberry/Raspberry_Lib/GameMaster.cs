@@ -31,7 +31,7 @@ namespace Raspberry_Lib
             if (_isTouch)
                 Input.Touch.EnableTouchSupport();
 
-#if DEBUG
+#if VERBOSE
             DebugRenderEnabled = true;
 #endif
 
