@@ -27,6 +27,9 @@ namespace Raspberry_Lib.Components
 
             public static readonly RenderSetting ObstacleXGapMaxUpper = new(1600);
             public static readonly RenderSetting ObstacleXGapMaxLower = new(800);
+
+            public const float YScaleDivisorLower = 8f;
+            public const float YScaleDivisorUpper = 4f;
         }
 
         public ProceduralGeneratorComponent()
@@ -150,12 +153,17 @@ namespace Raspberry_Lib.Components
                 walkPoints.Add(thisPoint);
             }
 
+
+            var yScaleDivisor = MathHelper.Lerp(
+                Settings.YScaleDivisorLower, 
+                Settings.YScaleDivisorUpper, 
+                PlayerScoreRating / Settings.PlayerScoreRatingMax);
             var numTerms = PlayerScoreRating < 5f ? Settings.NumDTFTerms : Settings.NumDTFTerms + 1;
             return new DFTFunction(
                 walkPoints, 
                 numTerms, 
                 iStartingPoint, 
-                new Vector2(_scale, _scale / 8));
+                new Vector2(_scale, _scale / yScaleDivisor));
         }
 
         private List<Vector2> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
