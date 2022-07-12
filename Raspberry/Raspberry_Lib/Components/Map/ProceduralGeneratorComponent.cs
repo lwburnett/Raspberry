@@ -30,7 +30,6 @@ namespace Raspberry_Lib.Components
 
             public const float YScaleDivisorLower = 8f;
             public const float YScaleDivisorUpper = 4f;
-            public const int RandomWalkNumEdgeStraightPoints = 10;
         }
 
         public ProceduralGeneratorComponent()
@@ -138,23 +137,14 @@ namespace Raspberry_Lib.Components
             for (var ii = 0; ii < numPoints; ii++)
             {
                 float dy;
-
-                if (ii < Settings.RandomWalkNumEdgeStraightPoints ||
-                    ii > numPoints - Settings.RandomWalkNumEdgeStraightPoints)
+                var randomNumber = rng.Next() % 2;
+                if (randomNumber == 0)
                 {
-                    dy = 0;
+                    dy = -1;
                 }
                 else
                 {
-                    var randomNumber = rng.Next() % 2;
-                    if (randomNumber == 0)
-                    {
-                        dy = -1;
-                    }
-                    else
-                    {
-                        dy = 1;
-                    }
+                    dy = 1;
                 }
 
                 y += dy;
