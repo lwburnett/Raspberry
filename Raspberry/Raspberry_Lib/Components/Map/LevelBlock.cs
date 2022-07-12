@@ -8,7 +8,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting RiverWidthTransitionPeriod = new(50f);
+            public static readonly RenderSetting RiverWidthTransitionPeriod = new(400f);
         }
 
         public LevelBlock(IFunction iFunction, IReadOnlyCollection<Vector2> iObstacles, float iRiverWidth, float? iPreviousBlockWidth = null)
