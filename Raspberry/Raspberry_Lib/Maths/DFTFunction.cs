@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Nez;
 
 namespace Raspberry_Lib.Maths
 {
@@ -157,8 +156,6 @@ namespace Raspberry_Lib.Maths
 
                 sum += coefficient * product;
             }
-
-            Debug.DrawPixel(new Vector2(iX, sum), 4, Color.Red, 10f);
 
             return sum;
         }
