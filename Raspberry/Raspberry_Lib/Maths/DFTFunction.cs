@@ -10,7 +10,7 @@ namespace Raspberry_Lib.Maths
     /// </summary>
     internal class DFTFunction : IFunction
     {
-        public DFTFunction(IEnumerable<Vector2> iPoints, int iNumTerms, Vector2 iStartingPoint, float iScale)
+        public DFTFunction(IEnumerable<Vector2> iPoints, int iNumTerms, Vector2 iStartingPoint, Vector2 iScale)
         {
             _scale = iScale;
 
@@ -27,8 +27,8 @@ namespace Raspberry_Lib.Maths
 
             PrecomputeCoefficients(pointsList, iNumTerms);
 
-            DomainStart = pointsList.First().X * _scale + _startingPoint.X;
-            DomainEnd = pointsList.Last().X * _scale + _startingPoint.X;
+            DomainStart = pointsList.First().X * _scale.X + _startingPoint.X;
+            DomainEnd = pointsList.Last().X * _scale.X + _startingPoint.X;
 
             var currentStartingPointY = GetYForX(DomainStart);
             _yCorrection = _startingPoint.Y - currentStartingPointY;
@@ -37,7 +37,7 @@ namespace Raspberry_Lib.Maths
 
         public float GetYForX(float iX)
         {
-            var transformedX = (iX - _startingPoint.X) / _scale;
+            var transformedX = (iX - _startingPoint.X) / _scale.X;
             var yValue = _avgY;
 
             for (var ii = 0; ii < _aCoefficients.Count; ii++)
@@ -47,12 +47,12 @@ namespace Raspberry_Lib.Maths
                 yValue += term1 + term2;
             }
 
-            return 2 * yValue * _scale + (_startingPoint.Y + _yCorrection);
+            return 2 * yValue * _scale.Y + (_startingPoint.Y + _yCorrection);
         }
 
         public float GetYPrimeForX(float iX)
         {
-            var transformedX = (iX - _startingPoint.X) / _scale;
+            var transformedX = (iX - _startingPoint.X) / _scale.X;
             var yValue = 0f;
 
             for (var ii = 0; ii < _aCoefficients.Count; ii++)
@@ -63,19 +63,19 @@ namespace Raspberry_Lib.Maths
                 yValue += term2 - term1;
             }
 
-            return yValue;
+            return yValue / _scale.Y;
         }
 
         public float DomainStart { get; }
         public float DomainEnd { get; }
 
-        private readonly float _scale;
+        private readonly Vector2 _scale;
         private readonly int _numPoints;
         private readonly float _avgY;
         private readonly Vector2 _startingPoint;
         private List<float> _aCoefficients;
         private List<float> _bCoefficients;
-        private float _yCorrection;
+        private readonly float _yCorrection;
 
         private void PrecomputeCoefficients(List<Vector2> iPoints, int iNumTerms)
         {

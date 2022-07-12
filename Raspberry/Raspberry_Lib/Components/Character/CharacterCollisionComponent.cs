@@ -46,8 +46,10 @@ namespace Raspberry_Lib.Components
 
                 var riverY = thisBlock.Function.GetYForX(vertex.X);
 
-                var upperBankY = riverY - thisBlock.RiverWidth / 2;
-                var lowerBankY = riverY + thisBlock.RiverWidth / 2;
+                var riverWidth = thisBlock.GetRiverWidth(vertex.X);
+
+                var upperBankY = riverY - riverWidth / 2;
+                var lowerBankY = riverY + riverWidth / 2;
 
 #if VERBOSE
                 Debug.DrawPixel(vertex, 4, Color.Red);

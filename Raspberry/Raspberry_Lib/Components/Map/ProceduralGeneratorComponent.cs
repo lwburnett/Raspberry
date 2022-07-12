@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
-using Nez.Textures;
 using Raspberry_Lib.Maths;
 
 namespace Raspberry_Lib.Components
@@ -39,10 +38,7 @@ namespace Raspberry_Lib.Components
         {
             base.OnAddedToEntity();
 
-            var textureAtlas = Entity.Scene.Content.LoadTexture(Content.Content.LevelTileset);
-            var texture = Sprite.SpritesFromAtlas(textureAtlas, 32, 32)[2];
-
-            _scale = texture.SourceRect.Width * Entity.Transform.Scale.X;
+            _scale = 32 * Entity.Scale.X;
         }
 
         public List<LevelBlock> Blocks { get; private set; }
@@ -65,8 +61,8 @@ namespace Raspberry_Lib.Components
             var randomWalk = RandomWalk(startingPos);
             Blocks = new List<LevelBlock>
             {
-                new (LeadingPoints(startingPos), riverWidth, new List<Vector2>()),
-                new (randomWalk, riverWidth, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleXGapMaxUpper.Value))
+                new (LeadingPoints(startingPos), new List<Vector2>(), riverWidth),
+                new (randomWalk, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleXGapMaxUpper.Value), riverWidth)
             };
 
             _nextScorePointX = randomWalk.DomainEnd;
@@ -90,7 +86,7 @@ namespace Raspberry_Lib.Components
                 var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
                 
                 var newWalk = RandomWalk(nextStartingPoint);
-                var newBlock = new LevelBlock(newWalk, riverWidth, GetObstaclesForBlock(newWalk));
+                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
 
                 Blocks.Add(newBlock);
 
@@ -134,6 +130,7 @@ namespace Raspberry_Lib.Components
 
             var numPoints = (int)MathHelper.Lerp(Settings.NumPointsPerBlockLower, Settings.NumPointsPerBlockUpper, PlayerScoreRating / Settings.PlayerScoreRatingMax);
 
+            float y = 0;
             for (var ii = 0; ii < numPoints; ii++)
             {
                 float dy;
@@ -147,12 +144,18 @@ namespace Raspberry_Lib.Components
                     dy = 1;
                 }
 
-                var thisPoint = new Vector2(ii, dy);
+                y += dy;
+
+                var thisPoint = new Vector2(ii, y);
                 walkPoints.Add(thisPoint);
             }
 
             var numTerms = PlayerScoreRating < 5f ? Settings.NumDTFTerms : Settings.NumDTFTerms + 1;
-            return new DFTFunction(walkPoints, numTerms, iStartingPoint, _scale);
+            return new DFTFunction(
+                walkPoints, 
+                numTerms, 
+                iStartingPoint, 
+                new Vector2(_scale, _scale / 8));
         }
 
         private List<Vector2> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)

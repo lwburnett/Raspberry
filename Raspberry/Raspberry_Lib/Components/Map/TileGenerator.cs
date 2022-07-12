@@ -118,6 +118,8 @@ namespace Raspberry_Lib.Components
                 }
             }
 
+            var riverWidth = iBlock.GetRiverWidth(iXPos);
+
             var upperTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, dataWidth, dataHeight);
             upperTexture.SetData(upperData);
             var lowerTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, dataWidth, dataHeight);
@@ -126,8 +128,8 @@ namespace Raspberry_Lib.Components
             var upperSprite = new Sprite(upperTexture);
             var lowerSprite = new Sprite(lowerTexture);
 
-            var upperBankTileYPos = yPos - (iBlock.RiverWidth / 2f);
-            var lowerBankTileYPos = yPos + (iBlock.RiverWidth / 2f);
+            var upperBankTileYPos = yPos - (riverWidth / 2f);
+            var lowerBankTileYPos = yPos + (riverWidth / 2f);
             
             var upperPosition = new Vector2(iXPos, upperBankTileYPos);
             var upperEntity = new Entity();
@@ -145,7 +147,7 @@ namespace Raspberry_Lib.Components
 
             tiles.Add(lowerEntity);
 
-            var riverSpriteHeightPixels = (int)(1f + iBlock.RiverWidth / pixelHeight);
+            var riverSpriteHeightPixels = (int)(1f + riverWidth / pixelHeight);
 
             var waterData = new Color[riverSpriteHeightPixels * dataWidth];
             for (var ii = 0; ii < riverSpriteHeightPixels * dataWidth; ii++)
