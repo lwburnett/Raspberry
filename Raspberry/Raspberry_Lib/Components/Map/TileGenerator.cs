@@ -133,7 +133,7 @@ namespace Raspberry_Lib.Components
             var upperEntity = new Entity();
             upperEntity.SetPosition(upperPosition);
             upperEntity.SetScale(iScale);
-            upperEntity.AddComponent(new SpriteRenderer(upperSprite));
+            upperEntity.AddComponent(new SpriteRenderer(upperSprite) { RenderLayer = 5 });
 
             tiles.Add(upperEntity);
 
@@ -141,7 +141,7 @@ namespace Raspberry_Lib.Components
             var lowerEntity = new Entity();
             lowerEntity.SetPosition(lowerPosition);
             lowerEntity.SetScale(iScale);
-            lowerEntity.AddComponent(new SpriteRenderer(lowerSprite));
+            lowerEntity.AddComponent(new SpriteRenderer(lowerSprite) { RenderLayer = 5 });
 
             tiles.Add(lowerEntity);
 

@@ -12,7 +12,7 @@ namespace Raspberry_Lib.Components
             var texture = Entity.Scene.Content.LoadTexture(Content.Content.CharacterSpriteSheet);
             var sprites = Sprite.SpritesFromAtlas(texture, 24, 24);
 
-            _animator = Entity.AddComponent<SpriteAnimator>();
+            _animator = Entity.AddComponent(new SpriteAnimator {RenderLayer = 4});
 
             _animator.AddAnimation(PrototypeCharacterComponent.State.Idle.ToString(), new[] { sprites[0] });
             _animator.AddAnimation(PrototypeCharacterComponent.State.Row.ToString(), new[] { sprites[1], sprites[2], sprites[3], sprites[0] });
