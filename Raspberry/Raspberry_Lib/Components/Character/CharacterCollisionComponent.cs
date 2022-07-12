@@ -84,7 +84,7 @@ namespace Raspberry_Lib.Components
             Verbose.ClearMetrics();
 #endif
 
-            _onFatalCollision();
+            //_onFatalCollision();
         }
     }
 }

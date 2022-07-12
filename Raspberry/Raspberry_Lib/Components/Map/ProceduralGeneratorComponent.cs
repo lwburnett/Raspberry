@@ -61,7 +61,7 @@ namespace Raspberry_Lib.Components
 
             var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
 
-            var randomWalk = RandomWalk(startingPos);
+            var randomWalk = RandomWalk(startingPos, Vector2.UnitX);
             Blocks = new List<LevelBlock>
             {
                 new (LeadingPoints(startingPos), new List<Vector2>(), riverWidth),
@@ -87,8 +87,9 @@ namespace Raspberry_Lib.Components
                 var nextStartingPoint = new Vector2(lastBlock.Function.DomainEnd, lastBlock.Function.GetYForX(lastBlock.Function.DomainEnd));
 
                 var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
-                
-                var newWalk = RandomWalk(nextStartingPoint);
+
+                var nextStartingSlope = new Vector2(1f, lastBlock.Function.GetYPrimeForX(lastBlock.Function.DomainEnd));
+                var newWalk = RandomWalk(nextStartingPoint, nextStartingSlope);
                 var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
 
                 Blocks.Add(newBlock);
@@ -126,7 +127,7 @@ namespace Raspberry_Lib.Components
             return new LinearFunction(leadingPoints);
         }
 
-        private IFunction RandomWalk(Vector2 iStartingPoint)
+        private IFunction RandomWalk(Vector2 iStartingPoint, Vector2 iStartingSlope)
         {
             var rng = new System.Random();
             var walkPoints = new List<Vector2>();
@@ -163,6 +164,7 @@ namespace Raspberry_Lib.Components
                 walkPoints, 
                 numTerms, 
                 iStartingPoint, 
+                iStartingSlope,
                 new Vector2(_scale, _scale / yScaleDivisor));
         }
 
