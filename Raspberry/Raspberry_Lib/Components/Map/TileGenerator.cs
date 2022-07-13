@@ -22,9 +22,9 @@ namespace Raspberry_Lib.Components
         {
             var tiles = new List<Entity>();
 
-            const int dataWidth = 32;
+            const int desiredDataWidth = 32;
 
-            var pixelWidth = iTileWidth / dataWidth;
+            var pixelWidth = iTileWidth / desiredDataWidth;
             var pixelHeight = pixelWidth;
 
             var yPos = iBlock.Function.GetYForX(iXPos);
@@ -32,8 +32,15 @@ namespace Raspberry_Lib.Components
             var numExtraDownTotal = 0;
             var columnData = new List<ColumnDatum> { new(0, 0) };
 
-            for (var ii = 1; ii < dataWidth; ii++)
+            var actualDataWidth = 1;
+            for (var ii = 1; ii < desiredDataWidth; ii++)
             {
+                var thisColumnX = iXPos + ii * pixelWidth;
+                if (thisColumnX > iBlock.Function.DomainEnd)
+                    break;
+
+                actualDataWidth++;
+
                 var thisIterationY = iBlock.Function.GetYForX(iXPos + ii * pixelWidth);
 
                 var yDiff = thisIterationY - yPos;
@@ -84,16 +91,16 @@ namespace Raspberry_Lib.Components
 
             var dataHeight = numExtraUpTotal + 10 + numExtraDownTotal;
 
-            var upperData = new Color[dataHeight * dataWidth];
-            var lowerData = new Color[dataHeight * dataWidth];
+            var upperData = new Color[dataHeight * actualDataWidth];
+            var lowerData = new Color[dataHeight * actualDataWidth];
 
-            for (var ii = 0; ii < dataWidth; ii++)
+            for (var ii = 0; ii < actualDataWidth; ii++)
             {
                 var thisColumn = columnData[ii];
 
                 for (var jj = 0; jj < dataHeight; jj++)
                 {
-                    var index = dataWidth * jj + ii;
+                    var index = actualDataWidth * jj + ii;
 
                     if (jj < thisColumn.NumAbove)
                     {
@@ -120,9 +127,9 @@ namespace Raspberry_Lib.Components
 
             var riverWidth = iBlock.GetRiverWidth(iXPos);
 
-            var upperTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, dataWidth, dataHeight);
+            var upperTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, dataHeight);
             upperTexture.SetData(upperData);
-            var lowerTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, dataWidth, dataHeight);
+            var lowerTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, dataHeight);
             lowerTexture.SetData(lowerData);
 
             var upperSprite = new Sprite(upperTexture);
@@ -131,7 +138,7 @@ namespace Raspberry_Lib.Components
             var upperBankTileYPos = yPos - (riverWidth / 2f);
             var lowerBankTileYPos = yPos + (riverWidth / 2f);
             
-            var upperPosition = new Vector2(iXPos, upperBankTileYPos);
+            var upperPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), upperBankTileYPos);
             var upperEntity = new Entity();
             upperEntity.SetPosition(upperPosition);
             upperEntity.SetScale(iScale);
@@ -139,7 +146,7 @@ namespace Raspberry_Lib.Components
 
             tiles.Add(upperEntity);
 
-            var lowerPosition = new Vector2(iXPos, lowerBankTileYPos);
+            var lowerPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), lowerBankTileYPos);
             var lowerEntity = new Entity();
             lowerEntity.SetPosition(lowerPosition);
             lowerEntity.SetScale(iScale);
@@ -149,19 +156,19 @@ namespace Raspberry_Lib.Components
 
             var riverSpriteHeightPixels = (int)(1f + riverWidth / pixelHeight);
 
-            var waterData = new Color[riverSpriteHeightPixels * dataWidth];
-            for (var ii = 0; ii < riverSpriteHeightPixels * dataWidth; ii++)
+            var waterData = new Color[riverSpriteHeightPixels * actualDataWidth];
+            for (var ii = 0; ii < riverSpriteHeightPixels * actualDataWidth; ii++)
             {
                 waterData[ii] = Settings.WaterColor;
             }
 
-            var waterTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, dataWidth, riverSpriteHeightPixels);
+            var waterTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, riverSpriteHeightPixels);
             waterTexture.SetData(waterData);
             var waterSprite = new Sprite(waterTexture);
 
             //var waterYPos = upperBankTileYPos + (numExtraUpTotal + 10 + numExtraDownTotal) * pixelHeight;
             var waterEntity = new Entity();
-            waterEntity.SetPosition(new Vector2(iXPos, yPos));
+            waterEntity.SetPosition(new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), yPos));
             waterEntity.SetScale(iScale);
             waterEntity.AddComponent(new SpriteRenderer(waterSprite){RenderLayer = 6});
 
