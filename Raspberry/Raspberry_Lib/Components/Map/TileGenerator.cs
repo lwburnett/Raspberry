@@ -135,8 +135,9 @@ namespace Raspberry_Lib.Components
             var upperSprite = new Sprite(upperTexture);
             var lowerSprite = new Sprite(lowerTexture);
 
-            var upperBankTileYPos = yPos - (riverWidth / 2f);
-            var lowerBankTileYPos = yPos + (riverWidth / 2f);
+            var additionalYOffset = (numExtraDownTotal - numExtraUpTotal) * pixelHeight / 2;
+            var upperBankTileYPos = yPos - (riverWidth / 2f) + additionalYOffset;
+            var lowerBankTileYPos = yPos + (riverWidth / 2f) + additionalYOffset;
             
             var upperPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), upperBankTileYPos);
             var upperEntity = new Entity();
@@ -168,7 +169,7 @@ namespace Raspberry_Lib.Components
 
             //var waterYPos = upperBankTileYPos + (numExtraUpTotal + 10 + numExtraDownTotal) * pixelHeight;
             var waterEntity = new Entity();
-            waterEntity.SetPosition(new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), yPos));
+            waterEntity.SetPosition(new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), yPos + additionalYOffset));
             waterEntity.SetScale(iScale);
             waterEntity.AddComponent(new SpriteRenderer(waterSprite){RenderLayer = 6});
 
