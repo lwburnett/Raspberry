@@ -167,9 +167,9 @@ namespace Raspberry_Lib.Components
             waterTexture.SetData(waterData);
             var waterSprite = new Sprite(waterTexture);
 
-            //var waterYPos = upperBankTileYPos + (numExtraUpTotal + 10 + numExtraDownTotal) * pixelHeight;
+            var waterPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), yPos + additionalYOffset);
             var waterEntity = new Entity();
-            waterEntity.SetPosition(new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), yPos + additionalYOffset));
+            waterEntity.SetPosition(waterPosition);
             waterEntity.SetScale(iScale);
             waterEntity.AddComponent(new SpriteRenderer(waterSprite){RenderLayer = 6});
 
