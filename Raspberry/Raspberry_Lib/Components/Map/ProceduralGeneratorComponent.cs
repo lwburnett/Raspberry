@@ -25,8 +25,8 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting ObstacleXGapMinUpper = new(800);
             public static readonly RenderSetting ObstacleXGapMinLower = new(200);
 
-            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1600);
-            public static readonly RenderSetting ObstacleXGapMaxLower = new(800);
+            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1200);
+            public static readonly RenderSetting ObstacleXGapMaxLower = new(400);
 
             public const float YScaleDivisorLower = 8f;
             public const float YScaleDivisorUpper = 4f;
@@ -90,7 +90,7 @@ namespace Raspberry_Lib.Components
 
                 var nextStartingSlope = new Vector2(1f, lastBlock.Function.GetYPrimeForX(lastBlock.Function.DomainEnd));
                 var newWalk = RandomWalk(nextStartingPoint, nextStartingSlope);
-                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
+                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk, lastBlock.Obstacles.Last().X), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
 
                 Blocks.Add(newBlock);
 
@@ -183,6 +183,9 @@ namespace Raspberry_Lib.Components
             {
                 var thisPointX = lastPointX + gapMin + 
                                  (float)rng.NextDouble() * (gapMax - gapMin);
+
+                if (thisPointX > iFunction.DomainEnd)
+                    break;
 
                 var thisPointY = iFunction.GetYForX(thisPointX) - (riverWidth / 2f) + _scale + ((float)rng.NextDouble() * (riverWidth - 2 * _scale));
 
