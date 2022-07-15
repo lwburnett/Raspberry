@@ -41,8 +41,7 @@ namespace Raspberry_Lib.Components
 
             foreach (var vertex in vertices)
             {
-                var thisBlock = _proceduralGenerator.Blocks.
-                    First(b => b.Function.DomainStart <= vertex.X && b.Function.DomainEnd >= vertex.X);
+                var thisBlock = _proceduralGenerator.GetBlockForPosition(vertex);
 
                 var riverY = thisBlock.Function.GetYForX(vertex.X);
 

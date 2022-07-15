@@ -82,7 +82,6 @@ namespace Raspberry_Lib.Components
 
             if (_playerCharacter.Position.X > _nextGenerationPointX)
             {
-                Blocks.RemoveAt(0);
                 var lastBlock = Blocks.Last();
                 var nextStartingPoint = new Vector2(lastBlock.Function.DomainEnd, lastBlock.Function.GetYForX(lastBlock.Function.DomainEnd));
 
@@ -97,6 +96,8 @@ namespace Raspberry_Lib.Components
                 _nextGenerationPointX = (newWalk.DomainEnd + newWalk.DomainStart) / 2f;
 
                 _renderer.OnNewGeneration(newBlock);
+
+                Blocks.RemoveAt(0);
             }
 
             if (_playerCharacter.Position.X > _nextScorePointX)
@@ -108,6 +109,8 @@ namespace Raspberry_Lib.Components
                 PlayerScoreRating = potentialScore <= Settings.PlayerScoreRatingMax ? potentialScore : Settings.PlayerScoreRatingMax;
             }
         }
+
+        public LevelBlock GetBlockForPosition(Vector2 iPos) => Blocks.FirstOrDefault(b => b.Function.DomainStart <= iPos.X && b.Function.DomainEnd >= iPos.X);
 
         private float _scale;
         private ProceduralRenderer _renderer;

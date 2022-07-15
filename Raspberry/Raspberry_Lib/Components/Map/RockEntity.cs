@@ -25,8 +25,10 @@ namespace Raspberry_Lib.Components
             _renderer.RenderLayer = 4;
             _renderer.Sprite = texture;
 
-            _collider = new CircleCollider(texture.SourceRect.Width / 2f) {PhysicsLayer = PhysicsLayer, Entity = this};
+            _collider = AddComponent(new CircleCollider(texture.SourceRect.Width / 2f) {PhysicsLayer = PhysicsLayer, Entity = this});
             Physics.AddCollider(_collider);
+
+            AddComponent(new WakeParticleEmitter(() => Vector2.Zero){RenderLayer = 4});
 
 #if VERBOSE
             Verbose.RenderCollider(_collider);

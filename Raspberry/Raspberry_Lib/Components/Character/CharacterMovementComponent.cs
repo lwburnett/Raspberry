@@ -66,10 +66,7 @@ namespace Raspberry_Lib.Components
             if (_generator == null)
                 return;
 
-            var thisBlock = _generator.Blocks.
-                FirstOrDefault(f =>
-                    f.Function.DomainStart < Entity.Position.X &&
-                    Entity.Position.X <= f.Function.DomainEnd);
+            var thisBlock = _generator.GetBlockForPosition(Entity.Position);
 
             if (thisBlock == null)
                 return;
