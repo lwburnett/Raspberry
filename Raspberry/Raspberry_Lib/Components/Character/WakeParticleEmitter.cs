@@ -16,7 +16,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting FlowSpeedLower = new(60);
             public static readonly RenderSetting FlowSpeedUpper = new(120);
 
-            public const int MaxNumParticles = 50;
+            public const int MaxNumParticles = 150;
             public const float ParticleTtl = 1f;
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
 
