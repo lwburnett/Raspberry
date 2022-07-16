@@ -7,6 +7,12 @@ namespace Raspberry_Lib.Components
 {
     internal class RockObstacleEntity : Entity
     {
+        private static class Settings
+        {
+            public static readonly RenderSetting DoNotUpdateWakeRightDistance = new(1000);
+            public static readonly RenderSetting DoNotUpdateWakeLeftDistance = new(2000);
+        }
+
         public RockObstacleEntity(Vector2 iPosition)
         {
             Position = iPosition;
@@ -28,7 +34,12 @@ namespace Raspberry_Lib.Components
             _collider = AddComponent(new CircleCollider(texture.SourceRect.Width / 2f) {PhysicsLayer = PhysicsLayer, Entity = this});
             Physics.AddCollider(_collider);
 
-            AddComponent(new WakeParticleEmitter(() => Vector2.Zero){RenderLayer = 4});
+            _character = Scene.FindEntity("character");
+
+            _rightUpdateWakeBoundX = Position.X + Settings.DoNotUpdateWakeRightDistance.Value;
+            _leftUpdateWakeBoundX = Position.X - Settings.DoNotUpdateWakeLeftDistance.Value;
+
+            AddComponent(new WakeParticleEmitter(ShouldUpdate) {RenderLayer = 4});
 
 #if VERBOSE
             Verbose.RenderCollider(_collider);
@@ -42,5 +53,13 @@ namespace Raspberry_Lib.Components
 
         private SpriteRenderer _renderer;
         private Collider _collider;
+        private Entity _character;
+        private float _rightUpdateWakeBoundX;
+        private float _leftUpdateWakeBoundX;
+
+        private bool ShouldUpdate()
+        {
+            return _character.Position.X > _leftUpdateWakeBoundX && _character.Position.X < _rightUpdateWakeBoundX;
+        }
     }
 }

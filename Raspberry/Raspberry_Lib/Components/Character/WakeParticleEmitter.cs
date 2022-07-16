@@ -38,10 +38,18 @@ namespace Raspberry_Lib.Components
             public float TimeToLive { get; set; }
         }
 
-        public WakeParticleEmitter(Func<Vector2> iGetCurrentVelocityFunc)
+        // Constructor for static objects that don't move
+        public WakeParticleEmitter(Func<bool> iShouldUpdateFunc) :
+            this(null, iShouldUpdateFunc)
+        {
+        }
+
+        // Constructor for dynamic objects that need to be recalculated every frame
+        public WakeParticleEmitter(Func<Vector2> iGetCurrentVelocityFunc, Func<bool> iShouldUpdateFunc)
         {
             _particles = new List<WakeParticle>();
             _getEntityVelocityFunc = iGetCurrentVelocityFunc;
+            _shouldUpdateFunc = iShouldUpdateFunc;
             Pool<WakeParticle>.WarmCache(Settings.MaxNumParticles);
             
             var textureData = new Color[Settings.TextureSize * Settings.TextureSize];
@@ -61,6 +69,24 @@ namespace Raspberry_Lib.Components
 
             System.Diagnostics.Debug.Assert(_collider != null);
             System.Diagnostics.Debug.Assert(_proceduralGenerator != null);
+
+            if (_getEntityVelocityFunc == null)
+            {
+                Vector2 GetZeroVec() => Vector2.Zero;
+
+                switch (_collider.Shape)
+                {
+                    case Circle circle:
+                        GetWakePoints(circle, GetZeroVec, out _staticUpperSpawnPoint, out _staticLowerSpawnPoint, out _staticParticleVelocity);
+                        break;
+                    case Polygon polygon:
+                        GetWakePoints(polygon, GetZeroVec, out _staticUpperSpawnPoint, out _staticLowerSpawnPoint, out _staticParticleVelocity);
+                        break;
+                    default:
+                        System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
+                        return;
+                }
+            }
         }
         
         public override float Width => float.MaxValue;
@@ -76,7 +102,7 @@ namespace Raspberry_Lib.Components
                     Color.White, 
                     0f, 
                     Vector2.Zero, 
-                    Entity.Scale, 
+                    Entity.Scale.X, 
                     SpriteEffects.None, 
                     0);
             }
@@ -84,6 +110,10 @@ namespace Raspberry_Lib.Components
 
         public void Update()
         {
+            // Skip update if need be
+            if (!_shouldUpdateFunc())
+                return;
+
             // Update current list of particles
             for (var ii = _particles.Count - 1; ii >= 0; ii--)
             {
@@ -99,19 +129,28 @@ namespace Raspberry_Lib.Components
                 thisParticle.Position += thisParticle.Velocity * Time.DeltaTime;
             }
 
-            // Get current spawn points
             Vector2 upperPoint, lowerPoint, particleVelocity;
-            switch (_collider.Shape)
+            // Get current spawn points
+            if (_getEntityVelocityFunc == null)
             {
-                case Circle circle:
-                    GetWakePoints(circle, out upperPoint, out lowerPoint, out particleVelocity);
-                    break;
-                case Polygon polygon:
-                    GetWakePoints(polygon, out upperPoint, out lowerPoint, out particleVelocity);
-                    break;
-                default:
-                    System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
-                    return;
+                upperPoint = _staticUpperSpawnPoint;
+                lowerPoint = _staticLowerSpawnPoint;
+                particleVelocity = _staticParticleVelocity;
+            }
+            else
+            {
+                switch (_collider.Shape)
+                {
+                    case Circle circle:
+                        GetWakePoints(circle, _getEntityVelocityFunc, out upperPoint, out lowerPoint, out particleVelocity);
+                        break;
+                    case Polygon polygon:
+                        GetWakePoints(polygon, _getEntityVelocityFunc, out upperPoint, out lowerPoint, out particleVelocity);
+                        break;
+                    default:
+                        System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
+                        return;
+                }
             }
 
             // Spawn particles if needed
@@ -120,7 +159,7 @@ namespace Raspberry_Lib.Components
                 if (_particles.Any())
                 {
                     var tmp1 = Vector2.Distance(lowerPoint, Entity.Position + _lastParticleSpawned.Position);
-                    var tmp2 = Settings.TextureSize * Entity.Scale.X * 2;
+                    var tmp2 = Settings.TextureSize * Entity.Scale.X * Entity.Scale.X * 2;
 
                     if (tmp1 > tmp2)
                     {
@@ -138,12 +177,17 @@ namespace Raspberry_Lib.Components
         private readonly List<WakeParticle> _particles;
         private Collider _collider;
         private ProceduralGeneratorComponent _proceduralGenerator;
-        private readonly Func<Vector2> _getEntityVelocityFunc;
         private readonly Sprite _sprite;
+        private readonly Func<Vector2> _getEntityVelocityFunc;
+        private readonly Func<bool> _shouldUpdateFunc;
 
-        private void GetWakePoints(Circle iCircle, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
+        private Vector2 _staticUpperSpawnPoint;
+        private Vector2 _staticLowerSpawnPoint;
+        private Vector2 _staticParticleVelocity;
+
+        private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
         {
-            var entityVelocity = _getEntityVelocityFunc();
+            var entityVelocity = iGetVelocityFunc();
             var riverVelocity = GetRiverVelocityAt(Entity.Position);
 
             var velocityDiff = riverVelocity - entityVelocity;
@@ -168,7 +212,7 @@ namespace Raspberry_Lib.Components
             oParticleVelocity = velocityDiff;
         }
 
-        private void GetWakePoints(Polygon iPolygon, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
+        private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
         {
             throw new NotImplementedException();
         }
