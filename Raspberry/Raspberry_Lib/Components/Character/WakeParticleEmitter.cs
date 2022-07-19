@@ -20,7 +20,13 @@ namespace Raspberry_Lib.Components
             public const float ParticleTtl = 1f;
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
 
-            public const int TextureSize = 2;
+            public const int TextureSizeStart = 2;
+            public const int TextureSizeEnd = 1;
+
+            public const byte TextureAlphaStart = 255;
+            public const byte TextureAlphaEnd = 0;
+
+            public static readonly RenderSetting OrthogonalPositionalVariance = new(10);
         }
 
         private class WakeParticle
@@ -36,6 +42,8 @@ namespace Raspberry_Lib.Components
             public Vector2 Velocity { get; set; }
             public float SpawnTime { get; set; }
             public float TimeToLive { get; set; }
+            public float Size { get; set; }
+            public byte ColorAlpha { get; set; }
         }
 
         // Constructor for static objects that don't move
@@ -52,14 +60,15 @@ namespace Raspberry_Lib.Components
             _shouldUpdateFunc = iShouldUpdateFunc;
             Pool<WakeParticle>.WarmCache(Settings.MaxNumParticles);
             
-            var textureData = new Color[Settings.TextureSize * Settings.TextureSize];
-            for (int ii = 0; ii < Settings.TextureSize * Settings.TextureSize; ii++)
+            var textureData = new Color[Settings.TextureSizeStart * Settings.TextureSizeStart];
+            for (int ii = 0; ii < Settings.TextureSizeStart * Settings.TextureSizeStart; ii++)
             {
                 textureData[ii] = Color.White;
             }
-            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.TextureSize, Settings.TextureSize);
+            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.TextureSizeStart, Settings.TextureSizeStart);
             texture.SetData(textureData);
             _sprite = new Sprite(texture);
+            _rng = new System.Random();
         }
 
         public override void OnAddedToEntity()
@@ -96,13 +105,15 @@ namespace Raspberry_Lib.Components
         {
             foreach (var wakeParticle in _particles)
             {
+                var thisColor = Color.White * (wakeParticle.ColorAlpha / 255f);
+
                 iBatcher.Draw(
                     wakeParticle.Sprite, 
-                    Entity.Position + wakeParticle.Position, 
-                    Color.White, 
+                    Entity.Position + wakeParticle.Position,
+                    thisColor, 
                     0f, 
                     Vector2.Zero, 
-                    Entity.Scale.X, 
+                    wakeParticle.Size, 
                     SpriteEffects.None, 
                     0);
             }
@@ -127,6 +138,10 @@ namespace Raspberry_Lib.Components
                 }
 
                 thisParticle.Position += thisParticle.Velocity * Time.DeltaTime;
+
+                var lerpValue = (Time.TotalTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
+                thisParticle.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, lerpValue);
+                thisParticle.Size = MathHelper.Lerp(Settings.TextureSizeStart, Settings.TextureSizeEnd, lerpValue);
             }
 
             Vector2 upperPoint, lowerPoint, particleVelocity;
@@ -159,7 +174,7 @@ namespace Raspberry_Lib.Components
                 if (_particles.Any())
                 {
                     var tmp1 = Vector2.Distance(lowerPoint, Entity.Position + _lastParticleSpawned.Position);
-                    var tmp2 = Settings.TextureSize * Entity.Scale.X * Entity.Scale.X * 2;
+                    var tmp2 = Settings.TextureSizeStart * Entity.Scale.X * 2;
 
                     if (tmp1 > tmp2)
                     {
@@ -184,6 +199,8 @@ namespace Raspberry_Lib.Components
         private Vector2 _staticUpperSpawnPoint;
         private Vector2 _staticLowerSpawnPoint;
         private Vector2 _staticParticleVelocity;
+
+        private readonly System.Random _rng;
 
         private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
         {
@@ -238,7 +255,7 @@ namespace Raspberry_Lib.Components
 
         private void SpawnParticles(Vector2 iUpperSpawnPoint, Vector2 iLowerSpawnPoint, Vector2 iVelocity)
         {
-            var spawnPointOffset = new Vector2(-Settings.TextureSize * Entity.Scale.X / 2f);
+            var spawnPointOffset = new Vector2(-Settings.TextureSizeStart * Entity.Scale.X / 2f);
 
             var upperParticle = Pool<WakeParticle>.Obtain();
             var lowerParticle = Pool<WakeParticle>.Obtain();
@@ -246,8 +263,15 @@ namespace Raspberry_Lib.Components
             upperParticle.Sprite = _sprite;
             lowerParticle.Sprite = _sprite;
 
-            upperParticle.Position = Entity.Position - iUpperSpawnPoint + spawnPointOffset;
-            lowerParticle.Position = Entity.Position - iLowerSpawnPoint + spawnPointOffset;
+            var orthogonalDirection = iVelocity;
+            orthogonalDirection.Normalize();
+            var rngOffset1Mag = (float)(Settings.OrthogonalPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
+            var rngOffset1 = orthogonalDirection * rngOffset1Mag;
+            var rngOffset2Mag = (float)(Settings.OrthogonalPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
+            var rngOffset2 = orthogonalDirection * rngOffset2Mag;
+
+            upperParticle.Position = Entity.Position - iUpperSpawnPoint + spawnPointOffset + rngOffset1;
+            lowerParticle.Position = Entity.Position - iLowerSpawnPoint + spawnPointOffset + rngOffset2;
 
             upperParticle.Velocity = iVelocity;
             lowerParticle.Velocity = iVelocity;
