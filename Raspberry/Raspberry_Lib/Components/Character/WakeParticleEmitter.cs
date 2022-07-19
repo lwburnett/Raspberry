@@ -21,12 +21,12 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
 
             public const int TextureSizeStart = 2;
-            public const int TextureSizeEnd = 1;
+            public const int TextureSizeEnd = 2;
 
             public const byte TextureAlphaStart = 255;
             public const byte TextureAlphaEnd = 0;
 
-            public static readonly RenderSetting OrthogonalPositionalVariance = new(10);
+            public static readonly RenderSetting OrthogonalPositionalVariance = new(15);
         }
 
         private class WakeParticle
