@@ -27,7 +27,7 @@ namespace Raspberry_Lib.Components
             public const byte TextureAlphaEnd = 0;
 
             public static readonly RenderSetting OrthogonalStartPositionalVariance = new(1);
-            public const float OrthogonalEndPositionalVarianceAsPercentOfVelocityMag = .05f;
+            public const float OrthogonalEndPositionalVarianceAsPercentOfVelocityMag = .04f;
             public const float OrthogonalEndPositionVariancePercentOfTtlStart = .25f;
         }
 
