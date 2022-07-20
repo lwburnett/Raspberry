@@ -98,7 +98,7 @@ namespace Raspberry_Lib.Maths
             _transitionPolynomialCoefficients.Add(iStartingPoint.Y + startingSlope / 8);
             _transitionPolynomialCoefficients.Add(startingSlope);
 
-            var deltaSlopePerUnit = .0005f / PlatformUtils.GetRenderScale();
+            var deltaSlopePerUnit = .05f / PlatformUtils.GetRenderScale();
             var leadingCoefficient = iEndingSlope > startingSlope ? deltaSlopePerUnit / 2 : -deltaSlopePerUnit / 2;
             _transitionPolynomialCoefficients.Add(leadingCoefficient);
 
@@ -118,7 +118,7 @@ namespace Raspberry_Lib.Maths
                 yValue += term1 + term2;
             }
 
-            return 2 * yValue * _scale.Y;
+            return yValue * _scale.Y;
         }
 
         private float DFTGetYPrimeForXUntransformed(float iX)
@@ -134,7 +134,7 @@ namespace Raspberry_Lib.Maths
                 yValue += term2 - term1;
             }
 
-            return yValue / _scale.Y;
+            return yValue  * _scale.Y / _scale.X;
         }
 
         private float TransitionGetYForX(float iX)
