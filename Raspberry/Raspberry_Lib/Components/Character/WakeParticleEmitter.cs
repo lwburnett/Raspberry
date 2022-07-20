@@ -51,13 +51,14 @@ namespace Raspberry_Lib.Components
 
         // Constructor for static objects that don't move
         public WakeParticleEmitter(Func<bool> iShouldUpdateFunc) :
-            this(null, iShouldUpdateFunc)
+            this(null, iShouldUpdateFunc, false)
         {
         }
 
         // Constructor for dynamic objects that need to be recalculated every frame
-        public WakeParticleEmitter(Func<Vector2> iGetCurrentVelocityFunc, Func<bool> iShouldUpdateFunc)
+        public WakeParticleEmitter(Func<Vector2> iGetCurrentVelocityFunc, Func<bool> iShouldUpdateFunc, bool iIsPlayer)
         {
+            _isPlayer = iIsPlayer;
             _particles = new List<WakeParticle>();
             _getEntityVelocityFunc = iGetCurrentVelocityFunc;
             _shouldUpdateFunc = iShouldUpdateFunc;
@@ -101,8 +102,8 @@ namespace Raspberry_Lib.Components
             }
         }
         
-        public override float Width => float.MaxValue;
-        public override float Height => float.MaxValue;
+        public override float Width => 100000000000f;
+        public override float Height => 100000000000f;
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
@@ -207,6 +208,7 @@ namespace Raspberry_Lib.Components
         private Vector2 _staticParticleVelocity;
 
         private readonly System.Random _rng;
+        private readonly bool _isPlayer;
 
         private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
         {
@@ -237,7 +239,22 @@ namespace Raspberry_Lib.Components
 
         private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
         {
-            throw new NotImplementedException();
+            var entityVelocity = iGetVelocityFunc();
+            var riverVelocity = GetRiverVelocityAt(Entity.Position);
+
+            var velocityDiff = riverVelocity - entityVelocity;
+            
+            if (iPolygon is Box box && _isPlayer)
+            {
+                oUpperPoint = Entity.Position + box.Points[1];
+                oLowerPoint = Entity.Position + box.Points[2];
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            oParticleVelocity = velocityDiff;
         }
 
         private Vector2 GetRiverVelocityAt(Vector2 iPos)

@@ -225,6 +225,7 @@ namespace Raspberry_Lib.Components
         }
 
         public float TotalDistanceTraveled { get; private set; }
+        public Vector2 CurrentVelocity => _currentVelocity;
 
         private readonly Action<PrototypeCharacterComponent.State> _stateChangedCallback;
         private CharacterInputController.InputDescription _currentInput;
