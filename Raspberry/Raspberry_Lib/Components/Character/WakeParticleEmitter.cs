@@ -26,7 +26,9 @@ namespace Raspberry_Lib.Components
             public const byte TextureAlphaStart = 255;
             public const byte TextureAlphaEnd = 0;
 
-            public static readonly RenderSetting OrthogonalPositionalVariance = new(15);
+            public static readonly RenderSetting OrthogonalStartPositionalVariance = new(1);
+            public const float OrthogonalEndPositionalVarianceAsPercentOfVelocityMag = .05f;
+            public const float OrthogonalEndPositionVariancePercentOfTtlStart = .25f;
         }
 
         private class WakeParticle
@@ -44,6 +46,7 @@ namespace Raspberry_Lib.Components
             public float TimeToLive { get; set; }
             public float Size { get; set; }
             public byte ColorAlpha { get; set; }
+            public Vector2 DeltaVelocityPerFrame { get; set; }
         }
 
         // Constructor for static objects that don't move
@@ -137,6 +140,9 @@ namespace Raspberry_Lib.Components
                     continue;
                 }
 
+                if (Time.TotalTime > thisParticle.SpawnTime + thisParticle.TimeToLive * Settings.OrthogonalEndPositionVariancePercentOfTtlStart)
+                    thisParticle.Velocity += thisParticle.DeltaVelocityPerFrame * Time.DeltaTime;
+                
                 thisParticle.Position += thisParticle.Velocity * Time.DeltaTime;
 
                 var lerpValue = (Time.TotalTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
@@ -173,10 +179,10 @@ namespace Raspberry_Lib.Components
             {
                 if (_particles.Any())
                 {
-                    var tmp1 = Vector2.Distance(lowerPoint, Entity.Position + _lastParticleSpawned.Position);
-                    var tmp2 = Settings.TextureSizeStart * Entity.Scale.X * 2;
+                    var distanceOfLastSpawnedParticle = Vector2.Distance(lowerPoint, Entity.Position + _lastParticleSpawned.Position);
+                    var widthOfParticleTexture = Settings.TextureSizeStart * Entity.Scale.X * 2;
 
-                    if (tmp1 > tmp2)
+                    if (distanceOfLastSpawnedParticle > widthOfParticleTexture)
                     {
                         SpawnParticles(upperPoint, lowerPoint, particleVelocity);
                     }
@@ -241,7 +247,7 @@ namespace Raspberry_Lib.Components
                 Settings.FlowSpeedUpper.Value,
                 1 - _proceduralGenerator.PlayerScoreRating / _proceduralGenerator.PlayerScoreRatingMax);
 
-            var block = _proceduralGenerator.GetBlockForPosition(Entity.Position);
+            var block = _proceduralGenerator.GetBlockForPosition(iPos);
             if (block == null)
                 return Vector2.Zero;
 
@@ -255,6 +261,16 @@ namespace Raspberry_Lib.Components
 
         private void SpawnParticles(Vector2 iUpperSpawnPoint, Vector2 iLowerSpawnPoint, Vector2 iVelocity)
         {
+            float GetEndVariance()
+            {
+                var timeToVarySquared = Settings.ParticleTtl * Settings.ParticleTtl * 
+                                        Settings.OrthogonalEndPositionVariancePercentOfTtlStart * Settings.OrthogonalEndPositionVariancePercentOfTtlStart;
+
+                return 2 * ((float)_rng.NextDouble() * 2 - 1f) *
+                       Settings.OrthogonalEndPositionalVarianceAsPercentOfVelocityMag * iVelocity.Length() /
+                       timeToVarySquared;
+            }
+
             var spawnPointOffset = new Vector2(-Settings.TextureSizeStart * Entity.Scale.X / 2f);
 
             var upperParticle = Pool<WakeParticle>.Obtain();
@@ -263,11 +279,11 @@ namespace Raspberry_Lib.Components
             upperParticle.Sprite = _sprite;
             lowerParticle.Sprite = _sprite;
 
-            var orthogonalDirection = iVelocity;
+            var orthogonalDirection = new Vector2(-iVelocity.Y, iVelocity.X);
             orthogonalDirection.Normalize();
-            var rngOffset1Mag = (float)(Settings.OrthogonalPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
+            var rngOffset1Mag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
             var rngOffset1 = orthogonalDirection * rngOffset1Mag;
-            var rngOffset2Mag = (float)(Settings.OrthogonalPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
+            var rngOffset2Mag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
             var rngOffset2 = orthogonalDirection * rngOffset2Mag;
 
             upperParticle.Position = Entity.Position - iUpperSpawnPoint + spawnPointOffset + rngOffset1;
@@ -281,6 +297,12 @@ namespace Raspberry_Lib.Components
 
             upperParticle.TimeToLive = Settings.ParticleTtl;
             lowerParticle.TimeToLive = Settings.ParticleTtl;
+
+            var upperEndVariance = GetEndVariance() * orthogonalDirection;
+            var lowerEndVariance = GetEndVariance() * orthogonalDirection;
+
+            upperParticle.DeltaVelocityPerFrame = upperEndVariance;
+            lowerParticle.DeltaVelocityPerFrame = lowerEndVariance;
 
             _particles.Add(upperParticle);
             _particles.Add(lowerParticle);
