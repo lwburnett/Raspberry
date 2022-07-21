@@ -40,6 +40,7 @@ namespace Raspberry_Lib.Components
             }
 
             public Sprite Sprite { get; set; }
+            public Vector2 SpawnPosition { get; set; }
             public Vector2 Position { get; set; }
             public Vector2 Velocity { get; set; }
             public float SpawnTime { get; set; }
@@ -73,6 +74,7 @@ namespace Raspberry_Lib.Components
             texture.SetData(textureData);
             _sprite = new Sprite(texture);
             _rng = new System.Random();
+            _staticSpawnPoints = new List<Vector2>();
         }
 
         public override void OnAddedToEntity()
@@ -90,10 +92,10 @@ namespace Raspberry_Lib.Components
                 switch (_collider.Shape)
                 {
                     case Circle circle:
-                        GetWakePoints(circle, GetZeroVec, out _staticUpperSpawnPoint, out _staticLowerSpawnPoint, out _staticParticleVelocity);
+                        GetWakePoints(circle, GetZeroVec, out _staticSpawnPoints, out _staticParticleVelocity);
                         break;
                     case Polygon polygon:
-                        GetWakePoints(polygon, GetZeroVec, out _staticUpperSpawnPoint, out _staticLowerSpawnPoint, out _staticParticleVelocity);
+                        GetWakePoints(polygon, GetZeroVec, out _staticSpawnPoints, out _staticParticleVelocity);
                         break;
                     default:
                         System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
@@ -151,12 +153,12 @@ namespace Raspberry_Lib.Components
                 thisParticle.Size = MathHelper.Lerp(Settings.TextureSizeStart, Settings.TextureSizeEnd, lerpValue);
             }
 
-            Vector2 upperPoint, lowerPoint, particleVelocity;
+            List<Vector2> spawnPoints;
+            Vector2 particleVelocity;
             // Get current spawn points
             if (_getEntityVelocityFunc == null)
             {
-                upperPoint = _staticUpperSpawnPoint;
-                lowerPoint = _staticLowerSpawnPoint;
+                spawnPoints = _staticSpawnPoints;
                 particleVelocity = _staticParticleVelocity;
             }
             else
@@ -164,10 +166,10 @@ namespace Raspberry_Lib.Components
                 switch (_collider.Shape)
                 {
                     case Circle circle:
-                        GetWakePoints(circle, _getEntityVelocityFunc, out upperPoint, out lowerPoint, out particleVelocity);
+                        GetWakePoints(circle, _getEntityVelocityFunc, out spawnPoints, out particleVelocity);
                         break;
                     case Polygon polygon:
-                        GetWakePoints(polygon, _getEntityVelocityFunc, out upperPoint, out lowerPoint, out particleVelocity);
+                        GetWakePoints(polygon, _getEntityVelocityFunc, out spawnPoints, out particleVelocity);
                         break;
                     default:
                         System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
@@ -180,17 +182,17 @@ namespace Raspberry_Lib.Components
             {
                 if (_particles.Any())
                 {
-                    var distanceOfLastSpawnedParticle = Vector2.Distance(lowerPoint, Entity.Position + _lastParticleSpawned.Position);
-                    var widthOfParticleTexture = Settings.TextureSizeStart * Entity.Scale.X * 2;
+                    var distanceOfLastSpawnedParticle = Vector2.Distance(_lastParticleSpawned.SpawnPosition, _lastParticleSpawned.Position);
+                    var widthOfParticleTexture = Settings.TextureSizeStart;
 
                     if (distanceOfLastSpawnedParticle > widthOfParticleTexture)
                     {
-                        SpawnParticles(upperPoint, lowerPoint, particleVelocity);
+                        SpawnParticles(spawnPoints, particleVelocity);
                     }
                 }
                 else if (Math.Abs(particleVelocity.Length()) > Settings.MinimumVelocityForSpawn.Value)
                 {
-                    SpawnParticles(upperPoint, lowerPoint, particleVelocity);
+                    SpawnParticles(spawnPoints, particleVelocity);
                 }
             }
         }
@@ -203,14 +205,13 @@ namespace Raspberry_Lib.Components
         private readonly Func<Vector2> _getEntityVelocityFunc;
         private readonly Func<bool> _shouldUpdateFunc;
 
-        private Vector2 _staticUpperSpawnPoint;
-        private Vector2 _staticLowerSpawnPoint;
+        private List<Vector2> _staticSpawnPoints;
         private Vector2 _staticParticleVelocity;
 
         private readonly System.Random _rng;
         private readonly bool _isPlayer;
 
-        private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
+        private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = GetRiverVelocityAt(Entity.Position);
@@ -223,21 +224,16 @@ namespace Raspberry_Lib.Components
             var point1 = Entity.Position + iCircle.Radius * orthogonalVec;
             var point2 = Entity.Position - iCircle.Radius * orthogonalVec;
 
-            if (point1.Y > point2.Y)
+            oSpawnPoints = new List<Vector2>
             {
-                oUpperPoint = point2;
-                oLowerPoint = point1;
-            }
-            else
-            {
-                oUpperPoint = point1;
-                oLowerPoint = point2;
-            }
+                point1,
+                point2
+            };
 
             oParticleVelocity = velocityDiff;
         }
 
-        private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out Vector2 oUpperPoint, out Vector2 oLowerPoint, out Vector2 oParticleVelocity)
+        private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = GetRiverVelocityAt(Entity.Position);
@@ -246,8 +242,11 @@ namespace Raspberry_Lib.Components
             
             if (iPolygon is Box box && _isPlayer)
             {
-                oUpperPoint = Entity.Position + box.Points[1];
-                oLowerPoint = Entity.Position + box.Points[2];
+                oSpawnPoints = new List<Vector2>
+                {
+                    Entity.Position + box.Points[1],
+                    Entity.Position + box.Points[2]
+                };
             }
             else
             {
@@ -276,55 +275,42 @@ namespace Raspberry_Lib.Components
             return riverVelocity;
         }
 
-        private void SpawnParticles(Vector2 iUpperSpawnPoint, Vector2 iLowerSpawnPoint, Vector2 iVelocity)
+        private void SpawnParticles(List<Vector2> iSpawnPositions, Vector2 iVelocity)
         {
-            float GetEndVariance()
-            {
-                var timeToVarySquared = Settings.ParticleTtl * Settings.ParticleTtl * 
-                                        Settings.OrthogonalEndPositionVariancePercentOfTtlStart * Settings.OrthogonalEndPositionVariancePercentOfTtlStart;
-
-                return 2 * ((float)_rng.NextDouble() * 2 - 1f) *
-                       Settings.OrthogonalEndPositionalVarianceAsPercentOfVelocityMag * iVelocity.Length() /
-                       timeToVarySquared;
-            }
-
             var spawnPointOffset = new Vector2(-Settings.TextureSizeStart * Entity.Scale.X / 2f);
 
-            var upperParticle = Pool<WakeParticle>.Obtain();
-            var lowerParticle = Pool<WakeParticle>.Obtain();
+            foreach (var spawnPosition in iSpawnPositions)
+            {
+                var particle = Pool<WakeParticle>.Obtain();
 
-            upperParticle.Sprite = _sprite;
-            lowerParticle.Sprite = _sprite;
+                particle.Sprite = _sprite; 
+                
+                var orthogonalDirection = new Vector2(-iVelocity.Y, iVelocity.X);
+                orthogonalDirection.Normalize();
+                var rngOffsetMag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
+                var rngOffset = orthogonalDirection * rngOffsetMag;
 
-            var orthogonalDirection = new Vector2(-iVelocity.Y, iVelocity.X);
-            orthogonalDirection.Normalize();
-            var rngOffset1Mag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
-            var rngOffset1 = orthogonalDirection * rngOffset1Mag;
-            var rngOffset2Mag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
-            var rngOffset2 = orthogonalDirection * rngOffset2Mag;
+                var spawnPositionFinal = Entity.Position - spawnPosition + spawnPointOffset + rngOffset;
+                particle.Position = spawnPositionFinal;
+                particle.SpawnPosition = spawnPositionFinal;
 
-            upperParticle.Position = Entity.Position - iUpperSpawnPoint + spawnPointOffset + rngOffset1;
-            lowerParticle.Position = Entity.Position - iLowerSpawnPoint + spawnPointOffset + rngOffset2;
+                particle.Velocity = iVelocity;
+                particle.SpawnTime = Time.TotalTime;
+                particle.TimeToLive = Settings.ParticleTtl;
 
-            upperParticle.Velocity = iVelocity;
-            lowerParticle.Velocity = iVelocity;
+                var timeToVarySquared = Settings.ParticleTtl * Settings.ParticleTtl *
+                                        Settings.OrthogonalEndPositionVariancePercentOfTtlStart * Settings.OrthogonalEndPositionVariancePercentOfTtlStart;
+                var endVarianceMag = 2 * ((float)_rng.NextDouble() * 2 - 1f) *
+                                     Settings.OrthogonalEndPositionalVarianceAsPercentOfVelocityMag * iVelocity.Length() /
+                                     timeToVarySquared;
+                var endVariance = endVarianceMag * orthogonalDirection;
 
-            upperParticle.SpawnTime = Time.TotalTime;
-            lowerParticle.SpawnTime = Time.TotalTime;
+                particle.DeltaVelocityPerFrame = endVariance;
 
-            upperParticle.TimeToLive = Settings.ParticleTtl;
-            lowerParticle.TimeToLive = Settings.ParticleTtl;
+                _particles.Add(particle);
 
-            var upperEndVariance = GetEndVariance() * orthogonalDirection;
-            var lowerEndVariance = GetEndVariance() * orthogonalDirection;
-
-            upperParticle.DeltaVelocityPerFrame = upperEndVariance;
-            lowerParticle.DeltaVelocityPerFrame = lowerEndVariance;
-
-            _particles.Add(upperParticle);
-            _particles.Add(lowerParticle);
-
-            _lastParticleSpawned = lowerParticle;
+                _lastParticleSpawned = particle;
+            }
         }
     }
 }
