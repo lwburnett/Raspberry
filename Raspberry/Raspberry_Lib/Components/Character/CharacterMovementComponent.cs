@@ -34,7 +34,7 @@ namespace Raspberry_Lib.Components
             _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
             _lastRowTimeSeconds = float.MinValue;
-            _lastIterationPositionX = null;
+            _globalMaxPositionXAchievedSoFar = null;
             TotalDistanceTraveled = 0;
 
 #if VERBOSE
@@ -217,22 +217,26 @@ namespace Raspberry_Lib.Components
             _collisionComponent.HandleCollision(collisionResult);
 
             // Publish distance traveled results
-            if (_lastIterationPositionX.HasValue)
+            if (_globalMaxPositionXAchievedSoFar.HasValue)
             {
-                var diffX = Entity.Position.X - _lastIterationPositionX.Value;
+                var diffX = Entity.Position.X - _globalMaxPositionXAchievedSoFar.Value;
 
                 if (diffX > 0)
                 {
 
-                    var lastIterationFlowScalar = thisBlock.Function.GetYPrimeForX(_lastIterationPositionX.Value);
+                    var lastIterationFlowScalar = thisBlock.Function.GetYPrimeForX(_globalMaxPositionXAchievedSoFar.Value);
 
                     var arcLength = (float)Math.Sqrt(1 + lastIterationFlowScalar * lastIterationFlowScalar) * diffX;
 
                     TotalDistanceTraveled += arcLength;
+
+                    _globalMaxPositionXAchievedSoFar = Entity.Position.X;
                 }
             }
-
-            _lastIterationPositionX = Entity.Position.X;
+            else
+            {
+                _globalMaxPositionXAchievedSoFar = Entity.Position.X;
+            }
         }
 
         public void OnPlayerInput(CharacterInputController.InputDescription iInput)
@@ -253,7 +257,7 @@ namespace Raspberry_Lib.Components
         private ProceduralGeneratorComponent _generator;
         private float _lastRowTimeSeconds;
         private CharacterCollisionComponent _collisionComponent;
-        private float? _lastIterationPositionX;
+        private float? _globalMaxPositionXAchievedSoFar;
 
         private Vector2 GetRotationAsDirectionVector()
         {
