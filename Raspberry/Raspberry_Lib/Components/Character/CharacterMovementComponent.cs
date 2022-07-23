@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 
@@ -14,7 +13,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting SpeedDifMax = new(25);
 
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
-            public static readonly RenderSetting Acceleration = new(10);
+            public static readonly RenderSetting Acceleration = new(20);
 
             public const float RotationRateDegreesPerSecondMin = 30f;
             public const float RotationRateDegreesPerSecondMax = 60f;
@@ -108,7 +107,24 @@ namespace Raspberry_Lib.Components
             // Apply row input
             if (Time.TotalTime - _lastRowTimeSeconds < Settings.RowTime.TotalSeconds)
             {
-                forceVec += directionVector * Settings.RowForce.Value;
+                var potentialRowForce = directionVector * Settings.RowForce.Value;
+                var potentialVelocity = _currentVelocity + potentialRowForce * Time.DeltaTime;
+
+                var currentVelocityProjectionOntoRiver = Vector2.Dot(_currentVelocity, flowDirectionVector) / flowDirectionVector.Length();
+                var potentialVelocityProjectionOntoRiver = Vector2.Dot(potentialVelocity, flowDirectionVector) / flowDirectionVector.Length();
+
+                if (potentialVelocityProjectionOntoRiver >= 0 ||
+                    potentialVelocityProjectionOntoRiver > currentVelocityProjectionOntoRiver)
+                {
+                    forceVec += potentialRowForce;
+                }
+                else
+                {
+                    var parallelProjectionForceMag = Vector2.Dot(potentialRowForce, flowDirectionVector) / flowDirectionVector.Length();
+                    var perpProjectionForce = potentialRowForce - parallelProjectionForceMag * flowDirectionVector / flowDirectionVector.Length();
+
+                    forceVec += perpProjectionForce;
+                }
 
                 _currentState = PrototypeCharacterComponent.State.Row;
             }
@@ -176,7 +192,7 @@ namespace Raspberry_Lib.Components
             forceVec += dragForcePerpVec;
 
             // Apply river flow force
-            forceVec += Settings.Acceleration.Value * flowDirectionVector * dotProductParallel;
+            forceVec += Settings.Acceleration.Value * flowDirectionVector * Math.Abs(dotProductParallel);
 
             if (dotProductPerp > 0)
             {
