@@ -215,45 +215,81 @@ namespace Raspberry_Lib.Components
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = GetRiverVelocityAt(Entity.Position);
-
             var velocityDiff = riverVelocity - entityVelocity;
 
-            var orthogonalVec = new Vector2(-velocityDiff.Y, velocityDiff.X);
-            orthogonalVec.Normalize();
+            var playerDirection = GetPlayerDirection();
 
-            var point1 = Entity.Position + iCircle.Radius * orthogonalVec;
-            var point2 = Entity.Position - iCircle.Radius * orthogonalVec;
-
-            oSpawnPoints = new List<Vector2>
+            if (ShouldHaveWake(entityVelocity, velocityDiff, playerDirection))
             {
-                point1,
-                point2
-            };
 
-            oParticleVelocity = velocityDiff;
+                var orthogonalVec = new Vector2(-velocityDiff.Y, velocityDiff.X);
+                orthogonalVec.Normalize();
+
+                var point1 = Entity.Position + iCircle.Radius * orthogonalVec;
+                var point2 = Entity.Position - iCircle.Radius * orthogonalVec;
+
+                oSpawnPoints = new List<Vector2>
+                {
+                    point1,
+                    point2
+                };
+
+                oParticleVelocity = velocityDiff;
+            }
+            else
+            {
+                oSpawnPoints = new List<Vector2>();
+                oParticleVelocity = Vector2.Zero;
+            }
         }
 
         private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = GetRiverVelocityAt(Entity.Position);
-
             var velocityDiff = riverVelocity - entityVelocity;
-            
-            if (iPolygon is Box box && _isPlayer)
+
+            var playerDirection = GetPlayerDirection();
+
+            if (ShouldHaveWake(entityVelocity, velocityDiff, playerDirection))
             {
-                oSpawnPoints = new List<Vector2>
+                if (iPolygon is Box box && _isPlayer)
                 {
-                    Entity.Position + box.Points[1],
-                    Entity.Position + box.Points[2]
-                };
+                    oSpawnPoints = new List<Vector2>
+                    {
+                        Entity.Position + box.Points[1],
+                        Entity.Position + box.Points[2]
+                    };
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                oParticleVelocity = velocityDiff;
             }
             else
             {
-                throw new NotImplementedException();
+                oSpawnPoints = new List<Vector2>();
+                oParticleVelocity = Vector2.Zero;
             }
+        }
 
-            oParticleVelocity = velocityDiff;
+        private static bool ShouldHaveWake(Vector2 iEntityVelocity, Vector2 iParticleVelocity, Vector2 iEntityDirection)
+        {
+            if (iEntityVelocity == Vector2.Zero)
+                return true;
+
+            var dotProduct = Vector2.Dot(iEntityDirection, iParticleVelocity);
+
+            if (dotProduct <= 0)
+                return true;
+
+            var scalarProjection = Vector2.Dot(iEntityVelocity, iParticleVelocity) / iParticleVelocity.Length();
+            if (scalarProjection > iParticleVelocity.Length())
+                return true;
+
+            return false;
         }
 
         private Vector2 GetRiverVelocityAt(Vector2 iPos)
@@ -311,6 +347,13 @@ namespace Raspberry_Lib.Components
 
                 _lastParticleSpawned = particle;
             }
+        }
+
+        private Vector2 GetPlayerDirection()
+        {
+            var angle = Entity.Transform.Rotation;
+
+            return new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
         }
     }
 }

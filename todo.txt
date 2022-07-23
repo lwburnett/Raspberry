@@ -1,0 +1,13 @@
+Features
+	- "Active Reload" of rowing
+	- Some sort of collectable
+	- Logs flowing down the stream
+
+Optimization
+	- Put generation in background thread
+
+Art
+	- Add Menus
+	- Add little particles that flow through the river
+
+- Balance
