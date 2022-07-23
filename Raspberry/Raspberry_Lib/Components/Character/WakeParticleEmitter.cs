@@ -104,8 +104,8 @@ namespace Raspberry_Lib.Components
             }
         }
         
-        public override float Width => 100000000000f;
-        public override float Height => 100000000000f;
+        public override float Width => 2000;
+        public override float Height => 2000;
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
