@@ -1,6 +1,6 @@
 Features
-	- "Active Reload" of rowing
-	- Some sort of collectable
+	- "Active Reload" for rowing
+	- Some sort of positive collectable to offset the dodging of obstacles
 	- Logs flowing down the stream
 
 Optimization
@@ -10,4 +10,9 @@ Art
 	- Add Menus
 	- Add little particles that flow through the river
 
-- Balance
+Bugs
+	-* Acceleration when travelling backwards
+	-* Travelling backwards allows the user to double count sections of river for distance travelled
+	- Rocks sometimes places badly at transitions
+
+Balance
