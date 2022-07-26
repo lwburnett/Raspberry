@@ -14,7 +14,7 @@ namespace Raspberry_Lib.Components
             public const int TextureSize = 2;
             public const int NumParticles = 20;
 
-            public const float SpawnYPercentWindow = .8f;
+            public const float SpawnYPercentWindow = .9f;
             public static readonly RenderSetting DeltaPhasePerUnit = new(2f);
             public static readonly RenderSetting OscillationAmplitude = new(10f);
         }
@@ -67,7 +67,7 @@ namespace Raspberry_Lib.Components
                 var block = _generator.GetBlockForPosition(thisX);
                 var thisRiverWidth = block.GetRiverWidth(thisX);
                 var thisRiverY = block.Function.GetYForX(thisX);
-                var thisY = thisRiverY + thisYPercent * thisRiverWidth;
+                var thisY = thisRiverY + thisYPercent * thisRiverWidth / 2;
                 var thisPosition = new Vector2(thisX, thisY);
 
                 var thisPhase = MathHelper.TwoPi * (float)rng.NextDouble();
@@ -107,7 +107,7 @@ namespace Raspberry_Lib.Components
                 {
                     var newBlock = _generator.GetBlockForPosition(teleportX.Value);
                     var riverWidth = newBlock.GetRiverWidth(teleportX.Value);
-                    var newY = newBlock.Function.GetYForX(teleportX.Value) + riverWidth * particle.RiverWidthPercent;
+                    var newY = newBlock.Function.GetYForX(teleportX.Value) + riverWidth * particle.RiverWidthPercent / 2;
 
                     particle.Position = new Vector2(teleportX.Value, newY);
 
@@ -120,7 +120,7 @@ namespace Raspberry_Lib.Components
                     var oldRiverWidth = _generator.GetBlockForPosition(particle.Position).GetRiverWidth(originalPosition.X);
                     var newRiverWidth = _generator.GetBlockForPosition(particle.Position).GetRiverWidth(particle.Position.X);
 
-                    var riverWidthDiffFactorY = Math.Abs(newRiverWidth - oldRiverWidth) * -particle.RiverWidthPercent;
+                    var riverWidthDiffFactorY = Math.Abs(newRiverWidth - oldRiverWidth) * -particle.RiverWidthPercent / 2;
                     particle.Position += new Vector2(0f, riverWidthDiffFactorY);
 
                     particle.OscillationPhase += Settings.DeltaPhasePerUnit.Value * Time.DeltaTime;
