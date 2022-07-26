@@ -39,6 +39,8 @@ namespace Raspberry_Lib.Components
             var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.TextureSize, Settings.TextureSize);
             texture.SetData(textureData);
             _sprite = new Sprite(texture);
+
+            RenderLayer = 5;
         }
 
         public override float Width => float.MaxValue;
@@ -134,9 +136,9 @@ namespace Raspberry_Lib.Components
             foreach (var particle in _particles)
             {
                 var modifiedPosition = particle.Position + (float)Math.Cos(particle.OscillationPhase) * Settings.OscillationAmplitude.Value * particle.OscillationDirection;
-
+                
                 iBatcher.Draw(
-                    _sprite, 
+                    _sprite,
                     modifiedPosition,
                     Color.White,
                     0f,
