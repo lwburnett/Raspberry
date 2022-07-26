@@ -15,8 +15,8 @@ namespace Raspberry_Lib.Components
             public const int NumParticles = 20;
 
             public const float SpawnYPercentWindow = .8f;
-            public static readonly RenderSetting DeltaPhasePerUnit = new(.05f);
-            public static readonly RenderSetting OscillationAmplitude = new(5f);
+            public static readonly RenderSetting DeltaPhasePerUnit = new(2f);
+            public static readonly RenderSetting OscillationAmplitude = new(10f);
         }
 
         private class RiverParticle
