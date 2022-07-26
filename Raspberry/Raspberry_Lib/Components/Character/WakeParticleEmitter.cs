@@ -13,9 +13,6 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeedLower = new(60);
-            public static readonly RenderSetting FlowSpeedUpper = new(120);
-
             public const int MaxNumParticles = 150;
             public const float ParticleTtl = 1f;
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
@@ -214,7 +211,7 @@ namespace Raspberry_Lib.Components
         private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
-            var riverVelocity = GetRiverVelocityAt(Entity.Position);
+            var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
             var velocityDiff = riverVelocity - entityVelocity;
 
             var playerDirection = GetPlayerDirection();
@@ -246,7 +243,7 @@ namespace Raspberry_Lib.Components
         private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
-            var riverVelocity = GetRiverVelocityAt(Entity.Position);
+            var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
             var velocityDiff = riverVelocity - entityVelocity;
 
             var playerDirection = GetPlayerDirection();
@@ -290,25 +287,6 @@ namespace Raspberry_Lib.Components
                 return true;
 
             return false;
-        }
-
-        private Vector2 GetRiverVelocityAt(Vector2 iPos)
-        {
-            var flowSpeed = MathHelper.Lerp(
-                Settings.FlowSpeedLower.Value,
-                Settings.FlowSpeedUpper.Value,
-                1 - _proceduralGenerator.PlayerScoreRating / _proceduralGenerator.PlayerScoreRatingMax);
-
-            var block = _proceduralGenerator.GetBlockForPosition(iPos);
-            if (block == null)
-                return Vector2.Zero;
-
-            var yPrime = block.Function.GetYPrimeForX(iPos.X);
-            var riverVelocity = new Vector2(1, yPrime);
-            riverVelocity.Normalize();
-            riverVelocity *= flowSpeed;
-
-            return riverVelocity;
         }
 
         private void SpawnParticles(List<Vector2> iSpawnPositions, Vector2 iVelocity)

@@ -29,6 +29,7 @@ namespace Raspberry_Lib.Scenes
             map.Transform.SetLocalScale(Settings.MapScale.Value);
             map.AddComponent(proceduralGenerator);
             map.AddComponent<ProceduralRenderer>();
+            map.AddComponent<RiverParticleManager>();
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * 2);

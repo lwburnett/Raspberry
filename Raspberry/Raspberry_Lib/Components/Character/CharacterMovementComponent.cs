@@ -8,8 +8,6 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting FlowSpeedLower = new(60);
-            public static readonly RenderSetting FlowSpeedUpper = new(120);
             public static readonly RenderSetting SpeedDifMax = new(25);
 
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
@@ -73,17 +71,14 @@ namespace Raspberry_Lib.Components
             var previousState = _currentState;
             var forceVec = Vector2.Zero;
 
-            var flowDirectionScalar = thisBlock.Function.GetYPrimeForX(Entity.Position.X);
+            var riverFlow = _generator.GetRiverVelocityAt(Entity.Position);
 
-            var flowDirectionVector = new Vector2(1f, flowDirectionScalar);
+            var flowSpeed = riverFlow.Length();
+
+            var flowDirectionVector = riverFlow;
             flowDirectionVector.Normalize();
 
             var flowPerpendicularDirection = GetClockwisePerpendicularUnitVector(flowDirectionVector);
-
-            var flowSpeed = MathHelper.Lerp(
-                Settings.FlowSpeedLower.Value,
-                Settings.FlowSpeedUpper.Value,
-                1 - _generator.PlayerScoreRating / _generator.PlayerScoreRatingMax);
 
             var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowSpeed * flowDirectionVector, _currentVelocity);
 

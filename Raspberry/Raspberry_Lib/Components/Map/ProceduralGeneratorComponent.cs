@@ -30,11 +30,14 @@ namespace Raspberry_Lib.Components
 
             public const float YScaleDivisorLower = 8f;
             public const float YScaleDivisorUpper = 4f;
+            
+            public static readonly RenderSetting FlowSpeedLower = new(60);
+            public static readonly RenderSetting FlowSpeedUpper = new(120);
         }
 
         public ProceduralGeneratorComponent()
         {
-            PlayerScoreRating = 1f;
+            _playerScoreRating = 1f;
         }
 
         public override void OnAddedToEntity()
@@ -47,10 +50,7 @@ namespace Raspberry_Lib.Components
         public List<LevelBlock> Blocks { get; private set; }
 
         public int BeginPlayOrder => 0;
-
-
-        public float PlayerScoreRating { get; private set; }
-        public float PlayerScoreRatingMax => Settings.PlayerScoreRatingMax;
+        
 
         public void OnBeginPlay()
         {
@@ -59,7 +59,7 @@ namespace Raspberry_Lib.Components
 
             var startingPos = _playerCharacter.Position;
 
-            var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
+            var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
 
             var randomWalk = RandomWalk(startingPos, Vector2.UnitX);
             Blocks = new List<LevelBlock>
@@ -85,7 +85,7 @@ namespace Raspberry_Lib.Components
                 var lastBlock = Blocks.Last();
                 var nextStartingPoint = new Vector2(lastBlock.Function.DomainEnd, lastBlock.Function.GetYForX(lastBlock.Function.DomainEnd));
 
-                var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
+                var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
 
                 var nextStartingSlope = new Vector2(1f, lastBlock.Function.GetYPrimeForX(lastBlock.Function.DomainEnd));
                 var newWalk = RandomWalk(nextStartingPoint, nextStartingSlope);
@@ -104,19 +104,42 @@ namespace Raspberry_Lib.Components
             {
                 _nextScorePointX = Blocks.Last().Function.DomainEnd;
 
-                var potentialScore = PlayerScoreRating + 1;
+                var potentialScore = _playerScoreRating + 1;
 
-                PlayerScoreRating = potentialScore <= Settings.PlayerScoreRatingMax ? potentialScore : Settings.PlayerScoreRatingMax;
+                _playerScoreRating = potentialScore <= Settings.PlayerScoreRatingMax ? potentialScore : Settings.PlayerScoreRatingMax;
             }
         }
 
-        public LevelBlock GetBlockForPosition(Vector2 iPos) => Blocks.FirstOrDefault(b => b.Function.DomainStart <= iPos.X && b.Function.DomainEnd >= iPos.X);
+        public LevelBlock GetBlockForPosition(float iX) => Blocks.FirstOrDefault(b => b.Function.DomainStart <= iX && b.Function.DomainEnd >= iX);
+        public LevelBlock GetBlockForPosition(Vector2 iPos) => GetBlockForPosition(iPos.X);
+
+        public Vector2 GetRiverVelocityAt(float iX)
+        {
+            var flowSpeed = MathHelper.Lerp(
+                Settings.FlowSpeedLower.Value,
+                Settings.FlowSpeedUpper.Value,
+                1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
+
+            var block = GetBlockForPosition(iX);
+            if (block == null)
+                return Vector2.Zero;
+
+            var yPrime = block.Function.GetYPrimeForX(iX);
+            var riverVelocity = new Vector2(1, yPrime);
+            riverVelocity.Normalize();
+            riverVelocity *= flowSpeed;
+
+            return riverVelocity;
+        }
+
+        public Vector2 GetRiverVelocityAt(Vector2 iPos) => GetRiverVelocityAt(iPos.X);
 
         private float _scale;
         private ProceduralRenderer _renderer;
         private Entity _playerCharacter;
         private float _nextGenerationPointX;
         private float _nextScorePointX;
+        private float _playerScoreRating;
 
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
@@ -135,7 +158,7 @@ namespace Raspberry_Lib.Components
             var rng = new System.Random();
             var walkPoints = new List<Vector2>();
 
-            var numPoints = (int)MathHelper.Lerp(Settings.NumPointsPerBlockLower, Settings.NumPointsPerBlockUpper, PlayerScoreRating / Settings.PlayerScoreRatingMax);
+            var numPoints = (int)MathHelper.Lerp(Settings.NumPointsPerBlockLower, Settings.NumPointsPerBlockUpper, _playerScoreRating / Settings.PlayerScoreRatingMax);
 
             float y = 0;
             for (var ii = 0; ii < numPoints; ii++)
@@ -161,8 +184,8 @@ namespace Raspberry_Lib.Components
             var yScaleDivisor = MathHelper.Lerp(
                 Settings.YScaleDivisorLower, 
                 Settings.YScaleDivisorUpper, 
-                PlayerScoreRating / Settings.PlayerScoreRatingMax);
-            var numTerms = PlayerScoreRating < 5f ? Settings.NumDTFTerms : Settings.NumDTFTerms + 1;
+                _playerScoreRating / Settings.PlayerScoreRatingMax);
+            var numTerms = _playerScoreRating < 5f ? Settings.NumDTFTerms : Settings.NumDTFTerms + 1;
             return new DFTFunction(
                 walkPoints, 
                 numTerms, 
@@ -178,9 +201,9 @@ namespace Raspberry_Lib.Components
 
             var lastPointX = iStartingPointX ?? iFunction.DomainStart;
 
-            var gapMin = MathHelper.Lerp(Settings.ObstacleXGapMinLower.Value, Settings.ObstacleXGapMinUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
-            var gapMax = MathHelper.Lerp(Settings.ObstacleXGapMaxLower.Value, Settings.ObstacleXGapMaxUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
-            var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - PlayerScoreRating / Settings.PlayerScoreRatingMax);
+            var gapMin = MathHelper.Lerp(Settings.ObstacleXGapMinLower.Value, Settings.ObstacleXGapMinUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
+            var gapMax = MathHelper.Lerp(Settings.ObstacleXGapMaxLower.Value, Settings.ObstacleXGapMaxUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
+            var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
 
             while (lastPointX < iFunction.DomainEnd)
             {
