@@ -11,12 +11,12 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public const int TextureSize = 3;
+            public const int TextureSize = 2;
             public const int NumParticles = 20;
 
             public const float SpawnYPercentWindow = .8f;
-            public static RenderSetting DeltaPhasePerUnit = new(.05f);
-            public static RenderSetting OscillationAmplitude = new(5f);
+            public static readonly RenderSetting DeltaPhasePerUnit = new(.05f);
+            public static readonly RenderSetting OscillationAmplitude = new(5f);
         }
 
         private class RiverParticle
@@ -135,7 +135,15 @@ namespace Raspberry_Lib.Components
             {
                 var modifiedPosition = particle.Position + (float)Math.Cos(particle.OscillationPhase) * Settings.OscillationAmplitude.Value * particle.OscillationDirection;
 
-                iBatcher.Draw(_sprite, modifiedPosition);
+                iBatcher.Draw(
+                    _sprite, 
+                    modifiedPosition,
+                    Color.White,
+                    0f,
+                    Vector2.Zero,
+                    Entity.Scale,
+                    SpriteEffects.None,
+                    0);
             }
         }
 
