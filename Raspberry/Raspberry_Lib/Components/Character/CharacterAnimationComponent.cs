@@ -9,7 +9,7 @@ namespace Raspberry_Lib.Components
     {
         public override void OnAddedToEntity()
         {
-            var texture = Entity.Scene.Content.LoadTexture(Content.Content.CharacterSpriteSheet);
+            var texture = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.CharacterSpriteSheet);
             var sprites = Sprite.SpritesFromAtlas(texture, 24, 24);
 
             _animator = Entity.AddComponent(new SpriteAnimator {RenderLayer = 4});
