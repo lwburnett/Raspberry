@@ -1,14 +1,14 @@
 Features
 	- "Active Reload" for rowing
 	- Some sort of positive collectable to offset the dodging of obstacles
-	- Logs flowing down the stream
 
 Optimization
 	- Put generation in background thread
 
 Art
 	- Add Menus
-	- Add little particles that flow through the river
+	- *Add little particles that flow through the river
+	- Area of influence shader around the player that shows the river within but the desert without
 
 Bugs
 	-* Acceleration when travelling backwards
