@@ -10,14 +10,6 @@ namespace Raspberry_Lib.Components
 {
     internal static class TileGenerator
     {
-        private static class Settings
-        {
-            public static readonly Color GrassColor = new(69, 198, 88);
-            public static readonly Color MudColor = new(69, 52, 29);
-            public static readonly Color FoamColor = new(182, 211, 211);
-            public static readonly Color WaterColor = new(35, 101, 100);
-        }
-
         public static List<Entity> GenerateRiverTiles(float iXPos, float iTileWidth, LevelBlock iBlock, float iScale)
         {
             var tiles = new List<Entity>();
@@ -104,23 +96,23 @@ namespace Raspberry_Lib.Components
 
                     if (jj < thisColumn.NumAbove)
                     {
-                        upperData[index] = Settings.GrassColor;
-                        lowerData[index] = Settings.WaterColor;
+                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Grass3; // Settings.GrassColor;
+                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Water2; // Settings.WaterColor;
                     }
                     else if (jj < thisColumn.NumAbove + 5)
                     {
-                        upperData[index] = Settings.MudColor;
-                        lowerData[index] = Settings.FoamColor;
+                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Mud; //Settings.MudColor;
+                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Water1; //Settings.FoamColor;
                     }
                     else if (jj < thisColumn.NumAbove + 10)
                     {
-                        upperData[index] = Settings.FoamColor;
-                        lowerData[index] = Settings.MudColor;
+                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Water1; //Settings.FoamColor;
+                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Mud; //Settings.MudColor;
                     }
                     else
                     {
-                        upperData[index] = Settings.WaterColor;
-                        lowerData[index] = Settings.GrassColor;
+                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Water2; // Settings.WaterColor;
+                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Grass3; // Settings.GrassColor;
                     }
                 }
             }
@@ -160,7 +152,7 @@ namespace Raspberry_Lib.Components
             var waterData = new Color[riverSpriteHeightPixels * actualDataWidth];
             for (var ii = 0; ii < riverSpriteHeightPixels * actualDataWidth; ii++)
             {
-                waterData[ii] = Settings.WaterColor;
+                waterData[ii] = Content.ContentData.ColorPallets.Meadow.Water2; // Settings.WaterColor;
             }
 
             var waterTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, riverSpriteHeightPixels);
