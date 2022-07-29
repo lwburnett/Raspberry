@@ -10,6 +10,14 @@ namespace Raspberry_Lib.Components
 {
     internal static class TileGenerator
     {
+        private static class Settings
+        {
+            public const float DarkWaterWidthAsPercentOfRiverWidth = .5f;
+            public const float MediumWaterWidthAsPercentOfRiverWidth = .9f;
+
+            public static readonly RenderSetting GrassTileHeight = new(1000);
+        }
+
         public static List<Entity> GenerateRiverTiles(float iXPos, float iTileWidth, LevelBlock iBlock, float iScale)
         {
             var tiles = new List<Entity>();
@@ -24,6 +32,7 @@ namespace Raspberry_Lib.Components
             var numExtraDownTotal = 0;
             var columnData = new List<ColumnDatum> { new(0, 0) };
 
+            // Do math to figure out how many pixels are above the shoreline and how many are below the shoreline for each column of pixels
             var actualDataWidth = 1;
             for (var ii = 1; ii < desiredDataWidth; ii++)
             {
@@ -83,6 +92,7 @@ namespace Raspberry_Lib.Components
 
             var dataHeight = numExtraUpTotal + 10 + numExtraDownTotal;
 
+            // Fill out color data arrays based on the column calculations above
             var upperData = new Color[dataHeight * actualDataWidth];
             var lowerData = new Color[dataHeight * actualDataWidth];
 
@@ -97,7 +107,7 @@ namespace Raspberry_Lib.Components
                     if (jj < thisColumn.NumAbove)
                     {
                         upperData[index] = Content.ContentData.ColorPallets.Meadow.Grass3; // Settings.GrassColor;
-                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Water2; // Settings.WaterColor;
+                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Water1; // Settings.WaterColor;
                     }
                     else if (jj < thisColumn.NumAbove + 5)
                     {
@@ -111,12 +121,13 @@ namespace Raspberry_Lib.Components
                     }
                     else
                     {
-                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Water2; // Settings.WaterColor;
+                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Water1; // Settings.WaterColor;
                         lowerData[index] = Content.ContentData.ColorPallets.Meadow.Grass3; // Settings.GrassColor;
                     }
                 }
             }
 
+            // Instantiate the shoreline sprites
             var riverWidth = iBlock.GetRiverWidth(iXPos);
 
             var upperTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, dataHeight);
@@ -147,25 +158,83 @@ namespace Raspberry_Lib.Components
 
             tiles.Add(lowerEntity);
 
+            // Make a sprite for the water between the shorelines
             var riverSpriteHeightPixels = (int)(1f + riverWidth / pixelHeight);
 
             var waterData = new Color[riverSpriteHeightPixels * actualDataWidth];
-            for (var ii = 0; ii < riverSpriteHeightPixels * actualDataWidth; ii++)
+
+            var waterSpriteYPos = yPos + additionalYOffset;
+
+            for (var xx = 0; xx < actualDataWidth; xx++)
             {
-                waterData[ii] = Content.ContentData.ColorPallets.Meadow.Water2; // Settings.WaterColor;
+                var thisXPos = iXPos + xx * pixelWidth;
+                var thisYPos = iBlock.Function.GetYForX(thisXPos);
+                var thisRiverWidth = iBlock.GetRiverWidth(thisXPos);
+                var darkWidth = thisRiverWidth * Settings.DarkWaterWidthAsPercentOfRiverWidth;
+                var midWidth = thisRiverWidth * Settings.MediumWaterWidthAsPercentOfRiverWidth;
+
+                for (var yy = 0; yy < riverSpriteHeightPixels; yy++)
+                {
+                    var dataIndex = xx + actualDataWidth * yy;
+                    var worldYPos = waterSpriteYPos - riverWidth / 2 + pixelHeight * yy;
+
+                    var diff = Math.Abs(thisYPos - worldYPos);
+                    if (diff < darkWidth / 2)
+                        waterData[dataIndex] = Content.ContentData.ColorPallets.Meadow.Water3;
+                    else if (diff < midWidth / 2)
+                        waterData[dataIndex] = Content.ContentData.ColorPallets.Meadow.Water2;
+                    else
+                        waterData[dataIndex] = Content.ContentData.ColorPallets.Meadow.Water1;
+                }
             }
 
             var waterTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, riverSpriteHeightPixels);
             waterTexture.SetData(waterData);
             var waterSprite = new Sprite(waterTexture);
 
-            var waterPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), yPos + additionalYOffset);
+            var waterPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), waterSpriteYPos);
             var waterEntity = new Entity();
             waterEntity.SetPosition(waterPosition);
             waterEntity.SetScale(iScale);
             waterEntity.AddComponent(new SpriteRenderer(waterSprite){RenderLayer = 6});
 
             tiles.Add(waterEntity);
+
+            // Make sprites for the grass outside the shorelines
+            var grassHeight = Settings.GrassTileHeight.Value;
+            var grassHeightPixels = (int)(1f + grassHeight / pixelHeight);
+
+            var grassDataSize = grassHeightPixels * actualDataWidth;
+            var upperGrassData = new Color[grassDataSize];
+            var lowerGrassData = new Color[grassDataSize];
+            for (var ii = 0; ii < grassDataSize; ii++)
+            {
+                upperGrassData[ii] = GetGrassColor();
+                lowerGrassData[ii] = GetGrassColor();
+            }
+
+            var upperGrassTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, grassHeightPixels);
+            upperGrassTexture.SetData(upperGrassData);
+            var upperGrassSprite = new Sprite(upperGrassTexture);
+
+            var upperGrassPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), upperBankTileYPos - dataHeight * pixelHeight / 2f - grassHeight / 2f);
+            var upperGrassEntity = new Entity();
+            upperGrassEntity.SetPosition(upperGrassPosition);
+            upperGrassEntity.SetScale(iScale);
+            upperGrassEntity.AddComponent(new SpriteRenderer(upperGrassSprite) { RenderLayer = 6 });
+
+            var lowerGrassTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, grassHeightPixels);
+            lowerGrassTexture.SetData(lowerGrassData);
+            var lowerGrassSprite = new Sprite(lowerGrassTexture);
+
+            var lowerGrassPosition = new Vector2(iXPos + (actualDataWidth * pixelWidth / 2), lowerBankTileYPos + dataHeight * pixelHeight / 2f + grassHeight / 2f);
+            var lowerGrassEntity = new Entity();
+            lowerGrassEntity.SetPosition(lowerGrassPosition);
+            lowerGrassEntity.SetScale(iScale);
+            lowerGrassEntity.AddComponent(new SpriteRenderer(lowerGrassSprite) { RenderLayer = 6 });
+
+            tiles.Add(upperGrassEntity);
+            tiles.Add(lowerGrassEntity);
 
             return tiles;
         }
@@ -180,6 +249,26 @@ namespace Raspberry_Lib.Components
 
             public int NumAbove { get; set; }
             public int NumBelow { get; set; }
+        }
+
+        private static readonly System.Random sRng = new();
+
+        private static Color GetGrassColor()
+        {
+            var num = sRng.Next(80);
+
+            if (num < 76) return Content.ContentData.ColorPallets.Meadow.Grass3;
+            if (num < 78) return Content.ContentData.ColorPallets.Meadow.Grass2;
+            return Content.ContentData.ColorPallets.Meadow.Grass1;
+        }
+
+        private static Color GetSandColor()
+        {
+            var num = sRng.Next(80);
+
+            if (num < 76) return Content.ContentData.ColorPallets.Desert.Color2;
+            if (num < 78) return Content.ContentData.ColorPallets.Desert.Color3;
+            return Content.ContentData.ColorPallets.Desert.Color4;
         }
     }
 }
