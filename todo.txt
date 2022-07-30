@@ -15,5 +15,7 @@ Bugs
 	-* Acceleration when travelling backwards
 	-* Travelling backwards allows the user to double count sections of river for distance travelled
 	- Rocks sometimes places badly at transitions
-	- Transitions at shoreline are sometimes awkward and blocky
+	- Transitions at shoreline are sometimes blocky and choppy
+	- Transition segments sometimes calculate the wrong starting slope
+
 Balance
