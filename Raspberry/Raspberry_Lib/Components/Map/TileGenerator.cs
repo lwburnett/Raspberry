@@ -106,7 +106,7 @@ namespace Raspberry_Lib.Components
 
                     if (jj < thisColumn.NumAbove)
                     {
-                        upperData[index] = Content.ContentData.ColorPallets.Meadow.Grass3; // Settings.GrassColor;
+                        upperData[index] = GetGrassColor();
                         lowerData[index] = Content.ContentData.ColorPallets.Meadow.Water1; // Settings.WaterColor;
                     }
                     else if (jj < thisColumn.NumAbove + 5)
@@ -122,7 +122,7 @@ namespace Raspberry_Lib.Components
                     else
                     {
                         upperData[index] = Content.ContentData.ColorPallets.Meadow.Water1; // Settings.WaterColor;
-                        lowerData[index] = Content.ContentData.ColorPallets.Meadow.Grass3; // Settings.GrassColor;
+                        lowerData[index] = GetGrassColor();
                     }
                 }
             }
