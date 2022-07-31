@@ -37,3 +37,9 @@
 /processorParam:TextureFormat=Color
 /build:Levels/Tileset.png
 
+#begin Shaders/ProximityShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/ProximityShader.fx
+

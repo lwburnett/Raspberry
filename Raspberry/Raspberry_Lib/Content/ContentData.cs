@@ -8,6 +8,7 @@ namespace Raspberry_Lib.Content
         {
             public const string LevelTileset = @"Levels/Tileset";
             public const string CharacterSpriteSheet = @"Characters/PrototypeCharacter";
+            public const string ProximityShader = @"Shaders/ProximityShader";
         }
 
         internal static class ColorPallets
