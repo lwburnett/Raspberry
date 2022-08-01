@@ -70,7 +70,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	float4 outsideColor = tex2D(OutsideTextureSampler, input.TextureCoordinates);
 
 	float4 result = outsideColor;
-
+	
 	const float2 thisPixelPos = float2(SpritePositionTopLeft.x + (input.TextureCoordinates.x * SpriteDimensions[0]), SpritePositionTopLeft.y + input.TextureCoordinates.y * SpriteDimensions[1]);
 	const float dist = GetDistSafe(thisPixelPos, PlayerPosition);
 	

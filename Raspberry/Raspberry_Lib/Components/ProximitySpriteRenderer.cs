@@ -22,19 +22,20 @@ namespace Raspberry_Lib.Components
 
             _getPlayerPosFunc = iGetPlayerPos;
             _getProximityRadiusFunc = iGetProximityRadius;
-
-            _areBoundsDirty = true;
         }
 
         public override RectangleF Bounds => _bounds;
-        
+        public override Material Material => _material;
+
         public override void OnAddedToEntity()
         {
-            _shader = Entity.Scene.Content.Load<Effect>(Content.ContentData.AssetPaths.ProximityShader);
-
             _bounds.CalculateBounds(Entity.Transform.Position, _localOffset, _insideSprite.Origin,
                 Entity.Transform.Scale, Entity.Transform.Rotation, _insideSprite.SourceRect.Width,
                 _insideSprite.SourceRect.Height);
+
+            var topLeftPosition = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale;
+            var screenSize = new Vector2(Entity.Scene.Camera.Bounds.X, Entity.Scene.Camera.Bounds.Y);
+            _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, topLeftPosition, screenSize);
         }
 
         public void Update()
@@ -42,28 +43,14 @@ namespace Raspberry_Lib.Components
             var playerPos = _getPlayerPosFunc();
             var radius = _getProximityRadiusFunc();
 
-            var spriteDimension = new[] { _spriteWidth, _spriteHeight };
-
-
-            _shader.Parameters["InsideTexture"].SetValue(_insideSprite.Texture2D);
-            _shader.Parameters["OutsideTexture"].SetValue(_outsideSprite.Texture2D);
-            _shader.Parameters["SpritePositionTopLeft"].SetValue(Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale);
-            _shader.Parameters["SpriteDimensions"].SetValue(spriteDimension);
-            _shader.Parameters["ScreenDimensions"].SetValue(new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height));
-            _shader.Parameters["PlayerPosition"].SetValue(playerPos);
-            _shader.Parameters["ProximityRadius"].SetValue(radius);
+            _material.Effect.SetPlayerPosition(playerPos);
+            _material.Effect.SetProximityRadius(radius);
         }
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
-            // iBatcher.End();
-            // iBatcher.Begin(BlendState.AlphaBlend, Core.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, _shader);
-
             iBatcher.Draw(_insideSprite, Entity.Transform.Position + LocalOffset, Color,
                 Entity.Transform.Rotation, _insideSprite.Origin, Entity.Transform.Scale, SpriteEffects.None, _layerDepth);
-
-            // iBatcher.End();
-            // iBatcher.Begin();
         }
 
         private readonly Sprite _insideSprite;
@@ -73,6 +60,45 @@ namespace Raspberry_Lib.Components
         private readonly Func<Vector2> _getPlayerPosFunc;
         private readonly Func<float> _getProximityRadiusFunc;
 
-        private Effect _shader;
+        private ProximityMaterial _material;
+    }
+
+    internal class ProximityMaterial : Material<ProximityEffect>
+    {
+        public ProximityMaterial(Texture2D iInsideTexture, Texture2D iOutsideTexture, Vector2 iPositionTopLeft, Vector2 iScreenDimension)
+        {
+            Effect = new ProximityEffect(iInsideTexture, iOutsideTexture, iPositionTopLeft, iScreenDimension);
+        }
+    }
+
+    internal class ProximityEffect : Effect
+    {
+        public ProximityEffect(Texture2D iInsideTexture, Texture2D iOutsideTexture, Vector2 iPositionTopLeft, Vector2 iScreenDimensions) : 
+            base(Core.GraphicsDevice, EffectResource.GetFileResourceBytes(Content.ContentData.AssetPaths.ProximityShader))
+        {
+            Parameters["InsideTexture"].SetValue(iInsideTexture);
+            
+            Parameters["OutsideTexture"].SetValue(iOutsideTexture);
+
+            Parameters["SpritePositionTopLeft"].SetValue(iPositionTopLeft);
+
+            Parameters["ScreenDimensions"].SetValue(iScreenDimensions);
+
+            _playerPositionParam = Parameters["PlayerPosition"];
+            _proximityRadiusParam = Parameters["ProximityRadius"];
+        }
+
+        public void SetPlayerPosition(Vector2 iPlayerPosition)
+        {
+            _playerPositionParam.SetValue(iPlayerPosition);
+        }
+
+        public void SetProximityRadius(float iProximityRadius)
+        {
+            _proximityRadiusParam.SetValue(iProximityRadius);
+        }
+        
+        private readonly EffectParameter _playerPositionParam;
+        private readonly EffectParameter _proximityRadiusParam;
     }
 }

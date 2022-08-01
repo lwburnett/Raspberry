@@ -50,5 +50,11 @@
     <None Update="Content\Levels\PrototypeTileMap.ldtk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Shaders\ProximityShader.fx">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="mgfxc $(ProjectDir)Content\Shaders\ProximityShader.fx $(OutDir)Content\Shaders\ProximityShader.mgfxo /Profile:OpenGL" />
+  </Target>
 </Project>
