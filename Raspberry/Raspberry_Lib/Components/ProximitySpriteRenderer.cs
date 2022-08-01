@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
@@ -13,55 +12,64 @@ namespace Raspberry_Lib.Components
         {
             System.Diagnostics.Debug.Assert(iInsideSprite != null);
             System.Diagnostics.Debug.Assert(iOutsideSprite != null);
-            System.Diagnostics.Debug.Assert(iInsideSprite.SourceRect == iOutsideSprite.SourceRect);
+            System.Diagnostics.Debug.Assert(iOutsideSprite.Texture2D.Bounds == iInsideSprite.Texture2D.Bounds);
 
             _insideSprite = iInsideSprite;
-
-            _outsideSpriteHeight = iOutsideSprite.Texture2D.Height;
-            _outsideSpriteWidth = iOutsideSprite.Texture2D.Width;
-            var outsideSpriteData = new Color[_outsideSpriteWidth * _outsideSpriteHeight];
-            iOutsideSprite.Texture2D.GetData(outsideSpriteData);
-
-            _outsideSpriteData = outsideSpriteData.Select(c => new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f)).ToArray();
+            _outsideSprite = iOutsideSprite;
+            
+            _spriteHeight = iInsideSprite.Texture2D.Height;
+            _spriteWidth = iInsideSprite.Texture2D.Width;
 
             _getPlayerPosFunc = iGetPlayerPos;
             _getProximityRadiusFunc = iGetProximityRadius;
+
+            _areBoundsDirty = true;
         }
 
-        public override float Width => _insideSprite.SourceRect.Width;
-        public override float Height => _insideSprite.SourceRect.Height;
-
+        public override RectangleF Bounds => _bounds;
+        
         public override void OnAddedToEntity()
         {
-            _shader = Entity.Scene.Content.LoadEffect(Content.ContentData.AssetPaths.ProximityShader);
+            _shader = Entity.Scene.Content.Load<Effect>(Content.ContentData.AssetPaths.ProximityShader);
+
+            _bounds.CalculateBounds(Entity.Transform.Position, _localOffset, _insideSprite.Origin,
+                Entity.Transform.Scale, Entity.Transform.Rotation, _insideSprite.SourceRect.Width,
+                _insideSprite.SourceRect.Height);
         }
 
         public void Update()
         {
             var playerPos = _getPlayerPosFunc();
             var radius = _getProximityRadiusFunc();
-            
-            _shader.Parameters["SpritePositionTopLeft"].SetValue(Entity.Position + LocalOffset - new Vector2(_outsideSpriteWidth / 2f, _outsideSpriteHeight / 2f) * Entity.Transform.Scale);
-            _shader.Parameters["SpriteDimensions"].SetValue(new Vector2(_outsideSpriteWidth, _outsideSpriteHeight));
+
+            var spriteDimension = new[] { _spriteWidth, _spriteHeight };
+
+
+            _shader.Parameters["InsideTexture"].SetValue(_insideSprite.Texture2D);
+            _shader.Parameters["OutsideTexture"].SetValue(_outsideSprite.Texture2D);
+            _shader.Parameters["SpritePositionTopLeft"].SetValue(Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale);
+            _shader.Parameters["SpriteDimensions"].SetValue(spriteDimension);
+            _shader.Parameters["ScreenDimensions"].SetValue(new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height));
             _shader.Parameters["PlayerPosition"].SetValue(playerPos);
             _shader.Parameters["ProximityRadius"].SetValue(radius);
-            _shader.Parameters["OutsideSpriteData"].SetValue(_outsideSpriteData);
         }
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
-            iBatcher.Begin(_shader);
+            // iBatcher.End();
+            // iBatcher.Begin(BlendState.AlphaBlend, Core.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, _shader);
 
             iBatcher.Draw(_insideSprite, Entity.Transform.Position + LocalOffset, Color,
-                Entity.Transform.Rotation, Vector2.Zero, Entity.Transform.Scale, SpriteEffects.None, _layerDepth);
+                Entity.Transform.Rotation, _insideSprite.Origin, Entity.Transform.Scale, SpriteEffects.None, _layerDepth);
 
-            iBatcher.End();
+            // iBatcher.End();
+            // iBatcher.Begin();
         }
 
         private readonly Sprite _insideSprite;
-        private readonly Vector4[] _outsideSpriteData;
-        private readonly int _outsideSpriteHeight;
-        private readonly int _outsideSpriteWidth;
+        private readonly Sprite _outsideSprite;
+        private readonly int _spriteHeight;
+        private readonly int _spriteWidth;
         private readonly Func<Vector2> _getPlayerPosFunc;
         private readonly Func<float> _getProximityRadiusFunc;
 

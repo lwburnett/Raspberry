@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Nez;
 
 namespace Raspberry_Lib.Components
@@ -60,11 +61,13 @@ namespace Raspberry_Lib.Components
             var theseEntities = new List<Entity>();
 
             var increment = 32 * Entity.Transform.Scale.X;
-            
+
+            var character = Entity.Scene.FindEntity("character");
+
             var xPos = iBlock.Function.DomainStart;
             while (xPos <= iBlock.Function.DomainEnd)
             {
-                var theseBankTiles = TileGenerator.GenerateRiverTiles(xPos, increment, iBlock, Entity.Scale.X);
+                var theseBankTiles = TileGenerator.GenerateRiverTiles(xPos, increment, iBlock, Entity.Scale.X, () => character.Position);
 
                 foreach (var tile in theseBankTiles)
                 {
