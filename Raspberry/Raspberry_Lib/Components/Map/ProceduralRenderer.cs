@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
-using Action = Nez.AI.GOAP.Action;
 
 namespace Raspberry_Lib.Components
 {
-    internal class ProceduralRenderer : RenderableComponent, IBeginPlay/*, IUpdatable*/
+    internal class ProceduralRenderer : RenderableComponent, IBeginPlay, IUpdatable
     {
+        private static class Settings
+        {
+            public const int NumTilesToProcessPerTick = 5;
+        }
+
         public ProceduralRenderer()
         {
             _entities = new List<List<Entity>>();
@@ -53,19 +57,34 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        // public void Update()
-        // {
-        //     throw new System.NotImplementedException();
-        // }
+        public void Update()
+        {
+            if (_generationJob != null && !_generationJob.IsFinished)
+            {
+                _generationJob.Tick();
+            }
+
+            if (_deleteFirstBlock)
+            {
+                var numTilesDeleted = 0;
+                var blockToDelete = _entities.First();
+                while (blockToDelete.Any() && numTilesDeleted < Settings.NumTilesToProcessPerTick)
+                {
+                    blockToDelete[0].Destroy();
+                    blockToDelete.RemoveAt(0);
+                    numTilesDeleted++;
+                }
+
+                if (!blockToDelete.Any())
+                {
+                    _entities.RemoveAt(0);
+                    _deleteFirstBlock = false;
+                }
+            }
+        }
 
         public void OnNewGeneration(LevelBlock iNewBlock)
         {
-            foreach (var entity in _entities.First())
-            {
-                entity.Destroy();
-            }
-            _entities.RemoveAt(0);
-
             System.Diagnostics.Debug.Assert(_generationJob == null || _generationJob.IsFinished);
 
             _entities.Add(new List<Entity>());
@@ -78,15 +97,17 @@ namespace Raspberry_Lib.Components
                 tileIncrement,
                 Entity.Transform.Scale.X,
                 () => character.Position,
-                () => 200);
+                () => 200,
+                Settings.NumTilesToProcessPerTick);
 
-            _generationJob.Tick();
-            System.Diagnostics.Debug.Assert(_generationJob.IsFinished);
+            System.Diagnostics.Debug.Assert(!_deleteFirstBlock);
+            _deleteFirstBlock = true;
         }
         
         private readonly List<List<Entity>> _entities;
         private ProceduralGeneratorComponent _generator;
         private GenerationJob _generationJob;
+        private bool _deleteFirstBlock;
 
         private void OnTileGenerated(Entity iNewTile)
         {
@@ -105,6 +126,8 @@ namespace Raspberry_Lib.Components
                 Func<float> iGetProximityRadius,
                 int iNumToProcessPerFrame = int.MaxValue)
             {
+                System.Diagnostics.Debug.Assert(iNumToProcessPerFrame > 0);
+
                 IsFinished = false;
 
                 _levelBlock = iBlock;
