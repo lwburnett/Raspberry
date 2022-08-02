@@ -9,7 +9,7 @@ Art
 	- Add Menus
 	- *Add little particles that flow through the river
 	- *Add grass tiles above and below shoreline
-	- Area of influence shader around the player that shows the river within but the desert without
+	- *Area of influence shader around the player that shows the river within but the desert without
 
 Bugs
 	-* Acceleration when travelling backwards
