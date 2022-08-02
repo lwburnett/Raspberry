@@ -17,5 +17,7 @@ Bugs
 	- Rocks sometimes places badly at transitions
 	- Transitions at shoreline are sometimes blocky and choppy
 	- Transition segments sometimes calculate the wrong starting slope
+	- River particles display outside of the player proximity
+	- Rocks have a wake outside of player proximity
 
 Balance
