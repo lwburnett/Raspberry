@@ -3,7 +3,8 @@ Features
 	- Some sort of positive collectable to offset the dodging of obstacles
 
 Optimization
-	- Put generation in background thread
+	- *Put generation in background thread
+		(Instead I spread tile generation out to only do 5 tiles per frame
 
 Art
 	- Add Menus

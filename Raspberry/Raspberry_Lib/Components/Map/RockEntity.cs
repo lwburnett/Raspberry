@@ -23,7 +23,7 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToScene()
         {
-            var textureAtlas = Scene.Content.LoadTexture(Content.ContentData.AssetPaths.LevelTileset);
+            var textureAtlas = Scene.Content.LoadTexture(Content.ContentData.AssetPaths.LevelTileset, true);
             var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
             var texture = spriteList[0];
 
