@@ -34,8 +34,9 @@ namespace Raspberry_Lib.Components
                 _insideSprite.SourceRect.Height);
 
             var topLeftPosition = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale;
-            var screenSize = new Vector2(Entity.Scene.Camera.Bounds.X, Entity.Scene.Camera.Bounds.Y);
-            _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, topLeftPosition, screenSize);
+            var spriteDimensions = new Vector2(_spriteWidth, _spriteHeight) * Entity.Transform.Scale;
+            var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.X, Entity.Scene.Camera.Bounds.Y);
+            _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, topLeftPosition, spriteDimensions, screenDimensions);
         }
 
         public void Update()
@@ -65,15 +66,15 @@ namespace Raspberry_Lib.Components
 
     internal class ProximityMaterial : Material<ProximityEffect>
     {
-        public ProximityMaterial(Texture2D iInsideTexture, Texture2D iOutsideTexture, Vector2 iPositionTopLeft, Vector2 iScreenDimension)
+        public ProximityMaterial(Texture2D iInsideTexture, Texture2D iOutsideTexture, Vector2 iPositionTopLeft, Vector2 iSpriteDimensions, Vector2 iScreenDimension)
         {
-            Effect = new ProximityEffect(iInsideTexture, iOutsideTexture, iPositionTopLeft, iScreenDimension);
+            Effect = new ProximityEffect(iInsideTexture, iOutsideTexture, iPositionTopLeft, iSpriteDimensions, iScreenDimension);
         }
     }
 
     internal class ProximityEffect : Effect
     {
-        public ProximityEffect(Texture2D iInsideTexture, Texture2D iOutsideTexture, Vector2 iPositionTopLeft, Vector2 iScreenDimensions) : 
+        public ProximityEffect(Texture2D iInsideTexture, Texture2D iOutsideTexture, Vector2 iPositionTopLeft, Vector2 iSpriteDimensions, Vector2 iScreenDimensions) : 
             base(Core.GraphicsDevice, EffectResource.GetFileResourceBytes(Content.ContentData.AssetPaths.ProximityShader))
         {
             Parameters["InsideTexture"].SetValue(iInsideTexture);
@@ -81,6 +82,8 @@ namespace Raspberry_Lib.Components
             Parameters["OutsideTexture"].SetValue(iOutsideTexture);
 
             Parameters["SpritePositionTopLeft"].SetValue(iPositionTopLeft);
+
+            Parameters["SpriteDimensions"].SetValue(iSpriteDimensions);
 
             Parameters["ScreenDimensions"].SetValue(iScreenDimensions);
 

@@ -1,10 +1,10 @@
 ﻿#if OPENGL
-	#define SV_POSITION POSITION
-	#define VS_SHADERMODEL vs_3_0
-	#define PS_SHADERMODEL ps_3_0
+#define SV_POSITION POSITION
+#define VS_SHADERMODEL vs_3_0
+#define PS_SHADERMODEL ps_3_0
 #else
-	#define VS_SHADERMODEL vs_4_0_level_9_1
-	#define PS_SHADERMODEL ps_4_0_level_9_1
+#define VS_SHADERMODEL vs_4_0_level_9_1
+#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
 #define MAXSIZECOLORMAP 10
@@ -14,7 +14,7 @@ Texture2D InsideTexture;
 Texture2D OutsideTexture;
 
 float2 SpritePositionTopLeft;
-int SpriteDimensions[2];
+float2 SpriteDimensions;
 float2 ScreenDimensions;
 float2 PlayerPosition;
 float ProximityRadius;
@@ -70,10 +70,10 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	float4 outsideColor = tex2D(OutsideTextureSampler, input.TextureCoordinates);
 
 	float4 result = outsideColor;
-	
-	const float2 thisPixelPos = float2(SpritePositionTopLeft.x + (input.TextureCoordinates.x * SpriteDimensions[0]), SpritePositionTopLeft.y + input.TextureCoordinates.y * SpriteDimensions[1]);
+
+	const float2 thisPixelPos = float2(SpritePositionTopLeft.x + (input.TextureCoordinates.x * SpriteDimensions.x), SpritePositionTopLeft.y + input.TextureCoordinates.y * SpriteDimensions.y);
 	const float dist = GetDistSafe(thisPixelPos, PlayerPosition);
-	
+
 	if (dist <= ProximityRadius)
 	{
 		result = insideColor;
