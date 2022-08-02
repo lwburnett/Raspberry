@@ -28,9 +28,6 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" />
-  </ItemGroup>
-  <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
@@ -50,11 +47,14 @@
     <None Update="Content\Levels\PrototypeTileMap.ldtk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Levels\Tileset.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Shaders\ProximityShader.fx">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mgfxc $(ProjectDir)Content\Shaders\ProximityShader.fx $(OutDir)Content\Shaders\ProximityShader.mgfxo /Profile:OpenGL" />
+    <Exec Command="mkdir $(OutDir)Content\Shaders&#xD;&#xA;mgfxc $(ProjectDir)Content\Shaders\ProximityShader.fx $(OutDir)Content\Shaders\ProximityShader.mgfxo /Profile:OpenGL" />
   </Target>
 </Project>

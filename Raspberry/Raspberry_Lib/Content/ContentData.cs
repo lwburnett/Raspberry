@@ -6,8 +6,8 @@ namespace Raspberry_Lib.Content
     {
         internal static class AssetPaths
         {
-            public const string LevelTileset = @"Levels/Tileset";
-            public const string CharacterSpriteSheet = @"Characters/PrototypeCharacter";
+            public const string LevelTileset = @"Content/Levels/Tileset.png";
+            public const string CharacterSpriteSheet = @"Content/Characters/PrototypeCharacter.png";
             public const string ProximityShader = @"Content/Shaders/ProximityShader.mgfxo";
         }
 
