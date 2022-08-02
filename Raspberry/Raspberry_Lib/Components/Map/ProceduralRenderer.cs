@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
+using Action = Nez.AI.GOAP.Action;
 
 namespace Raspberry_Lib.Components
 {
-    internal class ProceduralRenderer : RenderableComponent, IBeginPlay
+    internal class ProceduralRenderer : RenderableComponent, IBeginPlay/*, IUpdatable*/
     {
         public ProceduralRenderer()
         {
-            // _tiles = new List<List<Tile>>();
-            // _colliders = new List<List<Collider>>();
             _entities = new List<List<Entity>>();
             RenderLayer = 7;
         }
-
-        public int PhysicsLayer = 1;
+        
         public override float Width => float.MaxValue;
         public override float Height => float.MaxValue;
 
@@ -24,23 +23,40 @@ namespace Raspberry_Lib.Components
             // This does nothing right now but I'm keeping it here in case I need to render tiles later
         }
 
-        public int BeginPlayOrder => 1;
+        public override void OnAddedToEntity()
+        {
+            _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
+        }
 
+        public int BeginPlayOrder => 1;
         public void OnBeginPlay()
         {
-            // var textureAtlas = Entity.Scene.Content.LoadTexture(Content.Content.LevelTileset);
-            // var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
+            System.Diagnostics.Debug.Assert(_generator != null);
+            System.Diagnostics.Debug.Assert(_generationJob == null);
 
-            // _waterTexture = spriteList[0];
-            // _waterBankTexture = spriteList[1];
-            // _landBankTexture = spriteList[3];
-
-            _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
+            var tileIncrement = 32 * Entity.Transform.Scale.X;
+            var character = Entity.Scene.FindEntity("character");
             foreach (var block in _generator.Blocks)
             {
-                GenerateLevelBlockRenderables(block);
+                _entities.Add(new List<Entity>());
+
+                _generationJob = new GenerationJob(
+                    block,
+                    OnTileGenerated,
+                    tileIncrement,
+                    Entity.Transform.Scale.X,
+                    () => character.Position,
+                    () => 200);
+
+                _generationJob.Tick();
+                System.Diagnostics.Debug.Assert(_generationJob.IsFinished);
             }
         }
+
+        // public void Update()
+        // {
+        //     throw new System.NotImplementedException();
+        // }
 
         public void OnNewGeneration(LevelBlock iNewBlock)
         {
@@ -50,46 +66,112 @@ namespace Raspberry_Lib.Components
             }
             _entities.RemoveAt(0);
 
-            GenerateLevelBlockRenderables(iNewBlock);
+            System.Diagnostics.Debug.Assert(_generationJob == null || _generationJob.IsFinished);
+
+            _entities.Add(new List<Entity>());
+
+            var tileIncrement = 32 * Entity.Transform.Scale.X;
+            var character = Entity.Scene.FindEntity("character");
+            _generationJob = new GenerationJob(
+                iNewBlock,
+                OnTileGenerated,
+                tileIncrement,
+                Entity.Transform.Scale.X,
+                () => character.Position,
+                () => 200);
+
+            _generationJob.Tick();
+            System.Diagnostics.Debug.Assert(_generationJob.IsFinished);
         }
         
         private readonly List<List<Entity>> _entities;
         private ProceduralGeneratorComponent _generator;
+        private GenerationJob _generationJob;
 
-        private void GenerateLevelBlockRenderables(LevelBlock iBlock)
+        private void OnTileGenerated(Entity iNewTile)
         {
-            var theseEntities = new List<Entity>();
+            _entities.Last().Add(iNewTile);
+            Entity.Scene.AddEntity(iNewTile);
+        }
 
-            var increment = 32 * Entity.Transform.Scale.X;
-
-            var character = Entity.Scene.FindEntity("character");
-
-            var xPos = iBlock.Function.DomainStart;
-            while (xPos <= iBlock.Function.DomainEnd)
+        private class GenerationJob
+        {
+            public GenerationJob(
+                LevelBlock iBlock, 
+                Action<Entity> iOnTileGenerated,
+                float iIncrement,
+                float iScale,
+                Func<Vector2> iGetPlayerPosFunc,
+                Func<float> iGetProximityRadius,
+                int iNumToProcessPerFrame = int.MaxValue)
             {
-                var theseBankTiles = TileGenerator.GenerateRiverTiles(xPos, increment, iBlock, Entity.Scale.X, () => character.Position);
+                IsFinished = false;
 
-                foreach (var tile in theseBankTiles)
+                _levelBlock = iBlock;
+                _onTileGenerated = iOnTileGenerated;
+                _increment = iIncrement;
+                _scale = iScale;
+                _getPlayerPosFunc = iGetPlayerPosFunc;
+                _getProximityRadius = iGetProximityRadius;
+                _numToProcessPerFrame = iNumToProcessPerFrame;
+
+                _currentXPos = _levelBlock.Function.DomainStart;
+                _currentObstacleIndex = 0;
+            }
+
+            public void Tick()
+            {
+                var numProcessed = 0;
+
+                while (numProcessed < _numToProcessPerFrame && !IsFinished)
                 {
-                    Entity.Scene.AddEntity(tile);
-                    theseEntities.Add(tile);
+                    if (_currentXPos <= _levelBlock.Function.DomainEnd)
+                    {
+                        var theseTiles = TileGenerator.GenerateRiverTiles(
+                            _currentXPos, 
+                            _increment, 
+                            _levelBlock, 
+                            _scale, 
+                            _getPlayerPosFunc);
+
+                        foreach (var tile in theseTiles)
+                        {
+                            _onTileGenerated(tile);
+                            numProcessed++;
+                        }
+
+                        _currentXPos += _increment;
+                    }
+                    else if (_currentObstacleIndex < _levelBlock.Obstacles.Count)
+                    {
+                        var thisObstacle = new RockObstacleEntity(_levelBlock.Obstacles[_currentObstacleIndex])
+                        {
+                            Scale = new Vector2(_scale)
+                        };
+
+                        _onTileGenerated(thisObstacle);
+                        _currentObstacleIndex++;
+                        numProcessed++;
+                    }
+                    else
+                    {
+                        IsFinished = true;
+                    }
                 }
-
-                xPos += increment;
             }
+
+            public bool IsFinished { get; private set; }
             
-            foreach (var iObstacleLocation in iBlock.Obstacles)
-            {
-                var thisObstacle = new RockObstacleEntity(iObstacleLocation)
-                {
-                    Scale = Entity.Scale
-                };
+            private readonly LevelBlock _levelBlock;
+            private readonly Action<Entity> _onTileGenerated;
+            private readonly float _increment;
+            private readonly float _scale;
+            private readonly Func<Vector2> _getPlayerPosFunc;
+            private readonly Func<float> _getProximityRadius;
+            private readonly int _numToProcessPerFrame;
 
-                theseEntities.Add(thisObstacle);
-                Entity.Scene.AddEntity(thisObstacle);
-            }
-
-            _entities.Add(theseEntities);
+            private float _currentXPos;
+            private int _currentObstacleIndex;
         }
     }
 }
