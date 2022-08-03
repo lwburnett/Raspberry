@@ -51,9 +51,12 @@ namespace Raspberry_Lib.Components
         {
             _camera = Entity.Scene.Camera;
             _generator = Entity.GetComponent<ProceduralGeneratorComponent>();
-            
+
+            _character = Entity.Scene.FindEntity("character");
+
             System.Diagnostics.Debug.Assert(_camera != null);
             System.Diagnostics.Debug.Assert(_generator != null);
+            System.Diagnostics.Debug.Assert(_character != null);
         }
 
         public void OnBeginPlay()
@@ -136,16 +139,20 @@ namespace Raspberry_Lib.Components
             foreach (var particle in _particles)
             {
                 var modifiedPosition = particle.Position + (float)Math.Cos(particle.OscillationPhase) * Settings.OscillationAmplitude.Value * particle.OscillationDirection;
-                
-                iBatcher.Draw(
-                    _sprite,
-                    modifiedPosition,
-                    Color.White,
-                    0f,
-                    Vector2.Zero,
-                    Entity.Scale,
-                    SpriteEffects.None,
-                    0);
+
+
+                if (Vector2.Distance(modifiedPosition, _character.Position) < 200)
+                {
+                    iBatcher.Draw(
+                        _sprite,
+                        modifiedPosition,
+                        Color.White,
+                        0f,
+                        Vector2.Zero,
+                        Entity.Scale,
+                        SpriteEffects.None,
+                        0);
+                }
             }
         }
 
@@ -153,5 +160,6 @@ namespace Raspberry_Lib.Components
         private readonly Sprite _sprite;
         private Camera _camera;
         private ProceduralGeneratorComponent _generator;
+        private Entity _character;
     }
 }
