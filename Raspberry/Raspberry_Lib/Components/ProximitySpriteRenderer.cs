@@ -37,7 +37,8 @@ namespace Raspberry_Lib.Components
             var topLeftPosition = Vector2.Zero;
             var spriteDimensions = new Vector2(_spriteWidth, _spriteHeight) * Entity.Transform.Scale;
             var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height);
-            _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, topLeftPosition, spriteDimensions, screenDimensions);
+            _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, spriteDimensions, screenDimensions);
+            _material.Effect.SetSpritePosition(topLeftPosition);
 
 
             _topLeftPos = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale;
