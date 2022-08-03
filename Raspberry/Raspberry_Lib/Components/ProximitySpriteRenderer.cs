@@ -33,15 +33,20 @@ namespace Raspberry_Lib.Components
                 Entity.Transform.Scale, Entity.Transform.Rotation, _insideSprite.SourceRect.Width,
                 _insideSprite.SourceRect.Height);
 
-            var topLeftPosition = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale/* - Entity.Scene.Camera.Bounds.Location*/;
+            // This seems weird to put the top left position at (0, 0), but this prevents floating point overflow on android whose max value is 2^14
+            var topLeftPosition = Vector2.Zero;
             var spriteDimensions = new Vector2(_spriteWidth, _spriteHeight) * Entity.Transform.Scale;
             var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height);
             _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, topLeftPosition, spriteDimensions, screenDimensions);
+
+
+            _topLeftPos = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale;
         }
 
         public void Update()
         {
-            var playerPos = _getPlayerPosFunc();
+            // Expressing the player position relative to this sprite to avoid floating point overflow on android whose max value is 2^14
+            var playerPos = _getPlayerPosFunc() - _topLeftPos;
             var radius = _getProximityRadiusFunc();
 
             _material.Effect.SetPlayerPosition(playerPos);
@@ -60,6 +65,7 @@ namespace Raspberry_Lib.Components
         private readonly int _spriteWidth;
         private readonly Func<Vector2> _getPlayerPosFunc;
         private readonly Func<float> _getProximityRadiusFunc;
+        private Vector2 _topLeftPos;
 
         private ProximityMaterial _material;
     }
