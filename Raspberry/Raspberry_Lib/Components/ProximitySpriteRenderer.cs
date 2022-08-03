@@ -33,9 +33,9 @@ namespace Raspberry_Lib.Components
                 Entity.Transform.Scale, Entity.Transform.Rotation, _insideSprite.SourceRect.Width,
                 _insideSprite.SourceRect.Height);
 
-            var topLeftPosition = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale;
+            var topLeftPosition = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale/* - Entity.Scene.Camera.Bounds.Location*/;
             var spriteDimensions = new Vector2(_spriteWidth, _spriteHeight) * Entity.Transform.Scale;
-            var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.X, Entity.Scene.Camera.Bounds.Y);
+            var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height);
             _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, topLeftPosition, spriteDimensions, screenDimensions);
         }
 
