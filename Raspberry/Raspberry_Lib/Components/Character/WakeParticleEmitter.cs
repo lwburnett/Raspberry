@@ -17,8 +17,7 @@ namespace Raspberry_Lib.Components
             public const float ParticleTtl = 1f;
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
 
-            public const int TextureSizeStart = 2;
-            public const int TextureSizeEnd = 2;
+            public const int TextureSize = 1;
 
             public const byte TextureAlphaStart = 255;
             public const byte TextureAlphaEnd = 0;
@@ -42,7 +41,6 @@ namespace Raspberry_Lib.Components
             public Vector2 Velocity { get; set; }
             public float SpawnTime { get; set; }
             public float TimeToLive { get; set; }
-            public float Size { get; set; }
             public byte ColorAlpha { get; set; }
             public Vector2 DeltaVelocityPerFrame { get; set; }
         }
@@ -62,17 +60,20 @@ namespace Raspberry_Lib.Components
             _shouldUpdateFunc = iShouldUpdateFunc;
             Pool<WakeParticle>.WarmCache(Settings.MaxNumParticles);
             
-            var textureData = new Color[Settings.TextureSizeStart * Settings.TextureSizeStart];
-            for (int ii = 0; ii < Settings.TextureSizeStart * Settings.TextureSizeStart; ii++)
+            var textureData = new Color[Settings.TextureSize * Settings.TextureSize];
+            for (int ii = 0; ii < Settings.TextureSize * Settings.TextureSize; ii++)
             {
                 textureData[ii] = Color.White;
             }
-            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.TextureSizeStart, Settings.TextureSizeStart);
+            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.TextureSize, Settings.TextureSize);
             texture.SetData(textureData);
             _sprite = new Sprite(texture);
             _rng = new System.Random();
             _staticSpawnPoints = new List<Vector2>();
         }
+        //public override Material Material => _material;
+        public override float Width => 2000;
+        public override float Height => 2000;
 
         public override void OnAddedToEntity()
         {
@@ -99,26 +100,30 @@ namespace Raspberry_Lib.Components
                         return;
                 }
             }
+            
+            _character = Entity.Scene.FindEntity("character");
         }
-        
-        public override float Width => 2000;
-        public override float Height => 2000;
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
             foreach (var wakeParticle in _particles)
             {
-                var thisColor = Color.White * (wakeParticle.ColorAlpha / 255f);
+                var thisPos = Entity.Position + wakeParticle.Position;
 
-                iBatcher.Draw(
-                    wakeParticle.Sprite, 
-                    Entity.Position + wakeParticle.Position,
-                    thisColor, 
-                    0f, 
-                    Vector2.Zero, 
-                    wakeParticle.Size, 
-                    SpriteEffects.None, 
-                    0);
+                if (Vector2.Distance(thisPos, _character.Position) < 200)
+                {
+                    var thisColor = Color.White * (wakeParticle.ColorAlpha / 255f);
+
+                    iBatcher.Draw(
+                        wakeParticle.Sprite,
+                        thisPos,
+                        thisColor,
+                        0f,
+                        wakeParticle.Sprite.Origin,
+                        Entity.Transform.Scale,
+                        SpriteEffects.None,
+                        0);
+                }
             }
         }
 
@@ -147,7 +152,6 @@ namespace Raspberry_Lib.Components
 
                 var lerpValue = (Time.TotalTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
                 thisParticle.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, lerpValue);
-                thisParticle.Size = MathHelper.Lerp(Settings.TextureSizeStart, Settings.TextureSizeEnd, lerpValue);
             }
 
             List<Vector2> spawnPoints;
@@ -180,7 +184,7 @@ namespace Raspberry_Lib.Components
                 if (_particles.Any())
                 {
                     var distanceOfLastSpawnedParticle = Vector2.Distance(_lastParticleSpawned.SpawnPosition, _lastParticleSpawned.Position);
-                    var widthOfParticleTexture = Settings.TextureSizeStart;
+                    var widthOfParticleTexture = Settings.TextureSize;
 
                     if (distanceOfLastSpawnedParticle > widthOfParticleTexture)
                     {
@@ -207,6 +211,8 @@ namespace Raspberry_Lib.Components
 
         private readonly System.Random _rng;
         private readonly bool _isPlayer;
+        
+        private Entity _character;
 
         private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
@@ -291,7 +297,7 @@ namespace Raspberry_Lib.Components
 
         private void SpawnParticles(List<Vector2> iSpawnPositions, Vector2 iVelocity)
         {
-            var spawnPointOffset = new Vector2(-Settings.TextureSizeStart * Entity.Scale.X / 2f);
+            var spawnPointOffset = new Vector2(-Settings.TextureSize * Entity.Scale.X / 2f);
 
             foreach (var spawnPosition in iSpawnPositions)
             {
