@@ -1,6 +1,12 @@
+------------------------ Outstanding ------------------------
+
 Features
 	- "Active Reload" for rowing
-	- Some sort of positive collectable to offset the dodging of obstacles
+	- Player proximity enhancements
+		- Positive collectable that increases size of player proximity
+		- Slowly decay over time
+		- The player looses when the proximity decays too low
+	- Daily challenge map based on today's date
 
 Optimization
 
@@ -9,18 +15,24 @@ Art
 	- Game play UI
 		Turn up/down
 		Row
+	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	- Iterate on generated tile art
+	- Iterate on player character boat art
+	- Particle effect from the oars when the player rows
+	- Particle effect from the oars when the player turns
 
 Bugs
-	- Rocks sometimes places badly at transitions
+	- Rocks sometimes placed badly at transitions
 	- Transitions at shoreline are sometimes blocky and choppy
 	- Transition segments sometimes calculate the wrong starting slope
 	- You can kind of make out the boundaries of the shoreline tiles
 
 Balance
+	- Rounds last kind of long
+	- First half of rounds are kinda easy
 
----------------------------------------------------------
 
-Completed
+------------------------- Completed -------------------------
 
 Features
 
