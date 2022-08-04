@@ -20,6 +20,7 @@ Art
 	- Iterate on player character boat art
 	- Particle effect from the oars when the player rows
 	- Particle effect from the oars when the player turns
+	- Different sprites for rocks when inside and outside the player radius
 
 Bugs
 	- Rocks sometimes placed badly at transitions
