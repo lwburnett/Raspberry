@@ -11,6 +11,7 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public const int NumTilesToProcessPerTick = 5;
+            public static readonly RenderSetting MinXDistanceBetweenBranches = new(3000);
         }
 
         public ProceduralRenderer()
@@ -50,7 +51,8 @@ namespace Raspberry_Lib.Components
                     tileIncrement,
                     Entity.Transform.Scale.X,
                     () => character.Position,
-                    () => 200);
+                    () => 200,
+                    character.Position.X);
 
                 _generationJob.Tick();
                 System.Diagnostics.Debug.Assert(_generationJob.IsFinished);
@@ -91,6 +93,7 @@ namespace Raspberry_Lib.Components
 
             var tileIncrement = 32 * Entity.Transform.Scale.X;
             var character = Entity.Scene.FindEntity("character");
+            var lastBranchSpawnX = _generationJob?.LastBranchSpawnX ?? character.Position.X;
             _generationJob = new GenerationJob(
                 iNewBlock,
                 OnTileGenerated,
@@ -98,6 +101,7 @@ namespace Raspberry_Lib.Components
                 Entity.Transform.Scale.X,
                 () => character.Position,
                 () => 200,
+                lastBranchSpawnX,
                 Settings.NumTilesToProcessPerTick);
 
             System.Diagnostics.Debug.Assert(!_deleteFirstBlock);
@@ -124,6 +128,7 @@ namespace Raspberry_Lib.Components
                 float iScale,
                 Func<Vector2> iGetPlayerPosFunc,
                 Func<float> iGetProximityRadius,
+                float iLastBranchSpawnX,
                 int iNumToProcessPerFrame = int.MaxValue)
             {
                 System.Diagnostics.Debug.Assert(iNumToProcessPerFrame > 0);
@@ -137,6 +142,8 @@ namespace Raspberry_Lib.Components
                 _getPlayerPosFunc = iGetPlayerPosFunc;
                 _getProximityRadius = iGetProximityRadius;
                 _numToProcessPerFrame = iNumToProcessPerFrame;
+
+                LastBranchSpawnX = iLastBranchSpawnX;
 
                 _currentXPos = _levelBlock.Function.DomainStart;
                 _currentObstacleIndex = 0;
@@ -167,10 +174,24 @@ namespace Raspberry_Lib.Components
                     }
                     else if (_currentObstacleIndex < _levelBlock.Obstacles.Count)
                     {
-                        var thisObstacle = new RockObstacleEntity(_levelBlock.Obstacles[_currentObstacleIndex])
+                        var thisObstaclePosition = _levelBlock.Obstacles[_currentObstacleIndex];
+
+                        Entity thisObstacle;
+                        if (thisObstaclePosition.X - LastBranchSpawnX > Settings.MinXDistanceBetweenBranches.Value)
                         {
-                            Scale = new Vector2(_scale)
-                        };
+                            thisObstacle = new BranchEntity(thisObstaclePosition)
+                            {
+                                Scale = new Vector2(_scale)
+                            };
+                            LastBranchSpawnX = thisObstaclePosition.X;
+                        }
+                        else
+                        {
+                            thisObstacle = new RockObstacleEntity(_levelBlock.Obstacles[_currentObstacleIndex])
+                            {
+                                Scale = new Vector2(_scale)
+                            };
+                        }
 
                         _onTileGenerated(thisObstacle);
                         _currentObstacleIndex++;
@@ -184,6 +205,7 @@ namespace Raspberry_Lib.Components
             }
 
             public bool IsFinished { get; private set; }
+            public float LastBranchSpawnX { get; private set; }
             
             private readonly LevelBlock _levelBlock;
             private readonly Action<Entity> _onTileGenerated;
@@ -192,7 +214,7 @@ namespace Raspberry_Lib.Components
             private readonly Func<Vector2> _getPlayerPosFunc;
             private readonly Func<float> _getProximityRadius;
             private readonly int _numToProcessPerFrame;
-
+            
             private float _currentXPos;
             private int _currentObstacleIndex;
         }
