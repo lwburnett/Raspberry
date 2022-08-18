@@ -102,6 +102,7 @@ namespace Raspberry_Lib.Components
             }
             
             _character = Entity.Scene.FindEntity("character");
+            _playerProximityComponent = _character.GetComponent<PlayerProximityComponent>();
         }
 
         public override void Render(Batcher iBatcher, Camera iCamera)
@@ -110,7 +111,7 @@ namespace Raspberry_Lib.Components
             {
                 var thisPos = Entity.Position + wakeParticle.Position;
 
-                if (Vector2.Distance(thisPos, _character.Position) < 200)
+                if (Vector2.Distance(thisPos, _character.Position) < _playerProximityComponent.Radius)
                 {
                     var thisColor = Color.White * (wakeParticle.ColorAlpha / 255f);
 
@@ -213,6 +214,7 @@ namespace Raspberry_Lib.Components
         private readonly bool _isPlayer;
         
         private Entity _character;
+        private PlayerProximityComponent _playerProximityComponent;
 
         private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {

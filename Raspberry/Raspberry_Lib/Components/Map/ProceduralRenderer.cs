@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
+using Nez.BitmapFonts;
 
 namespace Raspberry_Lib.Components
 {
@@ -41,6 +42,7 @@ namespace Raspberry_Lib.Components
 
             var tileIncrement = 32 * Entity.Transform.Scale.X;
             var character = Entity.Scene.FindEntity("character");
+            var playerProximityComponent = character.GetComponent<PlayerProximityComponent>();
             foreach (var block in _generator.Blocks)
             {
                 _entities.Add(new List<Entity>());
@@ -51,7 +53,7 @@ namespace Raspberry_Lib.Components
                     tileIncrement,
                     Entity.Transform.Scale.X,
                     () => character.Position,
-                    () => 200,
+                    () => playerProximityComponent.Radius,
                     character.Position.X);
 
                 _generationJob.Tick();
@@ -93,6 +95,7 @@ namespace Raspberry_Lib.Components
 
             var tileIncrement = 32 * Entity.Transform.Scale.X;
             var character = Entity.Scene.FindEntity("character");
+            var playerProximityComponent = character.GetComponent<PlayerProximityComponent>();
             var lastBranchSpawnX = _generationJob?.LastBranchSpawnX ?? character.Position.X;
             _generationJob = new GenerationJob(
                 iNewBlock,
@@ -100,7 +103,7 @@ namespace Raspberry_Lib.Components
                 tileIncrement,
                 Entity.Transform.Scale.X,
                 () => character.Position,
-                () => 200,
+                () => playerProximityComponent.Radius,
                 lastBranchSpawnX,
                 Settings.NumTilesToProcessPerTick);
 
@@ -162,7 +165,8 @@ namespace Raspberry_Lib.Components
                             _increment, 
                             _levelBlock, 
                             _scale, 
-                            _getPlayerPosFunc);
+                            _getPlayerPosFunc,
+                            _getProximityRadius);
 
                         foreach (var tile in theseTiles)
                         {

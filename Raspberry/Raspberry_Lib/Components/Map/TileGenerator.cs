@@ -17,7 +17,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting GrassTileHeight = new(1000);
         }
 
-        public static List<Entity> GenerateRiverTiles(float iXPos, float iTileWidth, LevelBlock iBlock, float iScale, Func<Vector2> iGetPlayerPosFunc)
+        public static List<Entity> GenerateRiverTiles(float iXPos, float iTileWidth, LevelBlock iBlock, float iScale, Func<Vector2> iGetPlayerPosFunc, Func<float> iGetPlayerProximity)
         {
             var tiles = new List<Entity>();
 
@@ -161,7 +161,7 @@ namespace Raspberry_Lib.Components
             var upperEntity = new Entity();
             upperEntity.SetPosition(upperPosition);
             upperEntity.SetScale(iScale);
-            upperEntity.AddComponent(new ProximitySpriteRenderer(upperSpriteInside, upperSpriteOutside, iGetPlayerPosFunc, () => 200) { RenderLayer = 5 });
+            upperEntity.AddComponent(new ProximitySpriteRenderer(upperSpriteInside, upperSpriteOutside, iGetPlayerPosFunc, iGetPlayerProximity) { RenderLayer = 5 });
 
             tiles.Add(upperEntity);
 
@@ -169,7 +169,7 @@ namespace Raspberry_Lib.Components
             var lowerEntity = new Entity();
             lowerEntity.SetPosition(lowerPosition);
             lowerEntity.SetScale(iScale);
-            lowerEntity.AddComponent(new ProximitySpriteRenderer(lowerSpriteInside, lowerSpriteOutside, iGetPlayerPosFunc, () => 200) { RenderLayer = 5 });
+            lowerEntity.AddComponent(new ProximitySpriteRenderer(lowerSpriteInside, lowerSpriteOutside, iGetPlayerPosFunc, iGetPlayerProximity) { RenderLayer = 5 });
 
             tiles.Add(lowerEntity);
 
@@ -218,7 +218,7 @@ namespace Raspberry_Lib.Components
             var waterEntity = new Entity();
             waterEntity.SetPosition(waterPosition);
             waterEntity.SetScale(iScale);
-            waterEntity.AddComponent(new ProximitySpriteRenderer(waterSprite, riverBedSprite, iGetPlayerPosFunc, () => 200) {RenderLayer = 6});
+            waterEntity.AddComponent(new ProximitySpriteRenderer(waterSprite, riverBedSprite, iGetPlayerPosFunc, iGetPlayerProximity) {RenderLayer = 6});
 
             tiles.Add(waterEntity);
 
@@ -251,7 +251,7 @@ namespace Raspberry_Lib.Components
             var upperGrassEntity = new Entity();
             upperGrassEntity.SetPosition(upperGrassPosition);
             upperGrassEntity.SetScale(iScale);
-            upperGrassEntity.AddComponent(new ProximitySpriteRenderer(upperGrassSprite, upperSandSprite, iGetPlayerPosFunc, () => 200) { RenderLayer = 6 });
+            upperGrassEntity.AddComponent(new ProximitySpriteRenderer(upperGrassSprite, upperSandSprite, iGetPlayerPosFunc, iGetPlayerProximity) { RenderLayer = 6 });
 
             var lowerGrassTexture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, actualDataWidth, grassHeightPixels);
             lowerGrassTexture.SetData(lowerGrassData);
@@ -265,7 +265,7 @@ namespace Raspberry_Lib.Components
             var lowerGrassEntity = new Entity();
             lowerGrassEntity.SetPosition(lowerGrassPosition);
             lowerGrassEntity.SetScale(iScale);
-            lowerGrassEntity.AddComponent(new ProximitySpriteRenderer(lowerGrassSprite, lowerSandSprite, iGetPlayerPosFunc, () => 200) { RenderLayer = 6 });
+            lowerGrassEntity.AddComponent(new ProximitySpriteRenderer(lowerGrassSprite, lowerSandSprite, iGetPlayerPosFunc, iGetPlayerProximity) { RenderLayer = 6 });
 
             tiles.Add(upperGrassEntity);
             tiles.Add(lowerGrassEntity);

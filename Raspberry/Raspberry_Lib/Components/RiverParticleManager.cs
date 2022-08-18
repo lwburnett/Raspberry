@@ -85,6 +85,9 @@ namespace Raspberry_Lib.Components
 
                 _particles.Add(particle);
             }
+
+            _playerProximityComponent = _character.GetComponent<PlayerProximityComponent>();
+            System.Diagnostics.Debug.Assert(_playerProximityComponent != null);
         }
 
         public void Update()
@@ -141,7 +144,7 @@ namespace Raspberry_Lib.Components
                 var modifiedPosition = particle.Position + (float)Math.Cos(particle.OscillationPhase) * Settings.OscillationAmplitude.Value * particle.OscillationDirection;
 
 
-                if (Vector2.Distance(modifiedPosition, _character.Position) < 200)
+                if (Vector2.Distance(modifiedPosition, _character.Position) < _playerProximityComponent.Radius)
                 {
                     iBatcher.Draw(
                         _sprite,
@@ -161,5 +164,6 @@ namespace Raspberry_Lib.Components
         private Camera _camera;
         private ProceduralGeneratorComponent _generator;
         private Entity _character;
+        private PlayerProximityComponent _playerProximityComponent;
     }
 }

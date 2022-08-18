@@ -7,6 +7,7 @@ namespace Raspberry_Lib.Components
         public PrototypeCharacterComponent(System.Action iOnFatalCollision)
         {
             _collisionComponent = new CharacterCollisionComponent(iOnFatalCollision);
+            _playerProximityComponent = new PlayerProximityComponent(iOnFatalCollision);
         }
 
         public enum State
@@ -25,11 +26,13 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
             Entity.AddComponent(_collisionComponent);
             Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true));
+            Entity.AddComponent(_playerProximityComponent);
         }
 
         private CharacterAnimationComponent _animationComponent;
         private CharacterMovementComponent _movementComponent;
         private readonly CharacterCollisionComponent _collisionComponent;
+        private readonly PlayerProximityComponent _playerProximityComponent;
 
         private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {

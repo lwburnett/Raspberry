@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Microsoft.Xna.Framework;
 using Nez;
 using Nez.PhysicsShapes;
 
@@ -16,6 +15,7 @@ namespace Raspberry_Lib.Components
         public override void OnAddedToEntity()
         {
             Entity.AddComponent(_collider);
+            _playerProximityComponent = Entity.GetComponent<PlayerProximityComponent>();
 
 #if VERBOSE
             Verbose.RenderCollider(_collider);
@@ -66,15 +66,23 @@ namespace Raspberry_Lib.Components
 
         public void HandleCollision(CollisionResult collisionResult)
         {
-            if (collisionResult.Collider != null)
+            if (collisionResult.Collider == null) 
+                return;
+
+            if (collisionResult.Collider.Entity is RockObstacleEntity)
             {
                 OnFatalCollision();
+            }
+            else if (collisionResult.Collider.Entity is BranchEntity)
+            {
+                _playerProximityComponent.OnBranchHit();
             }
         }
 
         private readonly BoxCollider _collider;
         private readonly System.Action _onFatalCollision;
         private ProceduralGeneratorComponent _proceduralGenerator;
+        private PlayerProximityComponent _playerProximityComponent;
 
         private void OnFatalCollision()
         {
