@@ -8,10 +8,10 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public static readonly RenderSetting StartingRadius = new(300);
-            public static readonly RenderSetting BranchHitIncrease = new(300);
-            public const float BranchHitIncreaseOverTimeSeconds = .5f;
+            public static readonly RenderSetting BranchHitIncrease = new(100);
+            public const float BranchHitIncreaseOverTimeSeconds = 1f;
             public static readonly RenderSetting RadiusDecayPerSecond = new(10);
-            public static readonly RenderSetting MaximumRadius = new(900);
+            public static readonly RenderSetting MaximumRadius = new(500);
             public static readonly RenderSetting MinimumRadius = new(50);
         }
 
