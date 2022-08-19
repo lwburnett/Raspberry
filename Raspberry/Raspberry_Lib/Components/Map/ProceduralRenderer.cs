@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
-using Nez.BitmapFonts;
 
 namespace Raspberry_Lib.Components
 {
@@ -74,7 +73,9 @@ namespace Raspberry_Lib.Components
                 var blockToDelete = _entities.First();
                 while (blockToDelete.Any() && numTilesDeleted < Settings.NumTilesToProcessPerTick)
                 {
-                    blockToDelete[0].Destroy();
+                    if (!blockToDelete[0].IsDestroyed)
+                        blockToDelete[0].Destroy();
+
                     blockToDelete.RemoveAt(0);
                     numTilesDeleted++;
                 }

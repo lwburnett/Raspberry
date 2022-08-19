@@ -73,9 +73,10 @@ namespace Raspberry_Lib.Components
             {
                 OnFatalCollision();
             }
-            else if (collisionResult.Collider.Entity is BranchEntity)
+            else if (collisionResult.Collider.Entity is BranchEntity branch)
             {
                 _playerProximityComponent.OnBranchHit();
+                branch.OnPlayerHit();
             }
         }
 

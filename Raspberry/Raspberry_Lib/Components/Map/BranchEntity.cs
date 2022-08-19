@@ -12,6 +12,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting DoNotUpdateWakeRightDistance = new(1000);
             public static readonly RenderSetting DoNotUpdateWakeLeftDistance = new(2000);
         }
+
         public BranchEntity(Vector2 iPosition)
         {
             Position = iPosition;
@@ -45,6 +46,11 @@ namespace Raspberry_Lib.Components
         }
 
         public override void OnRemovedFromScene()
+        {
+            Physics.RemoveCollider(_collider);
+        }
+
+        public void OnPlayerHit()
         {
             Physics.RemoveCollider(_collider);
         }
