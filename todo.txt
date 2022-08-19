@@ -2,10 +2,6 @@
 
 Features
 	- "Active Reload" for rowing
-	- Player proximity enhancements
-		- Positive collectable that increases size of player proximity
-		- Slowly decay over time
-		- The player looses when the proximity decays too low
 	- Daily challenge map based on today's date
 
 Optimization
@@ -36,6 +32,10 @@ Balance
 ------------------------- Completed -------------------------
 
 Features
+	- Player proximity enhancements
+		- Positive collectable that increases size of player proximity
+		- Slowly decay over time
+		- The player looses when the proximity decays too low
 
 Optimization
 	- Put generation in background thread
