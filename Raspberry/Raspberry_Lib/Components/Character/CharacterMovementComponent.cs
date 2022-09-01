@@ -25,7 +25,7 @@ namespace Raspberry_Lib.Components
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
         {
             _stateChangedCallback = iOnStateChangedCallback;
-            _currentInput = new CharacterInputController.InputDescription();
+            CurrentInput = new CharacterInputController.InputDescription();
             _currentState = PrototypeCharacterComponent.State.Idle;
             _currentVelocity = new Vector2(.01f, 0.0f);
             _thisIterationMotion = Vector2.Zero;
@@ -85,16 +85,16 @@ namespace Raspberry_Lib.Components
             // Apply rotation input
             var lerpValue = MathHelper.Clamp(playerVelocityToWaterSpeedDiffInPlayerFrame / Settings.SpeedDifMax.Value, 0, 1);
             float rotationSpeed = MathHelper.Lerp(Settings.RotationRateDegreesPerSecondMin, Settings.RotationRateDegreesPerSecondMax, lerpValue);
-            var rotationDegreesToApply = _currentInput.Rotation * rotationSpeed * Time.DeltaTime;
+            var rotationDegreesToApply = CurrentInput.Rotation * rotationSpeed * Time.DeltaTime;
 
             Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
 
             var directionVector = GetRotationAsDirectionVector();
             directionVector.Normalize();
 
-            if (_currentInput.Rotation > 0.01f)
+            if (CurrentInput.Rotation > 0.01f)
                 _currentState = PrototypeCharacterComponent.State.TurnCw;
-            else if (_currentInput.Rotation < -0.01f)
+            else if (CurrentInput.Rotation < -0.01f)
                 _currentState = PrototypeCharacterComponent.State.TurnCcw;
             else
                 _currentState = PrototypeCharacterComponent.State.Idle;
@@ -127,7 +127,7 @@ namespace Raspberry_Lib.Components
             {
                 if (previousState == PrototypeCharacterComponent.State.Row)
                     _currentState = PrototypeCharacterComponent.State.Idle;
-                if (_currentInput.Row)
+                if (CurrentInput.Row)
                 {
                     _lastRowTimeSeconds = Time.TotalTime; 
                     if (previousState == PrototypeCharacterComponent.State.Idle)
@@ -150,11 +150,11 @@ namespace Raspberry_Lib.Components
                     rotationDragForceParallel = Settings.RotationDragGrowthSlope.Value * playerParallelVelocityToWaterSpeedDiffInRiverFrame;
                 }
                 
-                forceVec += -flowDirectionVector * rotationDragForceParallel * Math.Abs(_currentInput.Rotation);
+                forceVec += -flowDirectionVector * rotationDragForceParallel * Math.Abs(CurrentInput.Rotation);
 
                 var playerPerpendicularVelocityInRiverFrame = ScalarProject(_currentVelocity, flowPerpendicularDirection);
                 var rotationDragForcePerpendicular = Settings.RotationDragGrowthSlope.Value * playerPerpendicularVelocityInRiverFrame;
-                forceVec += -flowPerpendicularDirection * rotationDragForcePerpendicular * Math.Abs(_currentInput.Rotation);
+                forceVec += -flowPerpendicularDirection * rotationDragForcePerpendicular * Math.Abs(CurrentInput.Rotation);
             }
 
             // Apply river drag force
@@ -236,14 +236,14 @@ namespace Raspberry_Lib.Components
 
         public void OnPlayerInput(CharacterInputController.InputDescription iInput)
         {
-            _currentInput = iInput;
+            CurrentInput = iInput;
         }
 
         public float TotalDistanceTraveled { get; private set; }
         public Vector2 CurrentVelocity => _currentVelocity;
+        public CharacterInputController.InputDescription CurrentInput { get; private set; }
 
         private readonly Action<PrototypeCharacterComponent.State> _stateChangedCallback;
-        private CharacterInputController.InputDescription _currentInput;
         private PrototypeCharacterComponent.State _currentState;
         private Vector2 _currentVelocity;
         private Vector2 _thisIterationMotion;

@@ -31,13 +31,13 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent<ProceduralRenderer>();
             map.AddComponent<RiverParticleManager>();
 
+            var uiEntity = CreateEntity("ui");
+            uiEntity.AddComponent(new PlayUiCanvasComponent());
+
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * 2);
             character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
-
-            var uiEntity = CreateEntity("ui");
-            uiEntity.AddComponent(new PlayUiCanvasComponent());
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");
