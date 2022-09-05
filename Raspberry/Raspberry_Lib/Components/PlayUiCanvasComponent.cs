@@ -30,13 +30,13 @@ namespace Raspberry_Lib.Components
             var drawColor = Color.White;
             drawColor.A = 127;
             
-            _upIndicator = canvas.Stage.AddElement(new Image(spriteList[6]));
+            _upIndicator = canvas.Stage.AddElement(new Image(spriteList[8]));
             _upIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .25f);
             _upIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _upIndicator.SetScaling(Scaling.Fill);
             _upIndicator.SetColor(drawColor);
 
-            _downIndicator = canvas.Stage.AddElement(new Image(spriteList[5]));
+            _downIndicator = canvas.Stage.AddElement(new Image(spriteList[12]));
             _downIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .75f);
             _downIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _downIndicator.SetScaling(Scaling.Fill);
