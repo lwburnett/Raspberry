@@ -13,8 +13,8 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting Margin = new(100);
             public const int FontScale = 6;
 
-            public static readonly RenderSetting IndicatorSizeX = new(100);
-            public static readonly RenderSetting IndicatorSizeY = new(100);
+            public static readonly RenderSetting IndicatorSizeX = new(150);
+            public static readonly RenderSetting IndicatorSizeY = new(150);
         }
 
         public override void OnAddedToEntity()
