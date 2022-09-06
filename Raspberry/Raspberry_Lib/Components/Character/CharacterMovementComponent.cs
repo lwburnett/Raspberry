@@ -31,7 +31,7 @@ namespace Raspberry_Lib.Components
             _thisIterationMotion = Vector2.Zero;
             _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
-            _lastRowTimeSeconds = float.MinValue;
+            LastRowTimeSecond = float.MinValue;
             _globalMaxPositionXAchievedSoFar = null;
             TotalDistanceTraveled = 0;
 
@@ -100,7 +100,7 @@ namespace Raspberry_Lib.Components
                 _currentState = PrototypeCharacterComponent.State.Idle;
 
             // Apply row input
-            if (Time.TotalTime - _lastRowTimeSeconds < Settings.RowTime.TotalSeconds)
+            if (Time.TotalTime - LastRowTimeSecond < Settings.RowTime.TotalSeconds)
             {
                 var potentialRowForce = directionVector * Settings.RowForce.Value;
                 var potentialVelocity = _currentVelocity + potentialRowForce * Time.DeltaTime;
@@ -129,7 +129,7 @@ namespace Raspberry_Lib.Components
                     _currentState = PrototypeCharacterComponent.State.Idle;
                 if (CurrentInput.Row)
                 {
-                    _lastRowTimeSeconds = Time.TotalTime; 
+                    LastRowTimeSecond = Time.TotalTime; 
                     if (previousState == PrototypeCharacterComponent.State.Idle)
                         _currentState = PrototypeCharacterComponent.State.Row;
                 }
@@ -242,6 +242,7 @@ namespace Raspberry_Lib.Components
         public float TotalDistanceTraveled { get; private set; }
         public Vector2 CurrentVelocity => _currentVelocity;
         public CharacterInputController.InputDescription CurrentInput { get; private set; }
+        public float LastRowTimeSecond { get; private set; }
 
         private readonly Action<PrototypeCharacterComponent.State> _stateChangedCallback;
         private PrototypeCharacterComponent.State _currentState;
@@ -250,7 +251,6 @@ namespace Raspberry_Lib.Components
         private readonly Mover _mover;
         private SubpixelVector2 _subPixelV2;
         private ProceduralGeneratorComponent _generator;
-        private float _lastRowTimeSeconds;
         private CharacterCollisionComponent _collisionComponent;
         private float? _globalMaxPositionXAchievedSoFar;
 

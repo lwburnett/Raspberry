@@ -15,6 +15,17 @@ namespace Raspberry_Lib.Components
 
             public static readonly RenderSetting IndicatorSizeX = new(150);
             public static readonly RenderSetting IndicatorSizeY = new(150);
+
+            public const float RowTransition1 = 0.25f;
+            public const float RowTransition2 = 0.50f;
+            public const float RowTransition3 = 0.75f;
+        }
+
+        public PlayUiCanvasComponent()
+        {
+            _upPressed = false;
+            _downPressed = false;
+            _rowColor = RowColor.White;
         }
 
         public override void OnAddedToEntity()
@@ -32,6 +43,11 @@ namespace Raspberry_Lib.Components
 
             _downDefaultIcon = new SpriteDrawable(spriteList[12]);
             _downPressedIcon = new SpriteDrawable(spriteList[13]);
+
+            _rowWhiteIcon = new SpriteDrawable(spriteList[4]);
+            _rowRedIcon = new SpriteDrawable(spriteList[5]);
+            _rowYellowIcon = new SpriteDrawable(spriteList[6]);
+            _rowGreenIcon = new SpriteDrawable(spriteList[7]);
 
             var drawColor = Color.White;
             drawColor.A = 127;
@@ -71,9 +87,11 @@ namespace Raspberry_Lib.Components
             if (_movementComponent == null)
                 return;
 
+            // Handle Distance Display
             var distanceTraveled = (int)Mathf.Round(_movementComponent.TotalDistanceTraveled / Settings.DistanceToMetersFactor.Value);
             _distanceLabel.SetText($"{distanceTraveled} m");
 
+            // Handle Turning Indicators
             var input = _movementComponent.CurrentInput;
 
             var upPressed = input.Rotation < 0f;
@@ -89,6 +107,51 @@ namespace Raspberry_Lib.Components
                 _downPressed = downPressed;
                 _downIndicator.SetDrawable(_downPressed ? _downPressedIcon : _downDefaultIcon);
             }
+
+            // Handle Row Indicator
+            var rowTime = _movementComponent.LastRowTimeSecond;
+            var timeDiff = Time.TotalTime - rowTime;
+
+            if (timeDiff < Settings.RowTransition1)
+            {
+                if (_rowColor != RowColor.Red)
+                {
+                    _rowIndicator.SetDrawable(_rowRedIcon);
+                    _rowColor = RowColor.Red;
+                }
+            }
+            else if (timeDiff < Settings.RowTransition2)
+            {
+                if (_rowColor != RowColor.Yellow)
+                {
+                    _rowIndicator.SetDrawable(_rowYellowIcon);
+                    _rowColor = RowColor.Yellow;
+                }
+            }
+            else if (timeDiff < Settings.RowTransition3)
+            {
+                if (_rowColor != RowColor.Green)
+                {
+                    _rowIndicator.SetDrawable(_rowGreenIcon);
+                    _rowColor = RowColor.Green;
+                }
+            }
+            else
+            {
+                if (_rowColor != RowColor.White)
+                {
+                    _rowIndicator.SetDrawable(_rowWhiteIcon);
+                    _rowColor = RowColor.White;
+                }
+            }
+        }
+
+        private enum RowColor
+        {
+            White,
+            Red,
+            Yellow,
+            Green
         }
 
         private CharacterMovementComponent _movementComponent;
@@ -106,5 +169,12 @@ namespace Raspberry_Lib.Components
         
         private Nez.UI.IDrawable _downDefaultIcon;
         private Nez.UI.IDrawable _downPressedIcon;
+
+        private RowColor _rowColor;
+
+        private Nez.UI.IDrawable _rowWhiteIcon;
+        private Nez.UI.IDrawable _rowRedIcon;
+        private Nez.UI.IDrawable _rowYellowIcon;
+        private Nez.UI.IDrawable _rowGreenIcon;
     }
 }
