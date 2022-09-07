@@ -24,10 +24,10 @@ namespace Raspberry_Lib.Components
             public const float RowTransition2 = .9f;
             public const float RowTransition3 = 1.25f;
 
-            public static readonly RenderSetting RowForceBad = new(25);
-            public static readonly RenderSetting RowForceMedium = new(50);
-            public static readonly RenderSetting RowForceGood = new(75);
-            public static readonly RenderSetting RowForceNeutral = new(60);
+            public static readonly RenderSetting RowForceBad = new(40);
+            public static readonly RenderSetting RowForceMedium = new(65);
+            public static readonly RenderSetting RowForceGood = new(90);
+            public static readonly RenderSetting RowForceNeutral = new(75);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
