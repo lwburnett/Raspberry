@@ -1,16 +1,12 @@
 ------------------------ Outstanding ------------------------
 
 Features
-	- "Active Reload" for rowing
 	- Daily challenge map based on today's date
 
 Optimization
 
 Art
 	- Add Menus
-	- Game play UI
-		Turn up/down
-		Row
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- Iterate on generated tile art
 	- Iterate on player character boat art
@@ -26,12 +22,12 @@ Bugs
 
 Balance
 	- Rounds last kind of long
-	- First half of rounds are kinda easy
 
 
 ------------------------- Completed -------------------------
 
 Features
+	- "Active Reload" for rowing
 	- Player proximity enhancements
 		- Positive collectable that increases size of player proximity
 		- Slowly decay over time
@@ -45,9 +41,16 @@ Art
 	- Add little particles that flow through the river
 	- Add grass tiles above and below shoreline
 	- Area of influence shader around the player that shows the river within but the desert without
+	- Game play UI
+		Turn up/down
+		Row
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
 	- Travelling backwards allows the user to double count sections of river for distance travelled
 	- River particles display outside of the player proximity
 	- Rocks have a wake outside of player proximity
+
+Balance
+	- First half of rounds are kinda easy
+		(Solved this with the active reload rowing feature; it makes everything pretty darn challenging)
