@@ -15,11 +15,19 @@ namespace Raspberry_Lib.Components
 
             public const float RotationRateDegreesPerSecondMin = 30f;
             public const float RotationRateDegreesPerSecondMax = 60f;
-            public static readonly RenderSetting RowForce = new(75);
-            public static readonly TimeSpan RowTime = TimeSpan.FromSeconds(.5);
+            public const float RowTime = .5f;
             public static readonly RenderSetting RotationDragGrowthSlope = new(.125f);
 
             public static readonly RenderSetting DragCoefficient = new(.005f);
+
+            public const float RowTransition1 = .5f;
+            public const float RowTransition2 = .9f;
+            public const float RowTransition3 = 1.25f;
+
+            public static readonly RenderSetting RowForceBad = new(25);
+            public static readonly RenderSetting RowForceMedium = new(50);
+            public static readonly RenderSetting RowForceGood = new(75);
+            public static readonly RenderSetting RowForceNeutral = new(60);
         }
 
         public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
@@ -100,9 +108,11 @@ namespace Raspberry_Lib.Components
                 _currentState = PrototypeCharacterComponent.State.Idle;
 
             // Apply row input
-            if (Time.TotalTime - LastRowTimeSecond < Settings.RowTime.TotalSeconds)
+            if (Time.TotalTime - LastRowTimeSecond < Settings.RowTime)
             {
-                var potentialRowForce = directionVector * Settings.RowForce.Value;
+                System.Diagnostics.Debug.Assert(_rowForceForCurrentRow.HasValue);
+
+                var potentialRowForce = directionVector * _rowForceForCurrentRow.Value;
                 var potentialVelocity = _currentVelocity + potentialRowForce * Time.DeltaTime;
 
                 var currentVelocityProjectionOntoRiver = Vector2.Dot(_currentVelocity, flowDirectionVector) / flowDirectionVector.Length();
@@ -125,10 +135,22 @@ namespace Raspberry_Lib.Components
             }
             else
             {
+                _rowForceForCurrentRow = null;
+
                 if (previousState == PrototypeCharacterComponent.State.Row)
                     _currentState = PrototypeCharacterComponent.State.Idle;
                 if (CurrentInput.Row)
                 {
+                    var timeDiff = Time.TotalTime - LastRowTimeSecond;
+                    if (timeDiff < Settings.RowTransition1) 
+                        _rowForceForCurrentRow = Settings.RowForceBad.Value;
+                    else if (timeDiff < Settings.RowTransition2)
+                        _rowForceForCurrentRow = Settings.RowForceMedium.Value;
+                    else if (timeDiff < Settings.RowTransition3)
+                        _rowForceForCurrentRow = Settings.RowForceGood.Value;
+                    else
+                        _rowForceForCurrentRow = Settings.RowForceNeutral.Value;
+
                     LastRowTimeSecond = Time.TotalTime; 
                     if (previousState == PrototypeCharacterComponent.State.Idle)
                         _currentState = PrototypeCharacterComponent.State.Row;
@@ -253,6 +275,7 @@ namespace Raspberry_Lib.Components
         private ProceduralGeneratorComponent _generator;
         private CharacterCollisionComponent _collisionComponent;
         private float? _globalMaxPositionXAchievedSoFar;
+        private float? _rowForceForCurrentRow;
 
         private Vector2 GetRotationAsDirectionVector()
         {

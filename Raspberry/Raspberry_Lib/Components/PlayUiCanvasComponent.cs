@@ -16,9 +16,9 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting IndicatorSizeX = new(150);
             public static readonly RenderSetting IndicatorSizeY = new(150);
 
-            public const float RowTransition1 = 0.25f;
-            public const float RowTransition2 = 0.50f;
-            public const float RowTransition3 = 0.75f;
+            public const float RowTransition1 = .5f;
+            public const float RowTransition2 = .9f;
+            public const float RowTransition3 = 1.25f;
         }
 
         public PlayUiCanvasComponent()
