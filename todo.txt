@@ -19,6 +19,7 @@ Bugs
 	- Transitions at shoreline are sometimes blocky and choppy
 	- Transition segments sometimes calculate the wrong starting slope
 	- You can kind of make out the boundaries of the shoreline tiles
+	- Branches slightly bump the player and mess with their momentum
 
 Balance
 	- Rounds last kind of long
