@@ -25,7 +25,7 @@ namespace Raspberry_Lib.Components
             _movementComponent = Entity.AddComponent(new CharacterMovementComponent(OnCharacterStateChanged));
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
             Entity.AddComponent(_collisionComponent);
-            Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true));
+            Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true){RenderLayer = 5});
             Entity.AddComponent(_playerProximityComponent);
         }
 

@@ -50,6 +50,10 @@ Bugs
 	- Travelling backwards allows the user to double count sections of river for distance travelled
 	- River particles display outside of the player proximity
 	- Rocks have a wake outside of player proximity
+	- Player Wake
+		- The wake renders on top of the player boat
+		- The wake is enabled even when it has greater parallel velocity than the player
+		(Moved the wake to simply be a higher render layer for the player)
 
 Balance
 	- First half of rounds are kinda easy
