@@ -8,7 +8,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting SpeedDifMax = new(25);
+            public static readonly RenderSetting SpeedDifMax = new(20);
 
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(20);
@@ -198,7 +198,7 @@ namespace Raspberry_Lib.Components
 
             var dotProductPerp = Vector2.Dot(directionVector, flowPerpendicularDirection);
             var perpendicularSpeed = Vector2.Dot(_currentVelocity, flowPerpendicularDirection);
-            var dragForcePerpMag = Settings.DragCoefficient.Value * (1 - dotProductPerp) * perpendicularSpeed * perpendicularSpeed;
+            var dragForcePerpMag = .5f * Settings.DragCoefficient.Value * (1 - dotProductPerp) * perpendicularSpeed * perpendicularSpeed;
 
             Vector2 dragForcePerpVec;
             if (perpendicularSpeed > 0f)
