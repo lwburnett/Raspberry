@@ -9,7 +9,7 @@ namespace Raspberry_Lib
     {
         private static class Settings
         {
-            public static readonly Vector2 TargetScreenSize = new(2340, 1080);
+            public static readonly Vector2 TargetScreenSize = new(2204, 1014);
         }
 
         public GameServiceContainer Service => Core.Services;
