@@ -1,4 +1,5 @@
-﻿using Nez;
+﻿using Microsoft.Xna.Framework;
+using Nez;
 using Nez.UI;
 using Raspberry_Lib.Content;
 
@@ -10,7 +11,10 @@ namespace Raspberry_Lib.Scenes
         {
             public static readonly RenderSetting LabelTopPadding = new(20);
             public static readonly RenderSetting FontScale = new(5);
-            public static readonly RenderSetting MinButtonHeight = new(30);
+            public static readonly RenderSetting MinButtonHeight = new(50);
+
+            public static readonly RenderSetting TablePositionX = new(300);
+            public static readonly RenderSetting TablePositionY = new(200);
         }
 
         public MainMenuScene(System.Action iOnStart, System.Action iOnExit)
@@ -34,8 +38,8 @@ namespace Raspberry_Lib.Scenes
 
 
             var table = canvas.Stage.AddElement(new Table());
-            table.SetFillParent(true).Center();
-            table.Add(new Label("Awesome Title").SetFontScale(5));
+            table.SetPosition(Settings.TablePositionX.Value, Settings.TablePositionY.Value);
+            table.Add(new Label("Awesome Title").SetFontScale(5).SetFontColor(Color.Black));
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
             
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
@@ -45,8 +49,8 @@ namespace Raspberry_Lib.Scenes
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
             var exitButton = new TextButton("Exit", Skin.CreateDefaultSkin());
-            exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             exitButton.OnClicked += OnExitClicked;
+            exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             table.Add(exitButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
         }
 
