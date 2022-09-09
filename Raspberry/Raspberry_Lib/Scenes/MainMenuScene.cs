@@ -1,5 +1,6 @@
 ﻿using Nez;
 using Nez.UI;
+using Raspberry_Lib.Content;
 
 namespace Raspberry_Lib.Scenes
 {
@@ -24,10 +25,17 @@ namespace Raspberry_Lib.Scenes
 
             var canvas = CreateEntity("UiCanvas").AddComponent(new UICanvas());
             canvas.IsFullScreen = true;
-            var table = canvas.Stage.AddElement(new Table());
 
+            var background = new Image(Content.LoadTexture(ContentData.AssetPaths.TitleScreenBackground));
+            background.SetScaling(Scaling.Stretch);
+            background.SetWidth(canvas.Width);
+            background.SetHeight(canvas.Height);
+            canvas.Stage.AddElement(background);
+
+
+            var table = canvas.Stage.AddElement(new Table());
             table.SetFillParent(true).Center();
-            table.Add(new Label("Main Menu").SetFontScale(5));
+            table.Add(new Label("Awesome Title").SetFontScale(5));
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
             
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());

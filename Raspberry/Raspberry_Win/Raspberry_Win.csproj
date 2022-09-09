@@ -50,6 +50,9 @@
     <None Update="Content\Levels\Tileset.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Levels\TitleScreen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Shaders\ProximityShader.fx">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
