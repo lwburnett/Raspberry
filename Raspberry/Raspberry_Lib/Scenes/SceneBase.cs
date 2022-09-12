@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using Nez;
+using Nez.Tweens;
 using Raspberry_Lib.Components;
 
 namespace Raspberry_Lib.Scenes
@@ -25,8 +28,6 @@ namespace Raspberry_Lib.Scenes
             }
         }
 
-        private bool _isFirstUpdate;
-
         public void OnBeginPlay()
         {
             for (var ii = 0; ii < Entities.Count; ii++)
@@ -49,5 +50,22 @@ namespace Raspberry_Lib.Scenes
                 }
             }
         }
+
+        public override void OnStart()
+        {
+            if (BackgroundSong != null)
+            {
+                MediaPlayer.Play(BackgroundSong);
+                MediaPlayer.IsRepeating = true;
+            }
+        }
+
+        public override void End()
+        {
+            MediaPlayer.Stop();
+        }
+
+        protected Song BackgroundSong;
+        private bool _isFirstUpdate;
     }
 }

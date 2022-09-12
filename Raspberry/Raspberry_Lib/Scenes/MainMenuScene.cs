@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Media;
 using Nez;
 using Nez.UI;
 using Raspberry_Lib.Content;
@@ -17,7 +19,7 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting TablePositionY = new(200);
         }
 
-        public MainMenuScene(System.Action iOnStart, System.Action iOnExit)
+        public MainMenuScene(Action iOnStart, Action iOnExit)
         {
             _onStart = iOnStart;
             _onExit = iOnExit;
@@ -52,10 +54,13 @@ namespace Raspberry_Lib.Scenes
             exitButton.OnClicked += OnExitClicked;
             exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             table.Add(exitButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
+
+            var uri = new Uri(ContentData.AssetPaths.TitleScreenMusic, UriKind.Relative);
+            BackgroundSong = Song.FromUri("MainMenuSong", uri);
         }
 
-        private readonly System.Action _onStart;
-        private readonly System.Action _onExit;
+        private readonly Action _onStart;
+        private readonly Action _onExit;
 
         private void OnPlayClicked(Button iButton)
         {

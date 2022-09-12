@@ -38,6 +38,18 @@
     <ProjectReference Include="..\Raspberry_Lib\Raspberry_Lib.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\Audio\ocean-of-ice.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Audio\ocean-of-ice.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Audio\the-soul-crushing-monotony-of-isolation.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Audio\the-soul-crushing-monotony-of-isolation.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Characters\PrototypeCharacter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

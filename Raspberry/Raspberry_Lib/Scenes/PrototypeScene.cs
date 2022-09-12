@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Media;
 using Raspberry_Lib.Components;
+using Raspberry_Lib.Content;
+using System;
 
 namespace Raspberry_Lib.Scenes
 {
@@ -15,7 +18,7 @@ namespace Raspberry_Lib.Scenes
         public PrototypeScene(System.Action iOnFatalCollision)
         {
             _onFatalCollision = iOnFatalCollision;
-            ClearColor = Raspberry_Lib.Content.ContentData.ColorPallets.Desert.Color2;
+            ClearColor = ContentData.ColorPallets.Desert.Color2;
         }
 
         public override void Initialize()
@@ -38,6 +41,9 @@ namespace Raspberry_Lib.Scenes
             character.Transform.SetLocalScale(Settings.MapScale.Value * 2);
             character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
+
+            var uri = new Uri(ContentData.AssetPaths.PlayScreenMusic, UriKind.Relative);
+            BackgroundSong = Song.FromUri("MainMenuSong", uri);
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");
