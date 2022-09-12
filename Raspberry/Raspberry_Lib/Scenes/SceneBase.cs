@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using Nez;
-using Nez.Tweens;
 using Raspberry_Lib.Components;
 
 namespace Raspberry_Lib.Scenes
@@ -53,9 +52,9 @@ namespace Raspberry_Lib.Scenes
 
         public override void OnStart()
         {
-            if (BackgroundSong != null)
+            if (_backgroundSong != null)
             {
-                MediaPlayer.Play(BackgroundSong);
+                MediaPlayer.Play(_backgroundSong);
                 MediaPlayer.IsRepeating = true;
             }
         }
@@ -65,7 +64,15 @@ namespace Raspberry_Lib.Scenes
             MediaPlayer.Stop();
         }
 
-        protected Song BackgroundSong;
+        protected void SetBackgroundSong(string iPath)
+        {
+            var uri = new Uri(iPath, UriKind.Relative);
+            // Need to make the first argument iPath because Android is bugged and
+            //    uses that instead of the Uri to load the asset
+            _backgroundSong = Song.FromUri(iPath, uri);
+        }
+
+        private Song _backgroundSong;
         private bool _isFirstUpdate;
     }
 }

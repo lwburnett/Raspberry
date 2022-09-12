@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Media;
 using Nez;
 using Nez.UI;
 using Raspberry_Lib.Content;
@@ -55,8 +54,7 @@ namespace Raspberry_Lib.Scenes
             exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             table.Add(exitButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
 
-            var uri = new Uri(ContentData.AssetPaths.TitleScreenMusic, UriKind.Relative);
-            BackgroundSong = Song.FromUri("MainMenuSong", uri);
+            SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic);
         }
 
         private readonly Action _onStart;
