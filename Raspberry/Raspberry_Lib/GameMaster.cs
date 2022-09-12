@@ -55,7 +55,7 @@ namespace Raspberry_Lib
                 PauseOnFocusLost = false;
 
                 // Dumb work around to make it so the debug window isn't so annoyingly obtrusive
-                Screen.SetSize((int)(renderScaleFactor * Settings.TargetScreenSize.X), (int)(renderScaleFactor * Settings.TargetScreenSize.Y));
+                Screen.SetSize((int)(renderScaleFactor * Settings.TargetScreenSize.X * .95f), (int)(renderScaleFactor * Settings.TargetScreenSize.Y * .95f));
             }
 
             Batcher.UseFnaHalfPixelMatrix = true;
