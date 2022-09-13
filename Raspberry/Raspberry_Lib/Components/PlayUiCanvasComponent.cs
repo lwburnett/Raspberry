@@ -53,19 +53,19 @@ namespace Raspberry_Lib.Components
             drawColor.A = 127;
             
             _upIndicator = canvas.Stage.AddElement(new Image(_upDefaultIcon));
-            _upIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .25f);
+            _upIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f);
             _upIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _upIndicator.SetScaling(Scaling.Fill);
             _upIndicator.SetColor(drawColor);
 
             _downIndicator = canvas.Stage.AddElement(new Image(_downDefaultIcon));
-            _downIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .75f);
+            _downIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .85f - Settings.IndicatorSizeY.Value / 2f);
             _downIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _downIndicator.SetScaling(Scaling.Fill);
             _downIndicator.SetColor(drawColor);
 
             _rowIndicator = canvas.Stage.AddElement(new Image(spriteList[4]));
-            _rowIndicator.SetPosition(Screen.Width - Settings.Margin.Value * 2, Screen.Height * .5f);
+            _rowIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f);
             _rowIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
