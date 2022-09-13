@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Nez;
 
@@ -53,14 +52,18 @@ namespace Raspberry_Lib.Components
                 foreach (var touch in touchCollection)
                 {
                     var touchPosRatioX = touch.Position.X / screenSize.X;
+                    var touchPosRatioY = touch.Position.Y / screenSize.Y;
 
                     if (touchPosRatioX <= .33f)
                     {
-                        var touchPosRatioY = touch.Position.Y / screenSize.Y;
-                        
-                        rotation = MathHelper.Clamp((touchPosRatioY - .5f) * 4, -1f, 1f);
+                        if (touchPosRatioY >= .66f)
+                            rotation = 1f;
+                        else if (touchPosRatioY <= .33f)
+                            rotation = -1f;
+                        else
+                            row = true;
                     }
-                    else if (touchPosRatioX >= .66f)
+                    else
                     {
                         row = true;
                     }
