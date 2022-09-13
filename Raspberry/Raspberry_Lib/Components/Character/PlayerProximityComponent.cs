@@ -10,7 +10,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting StartingRadius = new(300);
             public static readonly RenderSetting BranchHitIncrease = new(100);
             public const float BranchHitIncreaseOverTimeSeconds = 1f;
-            public static readonly RenderSetting RadiusDecayPerSecond = new(10);
+            public static readonly RenderSetting RadiusDecayPerSecond = new(7.5f);
             public static readonly RenderSetting MaximumRadius = new(500);
             public static readonly RenderSetting MinimumRadius = new(50);
         }
