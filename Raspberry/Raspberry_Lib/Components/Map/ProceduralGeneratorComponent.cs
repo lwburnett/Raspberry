@@ -38,6 +38,8 @@ namespace Raspberry_Lib.Components
         public ProceduralGeneratorComponent()
         {
             _playerScoreRating = 1f;
+            //_rng = new System.Random(105);
+            _rng = new System.Random();
         }
 
         public override void OnAddedToEntity()
@@ -140,6 +142,7 @@ namespace Raspberry_Lib.Components
         private float _nextGenerationPointX;
         private float _nextScorePointX;
         private float _playerScoreRating;
+        private System.Random _rng;
 
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
@@ -155,7 +158,6 @@ namespace Raspberry_Lib.Components
 
         private IFunction RandomWalk(Vector2 iStartingPoint, Vector2 iStartingSlope)
         {
-            var rng = new System.Random();
             var walkPoints = new List<Vector2>();
 
             var numPoints = (int)MathHelper.Lerp(Settings.NumPointsPerBlockLower, Settings.NumPointsPerBlockUpper, _playerScoreRating / Settings.PlayerScoreRatingMax);
@@ -164,7 +166,7 @@ namespace Raspberry_Lib.Components
             for (var ii = 0; ii < numPoints; ii++)
             {
                 float dy;
-                var randomNumber = rng.Next() % 2;
+                var randomNumber = _rng.Next() % 2;
                 if (randomNumber == 0)
                 {
                     dy = -1;
@@ -196,7 +198,6 @@ namespace Raspberry_Lib.Components
 
         private List<Vector2> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
         {
-            var rng = new System.Random();
             var obstacles = new List<Vector2>();
 
             var lastPointX = iStartingPointX ?? iFunction.DomainStart;
@@ -208,12 +209,12 @@ namespace Raspberry_Lib.Components
             while (lastPointX < iFunction.DomainEnd)
             {
                 var thisPointX = lastPointX + gapMin + 
-                                 (float)rng.NextDouble() * (gapMax - gapMin);
+                                 (float)_rng.NextDouble() * (gapMax - gapMin);
 
                 if (thisPointX > iFunction.DomainEnd)
                     break;
 
-                var thisPointY = iFunction.GetYForX(thisPointX) - (riverWidth / 2f) + _scale + ((float)rng.NextDouble() * (riverWidth - 2 * _scale));
+                var thisPointY = iFunction.GetYForX(thisPointX) - (riverWidth / 2f) + _scale + ((float)_rng.NextDouble() * (riverWidth - 2 * _scale));
 
                 obstacles.Add(new Vector2(thisPointX, thisPointY));
 

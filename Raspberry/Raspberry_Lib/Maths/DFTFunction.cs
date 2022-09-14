@@ -98,7 +98,7 @@ namespace Raspberry_Lib.Maths
             _transitionPolynomialCoefficients.Add(iStartingPoint.Y + startingSlope / 8);
             _transitionPolynomialCoefficients.Add(startingSlope);
 
-            var deltaSlopePerUnit = .05f / PlatformUtils.GetRenderScale();
+            var deltaSlopePerUnit = .001f / PlatformUtils.GetRenderScale();
             var leadingCoefficient = iEndingSlope > startingSlope ? deltaSlopePerUnit / 2 : -deltaSlopePerUnit / 2;
             _transitionPolynomialCoefficients.Add(leadingCoefficient);
 
