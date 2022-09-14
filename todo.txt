@@ -16,8 +16,6 @@ Art
 
 Bugs
 	- Rocks sometimes placed badly at transitions
-	- Transitions at shoreline are sometimes blocky and choppy
-	- Transition segments sometimes calculate the wrong starting slope
 	- You can kind of make out the boundaries of the shoreline tiles
 	- Branches slightly bump the player and mess with their momentum
 
@@ -45,6 +43,8 @@ Art
 	- Game play UI
 		Turn up/down
 		Row
+	- Add Main menu art
+	- Add music
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
@@ -55,6 +55,10 @@ Bugs
 		- The wake renders on top of the player boat
 		- The wake is enabled even when it has greater parallel velocity than the player
 		(Moved the wake to simply be a higher render layer for the player)
+	- Transitions at shoreline are sometimes blocky and choppy
+		- Kinda solved by making transitions more gentle
+	- Transition segments sometimes calculate the wrong starting slope
+		- I don't think this was actually true. It looks better now that transitions are spread out over a larger domain
 
 Balance
 	- First half of rounds are kinda easy
