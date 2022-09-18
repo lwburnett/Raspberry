@@ -37,7 +37,7 @@ namespace Raspberry_Lib.Scenes
             uiEntity.AddComponent(new PlayUiCanvasComponent());
 
             var character = CreateEntity("character", characterStartingPos);
-            character.Transform.SetLocalScale(Settings.MapScale.Value * 2);
+            character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
             character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 
