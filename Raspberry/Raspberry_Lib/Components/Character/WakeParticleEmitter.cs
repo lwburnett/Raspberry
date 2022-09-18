@@ -14,7 +14,7 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public const int MaxNumParticles = 150;
-            public const float ParticleTtl = 1f;
+            public const float ParticleTtl = 1.2f;
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
 
             public const int TextureSize = 1;
