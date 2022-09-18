@@ -90,10 +90,10 @@ namespace Raspberry_Lib.Components
                 switch (_collider.Shape)
                 {
                     case Circle circle:
-                        GetWakePoints(circle, GetZeroVec, out _staticSpawnPoints, out _staticParticleVelocity);
+                        GetWakePoints(circle, GetZeroVec, _collider.AbsolutePosition, out _staticSpawnPoints, out _staticParticleVelocity);
                         break;
                     case Polygon polygon:
-                        GetWakePoints(polygon, GetZeroVec, out _staticSpawnPoints, out _staticParticleVelocity);
+                        GetWakePoints(polygon, GetZeroVec, _collider.AbsolutePosition, out _staticSpawnPoints, out _staticParticleVelocity);
                         break;
                     default:
                         System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
@@ -109,7 +109,7 @@ namespace Raspberry_Lib.Components
         {
             foreach (var wakeParticle in _particles)
             {
-                var thisPos = Entity.Position + wakeParticle.Position;
+                var thisPos = wakeParticle.Position;
 
                 if (Vector2.Distance(thisPos, _character.Position) < _playerProximityComponent.Radius)
                 {
@@ -168,10 +168,10 @@ namespace Raspberry_Lib.Components
                 switch (_collider.Shape)
                 {
                     case Circle circle:
-                        GetWakePoints(circle, _getEntityVelocityFunc, out spawnPoints, out particleVelocity);
+                        GetWakePoints(circle, _getEntityVelocityFunc, _collider.AbsolutePosition, out spawnPoints, out particleVelocity);
                         break;
                     case Polygon polygon:
-                        GetWakePoints(polygon, _getEntityVelocityFunc, out spawnPoints, out particleVelocity);
+                        GetWakePoints(polygon, _getEntityVelocityFunc, _collider.AbsolutePosition, out spawnPoints, out particleVelocity);
                         break;
                     default:
                         System.Diagnostics.Debug.Fail($"Unknown type of {nameof(Shape)}");
@@ -216,7 +216,7 @@ namespace Raspberry_Lib.Components
         private Entity _character;
         private PlayerProximityComponent _playerProximityComponent;
 
-        private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
+        private void GetWakePoints(Circle iCircle, Func<Vector2> iGetVelocityFunc, Vector2 iPosition, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
@@ -230,8 +230,8 @@ namespace Raspberry_Lib.Components
                 var orthogonalVec = new Vector2(-velocityDiff.Y, velocityDiff.X);
                 orthogonalVec.Normalize();
 
-                var point1 = Entity.Position + iCircle.Radius * orthogonalVec;
-                var point2 = Entity.Position - iCircle.Radius * orthogonalVec;
+                var point1 = iPosition + iCircle.Radius * orthogonalVec;
+                var point2 = iPosition - iCircle.Radius * orthogonalVec;
 
                 oSpawnPoints = new List<Vector2>
                 {
@@ -248,11 +248,11 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
+        private void GetWakePoints(Polygon iPolygon, Func<Vector2> iGetVelocityFunc, Vector2 iPosition, out List<Vector2> oSpawnPoints, out Vector2 oParticleVelocity)
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
-            var velocityDiff = riverVelocity - entityVelocity;
+            var velocityDiff = entityVelocity - riverVelocity;
 
             var playerDirection = GetPlayerDirection();
 
@@ -262,8 +262,8 @@ namespace Raspberry_Lib.Components
                 {
                     oSpawnPoints = new List<Vector2>
                     {
-                        Entity.Position + box.Points[1],
-                        Entity.Position + box.Points[2]
+                        iPosition + box.Points[0],
+                        iPosition + box.Points[3]
                     };
                 }
                 else
@@ -287,7 +287,7 @@ namespace Raspberry_Lib.Components
 
             var dotProduct = Vector2.Dot(iEntityDirection, iParticleVelocity);
 
-            if (dotProduct <= 0)
+            if (dotProduct > 0)
                 return true;
 
             var scalarProjection = Vector2.Dot(iEntityVelocity, iParticleVelocity) / iParticleVelocity.Length();
@@ -312,7 +312,7 @@ namespace Raspberry_Lib.Components
                 var rngOffsetMag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
                 var rngOffset = orthogonalDirection * rngOffsetMag;
 
-                var spawnPositionFinal = Entity.Position - spawnPosition + spawnPointOffset + rngOffset;
+                var spawnPositionFinal = spawnPosition + spawnPointOffset + rngOffset;
                 particle.Position = spawnPositionFinal;
                 particle.SpawnPosition = spawnPositionFinal;
 

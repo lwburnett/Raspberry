@@ -1,15 +1,31 @@
 ﻿using System.Linq;
 using Nez;
 using Nez.PhysicsShapes;
+#if VERBOSE
+using Microsoft.Xna.Framework;
+#endif
 
 namespace Raspberry_Lib.Components
 {
     internal class CharacterCollisionComponent : Component, IUpdatable, IBeginPlay
     {
+        private static class Settings
+        {
+            public const float ColliderXOffset = -9f;
+            public const float ColliderYOffset = 0f;
+
+            public const float ColliderWidth = 60;
+            public const float ColliderHeight = 15;
+        }
+
         public CharacterCollisionComponent(System.Action iOnFatalCollision)
         {
             _onFatalCollision = iOnFatalCollision;
-            _collider = new BoxCollider(20, 6);
+            _collider = new BoxCollider(
+                -Settings.ColliderWidth / 2 + Settings.ColliderXOffset,
+                -Settings.ColliderHeight / 2 + Settings.ColliderYOffset,
+                Settings.ColliderWidth,
+                Settings.ColliderHeight);
         }
 
         public override void OnAddedToEntity()
@@ -37,7 +53,8 @@ namespace Raspberry_Lib.Components
                 return;
 
             var points = polygon.Points;
-            var vertices = points.Select(p => Entity.Position + p);
+            var scaledLocalOffset = _collider.LocalOffset * Entity.Scale;
+            var vertices = points.Select(p => Entity.Position + scaledLocalOffset + p);
 
             foreach (var vertex in vertices)
             {
@@ -51,7 +68,7 @@ namespace Raspberry_Lib.Components
                 var lowerBankY = riverY + riverWidth / 2;
 
 #if VERBOSE
-                Debug.DrawPixel(vertex, 4, Color.Red);
+                //Debug.DrawPixel(vertex, 4, Color.Red);
                 Debug.DrawPixel(new Vector2(vertex.X, upperBankY), 4, Color.Yellow);
                 Debug.DrawPixel(new Vector2(vertex.X, lowerBankY), 4, Color.Yellow);
 #endif
