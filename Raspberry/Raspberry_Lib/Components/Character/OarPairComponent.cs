@@ -17,7 +17,8 @@ namespace Raspberry_Lib.Components
             public const byte TextureAlphaStart = 255;
             public const byte TextureAlphaEnd = 0;
 
-            public const float RowDurationSec = 1f;
+            public static readonly RenderSetting RowLength = new(100);
+
             public const float ParticleTtl = 1f;
 
             public const float RowTransition1 = .5f;
@@ -27,12 +28,16 @@ namespace Raspberry_Lib.Components
             //public const float RowSpeedBadAsPercentOfCurrentSpeed = 0.0f;
             public const float RowSpeedMediumAsPercentOfCurrentSpeed = -0.25f;
             public const float RowSpeedGoodAsPercentOfCurrentSpeed = -0.75f;
-            public const float RowSpeedNeutralAsPercentOfCurrentSpeed = -0.50f;
+            public const float RowSpeedNeutralAsPercentOfCurrentSpeed = -0.50f; 
+            
+            //public static readonly RenderSetting RowForceBad = new(40);
+            // public static readonly RenderSetting RowForceMedium = new(65);
+            // public static readonly RenderSetting RowForceGood = new(90);
+            // public static readonly RenderSetting RowForceNeutral = new(75);
 
             public static readonly RenderSetting RowStartPerpendicularPosition = new(45);
             public static readonly RenderSetting RowStartParticleRadius = new(3);
-
-            public static readonly RenderSetting RowParticleRadiusChangePerSecond = new(10);
+            public static readonly RenderSetting RowEndParticleRadius = new(13);
 
             public const int NumParticles = 8;
 
@@ -42,8 +47,9 @@ namespace Raspberry_Lib.Components
         private class RowGroup
         {
             public List<OarParticle> Particles { get; set; }
-            public float SpawnTime { get; set; }
-            public float RowDuration { get; set; }
+            public Vector2 CenterPoint { get; set; }
+            public Vector2 CenterVelocity { get; set; }
+            public float? FreedomTime { get; set; }
             public float TimeToLive { get; set; }
             public float ColorAlpha { get; set; }
             public Vector2 PostRowVelocity { get; set; }
@@ -52,12 +58,14 @@ namespace Raspberry_Lib.Components
         private class OarParticle
         {
             public Vector2 Position { get; set; }
-            public Vector2 Velocity { get; set; }
-            public Vector2 DeltaVelocityPerFrame { get; set; }
+            public Vector2 RadialDirection { get; set; }
         }
 
-        private class FreeParticle : OarParticle
+        private class FreeParticle
         {
+            public Vector2 Position { get; set; }
+            public Vector2 Velocity { get; set; }
+            public Vector2 DeltaVelocityPerFrame { get; set; }
             public float SpawnTime { get; set; }
             public float TimeToLive { get; set; }
             public byte ColorAlpha { get; set; }
@@ -114,12 +122,14 @@ namespace Raspberry_Lib.Components
             }
 
             // Update current list of row groups
+            var parallelDirection = GetRotationAsDirectionVector();
+            parallelDirection.Normalize();
+
             for (var ii = _rowGroups.Count - 1; ii >= 0; ii--)
             {
                 var thisRowGroup = _rowGroups[ii];
-
-                var timeSinceSpawn = Time.TotalTime - thisRowGroup.SpawnTime;
-                if (timeSinceSpawn > thisRowGroup.TimeToLive)
+                
+                if (thisRowGroup.FreedomTime.HasValue && Time.TotalTime - thisRowGroup.FreedomTime.Value > thisRowGroup.TimeToLive)
                 {
                     foreach (var particle in _rowGroups[ii].Particles)
                     {
@@ -129,24 +139,32 @@ namespace Raspberry_Lib.Components
                     continue;
                 }
 
-                if (timeSinceSpawn < thisRowGroup.RowDuration)
+                var entityToGroupCenter = thisRowGroup.CenterPoint - Entity.Position;
+                var groupCenterProjection = Math.Abs(Vector2.Dot(parallelDirection, entityToGroupCenter));
+
+                if (groupCenterProjection < Settings.RowLength.Value)
                 {
+                    thisRowGroup.CenterPoint += thisRowGroup.CenterVelocity * Time.DeltaTime;
+
+                    var radialLerpValue = 1 - (Settings.RowLength.Value - groupCenterProjection) / Settings.RowLength.Value;
+                    var radius = MathHelper.Lerp(Settings.RowStartParticleRadius.Value, Settings.RowEndParticleRadius.Value, radialLerpValue);
+
                     foreach (var particle in thisRowGroup.Particles)
                     {
-                        particle.Velocity += particle.DeltaVelocityPerFrame * Time.DeltaTime;
-                        particle.Position += particle.Velocity * Time.DeltaTime;
+                        particle.Position = thisRowGroup.CenterPoint + particle.RadialDirection * radius;
                     }
                 }
                 else
                 {
+                    thisRowGroup.FreedomTime ??= Time.TotalTime;
+
                     foreach (var particle in thisRowGroup.Particles)
                     {
                         particle.Position += thisRowGroup.PostRowVelocity * Time.DeltaTime;
                     }
 
-                    var lerpValue = (Time.TotalTime - thisRowGroup.RowDuration - thisRowGroup.SpawnTime) /
-                                    (thisRowGroup.TimeToLive - thisRowGroup.RowDuration);
-                    thisRowGroup.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, lerpValue);
+                    var alphaLerpValue = (Time.TotalTime - thisRowGroup.FreedomTime.Value) / thisRowGroup.TimeToLive;
+                    thisRowGroup.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, alphaLerpValue);
                 }
             }
 
@@ -159,27 +177,34 @@ namespace Raspberry_Lib.Components
                 var timeDiff = Time.TotalTime - _movementComponent.LastRowTimeSecond;
                 float? rowVelocityAsPercent;
                 if (timeDiff < Settings.RowTransition1)
+                {
                     rowVelocityAsPercent = null;
+                }
                 else if (timeDiff < Settings.RowTransition2)
+                {
                     rowVelocityAsPercent = Settings.RowSpeedMediumAsPercentOfCurrentSpeed;
+                }
                 else if (timeDiff < Settings.RowTransition3)
+                {
                     rowVelocityAsPercent = Settings.RowSpeedGoodAsPercentOfCurrentSpeed;
+                }
                 else
+                {
                     rowVelocityAsPercent = Settings.RowSpeedNeutralAsPercentOfCurrentSpeed;
-
+                }
+                
                 if (rowVelocityAsPercent.HasValue)
                 {
-                    var parallelDirection = GetRotationAsDirectionVector();
-                    parallelDirection.Normalize();
                     var orthogonalDirection = new Vector2(-parallelDirection.Y, parallelDirection.X);
                     orthogonalDirection.Normalize();
 
-                    var playerLateralVelocity = Vector2.Dot(_movementComponent.CurrentVelocity, orthogonalDirection) /
+                    var playerParallelSpeed = Vector2.Dot(_movementComponent.CurrentVelocity, parallelDirection) /
+                                                 parallelDirection.Length();
+                    var playerLateralSpeed = Vector2.Dot(_movementComponent.CurrentVelocity, orthogonalDirection) /
                                                 orthogonalDirection.Length();
-                    var rowVelocity = (playerLateralVelocity * orthogonalDirection) + 
-                                      (rowVelocityAsPercent.Value * _movementComponent.CurrentVelocity.Length() * parallelDirection);
-
-
+                    var rowVelocity = (playerLateralSpeed * orthogonalDirection) + 
+                                      (rowVelocityAsPercent.Value * playerParallelSpeed * parallelDirection);
+                    
                     var dTheta = MathHelper.Pi / Settings.NumParticles;
                     var radius = Settings.RowStartParticleRadius.Value;
                     if (input.Rotation <= 0f)
@@ -187,28 +212,13 @@ namespace Raspberry_Lib.Components
                         var centerPointLeft = Entity.Position +
                                                orthogonalDirection * Settings.RowStartPerpendicularPosition.Value;
 
-                        var rowGroup = new RowGroup
-                        {
-                            Particles = new List<OarParticle>(),
-                            SpawnTime = Time.TotalTime,
-                            RowDuration = Settings.RowDurationSec,
-                            TimeToLive = Settings.RowDurationSec + Settings.ParticleTtl,
-                            ColorAlpha = Settings.TextureAlphaStart,
-                            PostRowVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position)
-                        };
-
-                        for (var ii = 0; ii < Settings.NumParticles; ii++)
-                        {
-                            var thisParticle = Pool<OarParticle>.Obtain();
-                            var angle = -dTheta * ii;
-                            thisParticle.Position = 
-                                centerPointLeft + radius * 
-                                ((float)Math.Cos(angle) * orthogonalDirection + (float)Math.Sin(angle) * parallelDirection);
-
-                            thisParticle.Velocity = rowVelocity;
-                            thisParticle.DeltaVelocityPerFrame = Settings.RowParticleRadiusChangePerSecond.Value * (thisParticle.Position - centerPointLeft);
-                            rowGroup.Particles.Add(thisParticle);
-                        }
+                        var rowGroup = CreateRowGroup(
+                            centerPointLeft,
+                            dTheta,
+                            radius,
+                            orthogonalDirection,
+                            parallelDirection,
+                            rowVelocity);
 
                         _rowGroups.Add(rowGroup);
                     }
@@ -218,28 +228,13 @@ namespace Raspberry_Lib.Components
                         var centerPointRight = Entity.Position -
                                                orthogonalDirection * Settings.RowStartPerpendicularPosition.Value;
 
-                        var rowGroup = new RowGroup
-                        {
-                            Particles = new List<OarParticle>(),
-                            SpawnTime = Time.TotalTime,
-                            RowDuration = Settings.RowDurationSec,
-                            TimeToLive = Settings.RowDurationSec + Settings.ParticleTtl,
-                            ColorAlpha = Settings.TextureAlphaStart,
-                            PostRowVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position)
-                        };
-
-                        for (var ii = 0; ii < Settings.NumParticles; ii++)
-                        {
-                            var thisParticle = Pool<OarParticle>.Obtain();
-                            var angle = -dTheta * ii;
-                            thisParticle.Position =
-                                centerPointRight + radius *
-                                ((float)Math.Cos(angle) * orthogonalDirection + (float)Math.Sin(angle) * parallelDirection);
-
-                            thisParticle.Velocity = rowVelocity;
-                            thisParticle.DeltaVelocityPerFrame = Settings.RowParticleRadiusChangePerSecond.Value * (thisParticle.Position - centerPointRight);
-                            rowGroup.Particles.Add(thisParticle);
-                        }
+                        var rowGroup = CreateRowGroup(
+                            centerPointRight,
+                            dTheta,
+                            radius,
+                            orthogonalDirection,
+                            parallelDirection,
+                            rowVelocity);
 
                         _rowGroups.Add(rowGroup);
                     }
@@ -299,6 +294,39 @@ namespace Raspberry_Lib.Components
         private CharacterMovementComponent _movementComponent;
         private PlayerProximityComponent _proximityComponent;
         private ProceduralGeneratorComponent _proceduralGenerator;
+
+        private RowGroup CreateRowGroup(
+            Vector2 iCenterPoint,
+            float iDTheta, 
+            float iRadius,
+            Vector2 iOrthogonalDirection,
+            Vector2 iParallelDirection,
+            Vector2 iRowVelocity)
+        {
+            var rowGroup = new RowGroup
+            {
+                Particles = new List<OarParticle>(),
+                CenterPoint = iCenterPoint,
+                CenterVelocity = iRowVelocity,
+                TimeToLive = Settings.ParticleTtl,
+                ColorAlpha = Settings.TextureAlphaStart,
+                PostRowVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position)
+            };
+
+            for (var ii = 0; ii < Settings.NumParticles; ii++)
+            {
+                var thisParticle = Pool<OarParticle>.Obtain();
+                var angle = -iDTheta * ii;
+                thisParticle.RadialDirection = (float)Math.Cos(angle) * iOrthogonalDirection +
+                                               (float)Math.Sin(angle) * iParallelDirection;
+                thisParticle.Position =
+                    iCenterPoint + iRadius * thisParticle.RadialDirection;
+                
+                rowGroup.Particles.Add(thisParticle);
+            }
+
+            return rowGroup;
+        }
 
         private Vector2 GetRotationAsDirectionVector()
         {
