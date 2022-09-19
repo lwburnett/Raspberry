@@ -27,6 +27,7 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(_collisionComponent);
             Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true){RenderLayer = 5});
             Entity.AddComponent(_playerProximityComponent);
+            Entity.AddComponent(new OarPairComponent());
         }
 
         private CharacterAnimationComponent _animationComponent;
