@@ -25,16 +25,10 @@ namespace Raspberry_Lib.Components
             public const float RowTransition1 = .5f;
             public const float RowTransition2 = .9f;
             public const float RowTransition3 = 1.25f;
-
-            //public const float RowSpeedBadAsPercentOfCurrentSpeed = 0.0f;
+            
             public const float RowSpeedMediumAsPercentOfCurrentSpeed = -0.25f;
             public const float RowSpeedGoodAsPercentOfCurrentSpeed = -0.75f;
-            public const float RowSpeedNeutralAsPercentOfCurrentSpeed = -0.50f; 
-            
-            //public static readonly RenderSetting RowForceBad = new(40);
-            // public static readonly RenderSetting RowForceMedium = new(65);
-            // public static readonly RenderSetting RowForceGood = new(90);
-            // public static readonly RenderSetting RowForceNeutral = new(75);
+            public const float RowSpeedNeutralAsPercentOfCurrentSpeed = -0.50f;
 
             public static readonly RenderSetting RowStartPerpendicularPosition = new(45);
             public static readonly RenderSetting RowStartParticleRadius = new(3);
