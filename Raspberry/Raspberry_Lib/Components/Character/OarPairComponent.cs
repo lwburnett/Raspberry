@@ -4,6 +4,7 @@ using Nez;
 using Nez.Textures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Raspberry_Lib.Components
 {
@@ -11,7 +12,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public const int MaxNumParticles = 150;
+            public const int MaxNumParticles = 75;
             public const int TextureSize = 2;
 
             public const byte TextureAlphaStart = 255;
@@ -42,6 +43,10 @@ namespace Raspberry_Lib.Components
             public const int NumParticles = 8;
 
             public const float OrthogonalEndPositionVariancePercentOfTtlStart = .25f;
+            
+            public static readonly RenderSetting MinimumVelocityForWakeSpawn = new(10);
+            public static readonly RenderSetting OrthogonalStartPositionalVariance = new(1);
+            public const float OrthogonalEndPositionalVarianceAsPercentOfVelocityMag = .04f;
         }
 
         private class RowGroup
@@ -64,6 +69,7 @@ namespace Raspberry_Lib.Components
         private class FreeParticle
         {
             public Vector2 Position { get; set; }
+            public Vector2 SpawnPosition { get; set; }
             public Vector2 Velocity { get; set; }
             public Vector2 DeltaVelocityPerFrame { get; set; }
             public float SpawnTime { get; set; }
@@ -89,6 +95,7 @@ namespace Raspberry_Lib.Components
             _sprite = new Sprite(texture);
             _freeParticles = new List<FreeParticle>();
             _rowGroups = new List<RowGroup>();
+            _rng = new System.Random();
         }
 
         public override void OnAddedToEntity()
@@ -124,6 +131,8 @@ namespace Raspberry_Lib.Components
             // Update current list of row groups
             var parallelDirection = GetRotationAsDirectionVector();
             parallelDirection.Normalize();
+            var orthogonalDirection = new Vector2(-parallelDirection.Y, parallelDirection.X);
+            orthogonalDirection.Normalize();
 
             for (var ii = _rowGroups.Count - 1; ii >= 0; ii--)
             {
@@ -195,11 +204,8 @@ namespace Raspberry_Lib.Components
                 
                 if (rowVelocityAsPercent.HasValue)
                 {
-                    var orthogonalDirection = new Vector2(-parallelDirection.Y, parallelDirection.X);
-                    orthogonalDirection.Normalize();
-
                     var playerParallelSpeed = Vector2.Dot(_movementComponent.CurrentVelocity, parallelDirection) /
-                                                 parallelDirection.Length();
+                                              parallelDirection.Length();
                     var playerLateralSpeed = Vector2.Dot(_movementComponent.CurrentVelocity, orthogonalDirection) /
                                                 orthogonalDirection.Length();
                     var rowVelocity = (playerLateralSpeed * orthogonalDirection) + 
@@ -239,6 +245,22 @@ namespace Raspberry_Lib.Components
                         _rowGroups.Add(rowGroup);
                     }
                 }
+            }
+
+            // Handle left oar wake if turning
+            if (input.Rotation < 0)
+            {
+                var oarPosition = Entity.Position -
+                                 orthogonalDirection * Settings.RowStartPerpendicularPosition.Value;
+                HandleWake(oarPosition);
+            }
+
+            // Handle right oar wake if turning
+            if (input.Rotation > 0)
+            {
+                var oarPosition = Entity.Position +
+                                  orthogonalDirection * Settings.RowStartPerpendicularPosition.Value;
+                HandleWake(oarPosition);
             }
         }
 
@@ -291,9 +313,11 @@ namespace Raspberry_Lib.Components
         private readonly Sprite _sprite;
         private readonly List<FreeParticle> _freeParticles;
         private readonly List<RowGroup> _rowGroups;
+        private readonly System.Random _rng;
         private CharacterMovementComponent _movementComponent;
         private PlayerProximityComponent _proximityComponent;
         private ProceduralGeneratorComponent _proceduralGenerator;
+        private FreeParticle _lastParticleSpawned;
 
         private RowGroup CreateRowGroup(
             Vector2 iCenterPoint,
@@ -326,6 +350,65 @@ namespace Raspberry_Lib.Components
             }
 
             return rowGroup;
+        }
+
+        private void SpawnParticles(Vector2 iSpawnPosition, Vector2 iVelocity)
+        {
+            var spawnPointOffset = new Vector2(-Settings.TextureSize * Entity.Scale.X / 2f);
+        
+            var particle = Pool<FreeParticle>.Obtain();
+            
+            var orthogonalDirection = new Vector2(-iVelocity.Y, iVelocity.X);
+            orthogonalDirection.Normalize();
+            var rngOffsetMag = (float)(Settings.OrthogonalStartPositionalVariance.Value * (2 * _rng.NextDouble() - 1));
+            var rngOffset = orthogonalDirection * rngOffsetMag;
+
+            var spawnPositionFinal = iSpawnPosition + spawnPointOffset + rngOffset;
+            particle.Position = spawnPositionFinal;
+            particle.SpawnPosition = spawnPositionFinal;
+
+            particle.Velocity = iVelocity;
+            particle.SpawnTime = Time.TotalTime;
+            particle.TimeToLive = Settings.ParticleTtl;
+
+            var timeToVarySquared = Settings.ParticleTtl * Settings.ParticleTtl *
+                                    Settings.OrthogonalEndPositionVariancePercentOfTtlStart * Settings.OrthogonalEndPositionVariancePercentOfTtlStart;
+            var endVarianceMag = 2 * ((float)_rng.NextDouble() * 2 - 1f) *
+                                 Settings.OrthogonalEndPositionalVarianceAsPercentOfVelocityMag * iVelocity.Length() /
+                                 timeToVarySquared;
+            var endVariance = endVarianceMag * orthogonalDirection;
+
+            particle.DeltaVelocityPerFrame = endVariance;
+
+            _freeParticles.Add(particle);
+
+            _lastParticleSpawned = particle;
+        }
+
+        void HandleWake(Vector2 iOarPosition)
+        {
+            var entityVelocity = _movementComponent.CurrentVelocity;
+            var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
+            var velocityDiff = riverVelocity - entityVelocity;
+
+            // Spawn particles if needed
+            if (_freeParticles.Count < Settings.MaxNumParticles)
+            {
+                if (_freeParticles.Any())
+                {
+                    var distanceOfLastSpawnedParticle = Vector2.Distance(_lastParticleSpawned.SpawnPosition, _lastParticleSpawned.Position);
+                    var widthOfParticleTexture = Settings.TextureSize;
+
+                    if (distanceOfLastSpawnedParticle > widthOfParticleTexture)
+                    {
+                        SpawnParticles(iOarPosition, velocityDiff);
+                    }
+                }
+                else if (Math.Abs(velocityDiff.Length()) > Settings.MinimumVelocityForWakeSpawn.Value)
+                {
+                    SpawnParticles(iOarPosition, velocityDiff);
+                }
+            }
         }
 
         private Vector2 GetRotationAsDirectionVector()
