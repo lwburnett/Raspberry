@@ -29,7 +29,7 @@ namespace Raspberry_Lib.Components
             public const float RowSpeedGoodAsPercentOfCurrentSpeed = -0.75f;
             public const float RowSpeedNeutralAsPercentOfCurrentSpeed = -0.50f;
 
-            public static readonly RenderSetting RowStartPerpendicularPosition = new(30);
+            public static readonly RenderSetting RowStartPerpendicularPosition = new(45);
             public static readonly RenderSetting RowStartParticleRadius = new(3);
 
             public static readonly RenderSetting RowParticleRadiusChangePerSecond = new(10);
@@ -169,12 +169,17 @@ namespace Raspberry_Lib.Components
 
                 if (rowVelocityAsPercent.HasValue)
                 {
-                    var rowVelocity = rowVelocityAsPercent.Value * _movementComponent.CurrentVelocity;
-
                     var parallelDirection = GetRotationAsDirectionVector();
                     parallelDirection.Normalize();
                     var orthogonalDirection = new Vector2(-parallelDirection.Y, parallelDirection.X);
                     orthogonalDirection.Normalize();
+
+                    var playerLateralVelocity = Vector2.Dot(_movementComponent.CurrentVelocity, orthogonalDirection) /
+                                                orthogonalDirection.Length();
+                    var rowVelocity = (playerLateralVelocity * orthogonalDirection) + 
+                                      (rowVelocityAsPercent.Value * _movementComponent.CurrentVelocity.Length() * parallelDirection);
+
+
                     var dTheta = MathHelper.Pi / Settings.NumParticles;
                     var radius = Settings.RowStartParticleRadius.Value;
                     if (input.Rotation <= 0f)
