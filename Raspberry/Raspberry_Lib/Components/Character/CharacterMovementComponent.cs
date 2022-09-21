@@ -30,11 +30,9 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting RowForceNeutral = new(75);
         }
 
-        public CharacterMovementComponent(Action<PrototypeCharacterComponent.State> iOnStateChangedCallback)
+        public CharacterMovementComponent()
         {
-            _stateChangedCallback = iOnStateChangedCallback;
             CurrentInput = new CharacterInputController.InputDescription();
-            _currentState = PrototypeCharacterComponent.State.Idle;
             _currentVelocity = new Vector2(.01f, 0.0f);
             _thisIterationMotion = Vector2.Zero;
             _mover = new Mover();
@@ -75,8 +73,7 @@ namespace Raspberry_Lib.Components
 
             if (thisBlock == null)
                 return;
-
-            var previousState = _currentState;
+            
             var forceVec = Vector2.Zero;
 
             var riverFlow = _generator.GetRiverVelocityAt(Entity.Position);
@@ -99,13 +96,6 @@ namespace Raspberry_Lib.Components
 
             var directionVector = GetRotationAsDirectionVector();
             directionVector.Normalize();
-
-            if (CurrentInput.Rotation > 0.01f)
-                _currentState = PrototypeCharacterComponent.State.TurnCw;
-            else if (CurrentInput.Rotation < -0.01f)
-                _currentState = PrototypeCharacterComponent.State.TurnCcw;
-            else
-                _currentState = PrototypeCharacterComponent.State.Idle;
 
             // Apply row input
             if (Time.TotalTime - LastRowTimeSecond < Settings.RowTime)
@@ -130,15 +120,11 @@ namespace Raspberry_Lib.Components
 
                     forceVec += perpProjectionForce;
                 }
-
-                _currentState = PrototypeCharacterComponent.State.Row;
             }
             else
             {
                 _rowForceForCurrentRow = null;
-
-                if (previousState == PrototypeCharacterComponent.State.Row)
-                    _currentState = PrototypeCharacterComponent.State.Idle;
+                
                 if (CurrentInput.Row)
                 {
                     var timeDiff = Time.TotalTime - LastRowTimeSecond;
@@ -152,8 +138,6 @@ namespace Raspberry_Lib.Components
                         _rowForceForCurrentRow = Settings.RowForceNeutral.Value;
 
                     LastRowTimeSecond = Time.TotalTime; 
-                    if (previousState == PrototypeCharacterComponent.State.Idle)
-                        _currentState = PrototypeCharacterComponent.State.Row;
                 }
             }
 
@@ -222,9 +206,6 @@ namespace Raspberry_Lib.Components
 
             // Apply accumulated forces
             _currentVelocity += forceVec * Time.DeltaTime;
-            
-            if (_currentState != previousState)
-                _stateChangedCallback(_currentState);
 
             _thisIterationMotion = _currentVelocity * Time.DeltaTime;
             _mover.CalculateMovement(ref _thisIterationMotion, out var collisionResult);
@@ -265,9 +246,7 @@ namespace Raspberry_Lib.Components
         public Vector2 CurrentVelocity => _currentVelocity;
         public CharacterInputController.InputDescription CurrentInput { get; private set; }
         public float LastRowTimeSecond { get; private set; }
-
-        private readonly Action<PrototypeCharacterComponent.State> _stateChangedCallback;
-        private PrototypeCharacterComponent.State _currentState;
+        
         private Vector2 _currentVelocity;
         private Vector2 _thisIterationMotion;
         private readonly Mover _mover;

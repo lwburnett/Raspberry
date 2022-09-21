@@ -10,27 +10,17 @@ namespace Raspberry_Lib.Components
             _playerProximityComponent = new PlayerProximityComponent(iOnFatalCollision);
         }
 
-        public enum State
-        {
-            Idle,
-            TurnCw,
-            TurnCcw,
-            Row
-        }
-
-
         public override void OnAddedToEntity()
         {
-            _animationComponent = Entity.AddComponent<CharacterAnimationComponent>();
-            _movementComponent = Entity.AddComponent(new CharacterMovementComponent(OnCharacterStateChanged));
+            _movementComponent = Entity.AddComponent(new CharacterMovementComponent());
+            Entity.AddComponent<CharacterAnimationComponent>();
             Entity.AddComponent(new CharacterInputController(OnPlayerInput));
             Entity.AddComponent(_collisionComponent);
             Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true){RenderLayer = 5});
             Entity.AddComponent(_playerProximityComponent);
             Entity.AddComponent(new OarPairComponent());
         }
-
-        private CharacterAnimationComponent _animationComponent;
+        
         private CharacterMovementComponent _movementComponent;
         private readonly CharacterCollisionComponent _collisionComponent;
         private readonly PlayerProximityComponent _playerProximityComponent;
@@ -38,11 +28,6 @@ namespace Raspberry_Lib.Components
         private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {
             _movementComponent.OnPlayerInput(iInputDescription);
-        }
-
-        private void OnCharacterStateChanged(State iNewState)
-        {
-            _animationComponent.SetState(iNewState);
         }
     }
 }

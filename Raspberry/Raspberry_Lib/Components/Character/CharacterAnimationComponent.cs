@@ -1,59 +1,43 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Nez;
-using Nez.Sprites;
 using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterAnimationComponent : Component
+    internal class CharacterAnimationComponent : RenderableComponent
     {
+        private static class Settings
+        {
+            public const int CellWidth = 80;
+            public const int CellHeight = 30;
+        }
+
+        public CharacterAnimationComponent()
+        {
+            RenderLayer = 4;
+        }
+
         public override void OnAddedToEntity()
         {
             var texture = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.CharacterSpriteSheet);
-            var sprites = Sprite.SpritesFromAtlas(texture, 80, 30);
+            _sprites = Sprite.SpritesFromAtlas(texture, Settings.CellWidth, Settings.CellHeight);
 
-            _animator = Entity.AddComponent(new SpriteAnimator {RenderLayer = 4});
-
-            _animator.AddAnimation(PrototypeCharacterComponent.State.Idle.ToString(), new[] { sprites[0] });
-            // _animator.AddAnimation(PrototypeCharacterComponent.State.Row.ToString(), new[] { sprites[1], sprites[2], sprites[3], sprites[0] });
-            // _animator.AddAnimation(PrototypeCharacterComponent.State.TurnCcw.ToString(), new []{ sprites[4] });
-            // _animator.AddAnimation(PrototypeCharacterComponent.State.TurnCw.ToString(), new []{sprites[5]});
-
-            _currentState = PrototypeCharacterComponent.State.Idle;
-            _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.PingPong);
+            _currentSprite = _sprites[0];
+            _spriteEffect = SpriteEffects.None;
         }
 
-        public void SetState(PrototypeCharacterComponent.State iNewState)
+        public override float Width => 600f;
+        public override float Height => 600f;
+
+        public override void Render(Batcher batcher, Camera camera)
         {
-            if (_currentState == iNewState)
-                return;
-
-            _currentState = iNewState;
-            switch (iNewState)
-            {
-                case PrototypeCharacterComponent.State.Idle:
-                case PrototypeCharacterComponent.State.Row:
-                case PrototypeCharacterComponent.State.TurnCcw:
-                case PrototypeCharacterComponent.State.TurnCw:
-                    _animator.Play(PrototypeCharacterComponent.State.Idle.ToString(), SpriteAnimator.LoopMode.ClampForever);
-                    break;
-                // case PrototypeCharacterComponent.State.Row:
-                //     _animator.Play(PrototypeCharacterComponent.State.Row.ToString(), SpriteAnimator.LoopMode.ClampForever);
-                //     break;
-                //
-                // case PrototypeCharacterComponent.State.TurnCcw:
-                //     _animator.Play(PrototypeCharacterComponent.State.TurnCcw.ToString(), SpriteAnimator.LoopMode.ClampForever);
-                //     break;
-                // case PrototypeCharacterComponent.State.TurnCw:
-                //     _animator.Play(PrototypeCharacterComponent.State.TurnCw.ToString(), SpriteAnimator.LoopMode.ClampForever);
-                //     break;
-                default:
-                    System.Diagnostics.Debug.Fail($"Unknown value of enum {typeof(PrototypeCharacterComponent.State)}: {iNewState}");
-                    throw new ArgumentOutOfRangeException(nameof(iNewState), iNewState, null);
-            }
+            batcher.Draw(_currentSprite, Entity.Transform.Position + LocalOffset, Color,
+                Entity.Transform.Rotation, _currentSprite.Origin, Entity.Transform.Scale, _spriteEffect, _layerDepth);
         }
 
-        private PrototypeCharacterComponent.State _currentState;
-        private SpriteAnimator _animator;
+        private List<Sprite> _sprites;
+        private Sprite _currentSprite;
+        private SpriteEffects _spriteEffect;
     }
 }
