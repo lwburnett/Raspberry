@@ -8,10 +8,8 @@ Optimization
 Art
 	- Add Menus
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	- Add in rocking of the player boat modelled after a damped oscillator
 	- Iterate on generated tile art
-	- Iterate on player character boat art
-	- Particle effect from the oars when the player rows
-	- Particle effect from the oars when the player turns
 	- Different sprites for rocks when inside and outside the player radius
 
 Bugs
@@ -45,6 +43,9 @@ Art
 		Row
 	- Add Main menu art
 	- Add music
+	- Iterate on player character boat art
+	- Particle effect from the oars when the player rows
+	- Particle effect from the oars when the player turns
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
