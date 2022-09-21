@@ -1,21 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterAnimationComponent : RenderableComponent
+    internal class CharacterAnimationComponent : RenderableComponent, IUpdatable
     {
         private static class Settings
         {
             public const int CellWidth = 80;
             public const int CellHeight = 30;
+
+            public const float Amplitude = 11.49f;
+            public const float WaveLengthSec = 2f;
         }
 
         public CharacterAnimationComponent()
         {
             RenderLayer = 4;
+            _omega = MathHelper.TwoPi / Settings.WaveLengthSec;
         }
 
         public override void OnAddedToEntity()
@@ -25,6 +31,27 @@ namespace Raspberry_Lib.Components
 
             _currentSprite = _sprites[0];
             _spriteEffect = SpriteEffects.None;
+
+            //_movementComponent = Entity.GetComponent<CharacterMovementComponent>();
+        }
+
+        public void Update()
+        {
+            //var input = _movementComponent.CurrentInput;
+
+            var rawVal = DampedOscillationFunction(Time.TotalTime);
+            var index = (int)Math.Round(rawVal);
+
+            if (index >= 0)
+            {
+                _currentSprite = _sprites[index];
+                _spriteEffect = SpriteEffects.None;
+            }
+            else
+            {
+                _currentSprite = _sprites[Math.Abs(index)];
+                _spriteEffect = SpriteEffects.FlipVertically;
+            }
         }
 
         public override float Width => 600f;
@@ -39,5 +66,14 @@ namespace Raspberry_Lib.Components
         private List<Sprite> _sprites;
         private Sprite _currentSprite;
         private SpriteEffects _spriteEffect;
+        private readonly float _omega;
+
+        //private CharacterMovementComponent _movementComponent;
+
+        private float DampedOscillationFunction(float iTimeSec)
+        {
+            var value = Settings.Amplitude * (float)Math.Cos(iTimeSec * _omega);
+            return value;
+        }
     }
 }
