@@ -24,7 +24,10 @@ namespace Raspberry_Lib.Components
             public const float RowTransition3 = 1.25f;
 
             public const float RowTime = .5f;
-            public const float RowTorque = 10f;
+            
+            public const float RowTorqueMedium = 5f;
+            public const float RowTorqueGood = 10f;
+            public const float RowTorqueNeutral = 8f;
         }
 
         public CharacterAnimationComponent()
@@ -32,7 +35,7 @@ namespace Raspberry_Lib.Components
             RenderLayer = 4;
             _omega = MathHelper.TwoPi / Settings.WaveLengthSec;
 
-            _rowStartTime = null;
+            _rowStartTime = float.MinValue;
             _turnStartTime = null;
             _turnIsClockwise = null;
 
@@ -62,16 +65,21 @@ namespace Raspberry_Lib.Components
             // Set row values
             if (input.Row)
             {
-                if (!_rowStartTime.HasValue)
+                var timeDiff = Time.TotalTime - _rowStartTime;
+
+                if (timeDiff >= Settings.RowTransition1)
                 {
+                    if (timeDiff < Settings.RowTransition2)
+                        _rowTorque = Settings.RowTorqueMedium;
+                    else if (timeDiff < Settings.RowTransition3)
+                        _rowTorque = Settings.RowTorqueGood;
+                    else
+                        _rowTorque = Settings.RowTorqueNeutral;
+
                     _rowStartTime = Time.TotalTime;
-                    _rowForceDirection = _rng.Next() % 2 == 0 ? 1 : -1;
+                    _rowTorqueDirection = _rng.Next() % 2 == 0 ? 1 : -1;
                 }
             }
-
-            // Clear out rowing values if not rowing
-            if (_rowStartTime.HasValue && Time.TotalTime - _rowStartTime.Value > Settings.RowTime)
-                _rowStartTime = null;
 
             // Set turning values
             if (input.Rotation > 0)
@@ -101,8 +109,8 @@ namespace Raspberry_Lib.Components
             var torque = 0f;
 
             // Apply torque if rowing
-            if (_rowStartTime.HasValue)
-                torque += Settings.RowTorque * _rowForceDirection;
+            if (Time.TotalTime - _rowStartTime < Settings.RowTime)
+                torque += _rowTorque * _rowTorqueDirection;
 
             // Apply torque if turning
             // todo
@@ -156,8 +164,9 @@ namespace Raspberry_Lib.Components
         private CharacterMovementComponent _movementComponent;
         private ProceduralGeneratorComponent _proceduralGenerator;
 
-        private float? _rowStartTime;
-        private float _rowForceDirection;
+        private float _rowStartTime;
+        private float _rowTorqueDirection;
+        private float _rowTorque;
         private float? _turnStartTime;
         private bool? _turnIsClockwise;
 
