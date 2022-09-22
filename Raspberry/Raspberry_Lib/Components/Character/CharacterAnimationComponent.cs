@@ -18,28 +18,18 @@ namespace Raspberry_Lib.Components
 
             public const float WaveLengthSec = 2f;
             public const float DampingFactor = .5f;
-            
-            public const float RowTransition1 = .5f;
-            public const float RowTransition2 = .9f;
-            public const float RowTransition3 = 1.25f;
 
-            public const float RowTime = .5f;
-            
-            public const float RowTorqueMedium = 5f;
-            public const float RowTorqueGood = 10f;
-            public const float RowTorqueNeutral = 8f;
+            public const float SpeedDiffTurnTorqueScalar = .2f;
         }
 
         public CharacterAnimationComponent()
         {
             RenderLayer = 4;
             _omega = MathHelper.TwoPi / Settings.WaveLengthSec;
-
-            _rowStartTime = float.MinValue;
+            
             _turnStartTime = null;
             _turnIsClockwise = null;
-
-            _rng = new System.Random();
+            
             _amplitude = 0f;
             _phase = 0f;
 
@@ -61,25 +51,6 @@ namespace Raspberry_Lib.Components
         public void Update()
         {
             var input = _movementComponent.CurrentInput;
-
-            // Set row values
-            if (input.Row)
-            {
-                var timeDiff = Time.TotalTime - _rowStartTime;
-
-                if (timeDiff >= Settings.RowTransition1)
-                {
-                    if (timeDiff < Settings.RowTransition2)
-                        _rowTorque = Settings.RowTorqueMedium;
-                    else if (timeDiff < Settings.RowTransition3)
-                        _rowTorque = Settings.RowTorqueGood;
-                    else
-                        _rowTorque = Settings.RowTorqueNeutral;
-
-                    _rowStartTime = Time.TotalTime;
-                    _rowTorqueDirection = _rng.Next() % 2 == 0 ? 1 : -1;
-                }
-            }
 
             // Set turning values
             if (input.Rotation > 0)
@@ -108,12 +79,15 @@ namespace Raspberry_Lib.Components
             // Accumulate torque
             var torque = 0f;
 
-            // Apply torque if rowing
-            if (Time.TotalTime - _rowStartTime < Settings.RowTime)
-                torque += _rowTorque * _rowTorqueDirection;
-
             // Apply torque if turning
-            // todo
+            if (_turnStartTime.HasValue && _turnIsClockwise.HasValue)
+            {
+                var velocityDiff = _movementComponent.CurrentVelocity - _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
+
+                var direction = _turnIsClockwise.Value ? -1 : 1;
+
+                torque += velocityDiff.Length() * direction * Settings.SpeedDiffTurnTorqueScalar;
+            }
 
             // Calculate new values given a non-zero torque
             if (torque != 0)
@@ -155,7 +129,6 @@ namespace Raspberry_Lib.Components
         private List<Sprite> _sprites;
         private Sprite _currentSprite;
         private SpriteEffects _spriteEffect;
-        private readonly System.Random _rng;
         private readonly float _omega;
 
         private float _amplitude;
@@ -163,10 +136,7 @@ namespace Raspberry_Lib.Components
 
         private CharacterMovementComponent _movementComponent;
         private ProceduralGeneratorComponent _proceduralGenerator;
-
-        private float _rowStartTime;
-        private float _rowTorqueDirection;
-        private float _rowTorque;
+        
         private float? _turnStartTime;
         private bool? _turnIsClockwise;
 
@@ -233,14 +203,5 @@ namespace Raspberry_Lib.Components
 
             return (float)Math.Atan(fraction);
         }
-
-        private Vector2 GetRotationAsDirectionVector()
-        {
-            var rotation = Entity.Transform.Rotation;
-
-            return new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation));
-        }
-
-        private static float ScalarProject(Vector2 iVecA, Vector2 iVecB) => Vector2.Dot(iVecA, iVecB) / iVecB.Length();
     }
 }
