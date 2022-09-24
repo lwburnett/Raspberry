@@ -8,7 +8,6 @@ Optimization
 Art
 	- Add Menus
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Add in rocking of the player boat modelled after a damped oscillator
 	- Iterate on generated tile art
 	- Different sprites for rocks when inside and outside the player radius
 
@@ -16,6 +15,11 @@ Bugs
 	- Rocks sometimes placed badly at transitions
 	- You can kind of make out the boundaries of the shoreline tiles
 	- Branches slightly bump the player and mess with their momentum
+	- Boat rocking is simply based on (PlayerVelocity - RiverVelocity) and it looks wrong sometimes
+		especially when facing backwards
+	- Row wakes look wrong when facing backwards
+	- Turn wake particles move too fast
+	- Wake particles are too small compared to row wake and turn wake particles
 
 Balance
 	- Rounds last kind of long
@@ -46,6 +50,7 @@ Art
 	- Iterate on player character boat art
 	- Particle effect from the oars when the player rows
 	- Particle effect from the oars when the player turns
+	- Add in rocking of the player boat modelled after a damped oscillator
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
