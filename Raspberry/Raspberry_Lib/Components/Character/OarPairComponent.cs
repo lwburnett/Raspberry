@@ -20,7 +20,7 @@ namespace Raspberry_Lib.Components
 
             public static readonly RenderSetting RowLength = new(100);
 
-            public const float ParticleTtl = 1f;
+            public const float ParticleTtl = 1.4f;
 
             public const float RowTransition1 = .5f;
             public const float RowTransition2 = .9f;
@@ -381,11 +381,9 @@ namespace Raspberry_Lib.Components
 
         void HandleWake(Vector2 iOarPosition)
         {
-            var entityVelocity = _movementComponent.CurrentVelocity;
             var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
-            var velocityDiff = riverVelocity - entityVelocity;
 
-            // Spawn particles if needed
+                // Spawn particles if needed
             if (_freeParticles.Count < Settings.MaxNumParticles)
             {
                 if (_freeParticles.Any())
@@ -395,12 +393,12 @@ namespace Raspberry_Lib.Components
 
                     if (distanceOfLastSpawnedParticle > widthOfParticleTexture)
                     {
-                        SpawnParticles(iOarPosition, velocityDiff);
+                        SpawnParticles(iOarPosition, riverVelocity);
                     }
                 }
-                else if (Math.Abs(velocityDiff.Length()) > Settings.MinimumVelocityForWakeSpawn.Value)
+                else if (Math.Abs(riverVelocity.Length()) > Settings.MinimumVelocityForWakeSpawn.Value)
                 {
-                    SpawnParticles(iOarPosition, velocityDiff);
+                    SpawnParticles(iOarPosition, riverVelocity);
                 }
             }
         }

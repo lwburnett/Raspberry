@@ -14,10 +14,10 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public const int MaxNumParticles = 150;
-            public const float ParticleTtl = 1.2f;
+            public const float ParticleTtl = 1.4f;
             public static readonly RenderSetting MinimumVelocityForSpawn = new(10);
 
-            public const int TextureSize = 1;
+            public const int TextureSize = 2;
 
             public const byte TextureAlphaStart = 255;
             public const byte TextureAlphaEnd = 0;
@@ -220,14 +220,13 @@ namespace Raspberry_Lib.Components
         {
             var entityVelocity = iGetVelocityFunc();
             var riverVelocity = _proceduralGenerator.GetRiverVelocityAt(Entity.Position);
-            var velocityDiff = riverVelocity - entityVelocity;
 
             var playerDirection = GetPlayerDirection();
 
-            if (ShouldHaveWake(entityVelocity, velocityDiff, playerDirection))
+            if (ShouldHaveWake(entityVelocity, riverVelocity, playerDirection))
             {
 
-                var orthogonalVec = new Vector2(-velocityDiff.Y, velocityDiff.X);
+                var orthogonalVec = new Vector2(-riverVelocity.Y, riverVelocity.X);
                 orthogonalVec.Normalize();
 
                 var point1 = iPosition + iCircle.Radius * orthogonalVec;
@@ -239,7 +238,7 @@ namespace Raspberry_Lib.Components
                     point2
                 };
 
-                oParticleVelocity = velocityDiff;
+                oParticleVelocity = riverVelocity;
             }
             else
             {
