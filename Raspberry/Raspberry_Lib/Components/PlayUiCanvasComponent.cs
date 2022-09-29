@@ -64,7 +64,7 @@ namespace Raspberry_Lib.Components
             _downIndicator.SetScaling(Scaling.Fill);
             _downIndicator.SetColor(drawColor);
 
-            _rowIndicator = canvas.Stage.AddElement(new Image(spriteList[4]));
+            _rowIndicator = canvas.Stage.AddElement(new Image(spriteList[0]));
             _rowIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f);
             _rowIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
