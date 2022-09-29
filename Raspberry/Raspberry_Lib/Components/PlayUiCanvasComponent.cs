@@ -35,19 +35,19 @@ namespace Raspberry_Lib.Components
             _distanceLabel.SetPosition(Screen.Width / 2f, Settings.Margin.Value);
             _distanceLabel.SetFontScale(Settings.FontScale);
 
-            var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.LevelTileset, true);
+            var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.IconsTileset, true);
             var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
 
-            _upDefaultIcon = new SpriteDrawable(spriteList[8]);
-            _upPressedIcon = new SpriteDrawable(spriteList[9]);
+            _upDefaultIcon = new SpriteDrawable(spriteList[4]);
+            _upPressedIcon = new SpriteDrawable(spriteList[5]);
 
-            _downDefaultIcon = new SpriteDrawable(spriteList[12]);
-            _downPressedIcon = new SpriteDrawable(spriteList[13]);
+            _downDefaultIcon = new SpriteDrawable(spriteList[8]);
+            _downPressedIcon = new SpriteDrawable(spriteList[9]);
 
-            _rowWhiteIcon = new SpriteDrawable(spriteList[4]);
-            _rowRedIcon = new SpriteDrawable(spriteList[5]);
-            _rowYellowIcon = new SpriteDrawable(spriteList[6]);
-            _rowGreenIcon = new SpriteDrawable(spriteList[7]);
+            _rowWhiteIcon = new SpriteDrawable(spriteList[0]);
+            _rowRedIcon = new SpriteDrawable(spriteList[1]);
+            _rowYellowIcon = new SpriteDrawable(spriteList[2]);
+            _rowGreenIcon = new SpriteDrawable(spriteList[3]);
 
             var drawColor = Color.White;
             drawColor.A = 127;

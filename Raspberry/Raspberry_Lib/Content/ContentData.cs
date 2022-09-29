@@ -6,9 +6,10 @@ namespace Raspberry_Lib.Content
     {
         internal static class AssetPaths
         {
-            public const string LevelTileset = @"Content/Levels/Tileset.png";
+            public const string IconsTileset = @"Content/Levels/Icons.png";
+            public const string ObjectsTileset = @"Content/Levels/Objects.png";
             public const string TitleScreenBackground = @"Content/Levels/TitleScreen.png";
-            public const string CharacterSpriteSheet = @"Content/Characters/PrototypeCharacter.png";
+            public const string CharacterSpriteSheet = @"Content/Characters/Character.png";
             public const string ProximityShader = @"Content/Shaders/ProximityShader.mgfxo";
             public const string TitleScreenMusic = @"Content/Audio/ocean-of-ice.ogg";
             public const string PlayScreenMusic = @"Content/Audio/the-soul-crushing-monotony-of-isolation.ogg";
