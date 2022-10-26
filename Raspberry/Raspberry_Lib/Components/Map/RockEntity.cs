@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Nez;
-using Nez.Sprites;
 using Nez.Textures;
 
 namespace Raspberry_Lib.Components
@@ -11,6 +10,8 @@ namespace Raspberry_Lib.Components
         {
             public static readonly RenderSetting DoNotUpdateWakeRightDistance = new(1000);
             public static readonly RenderSetting DoNotUpdateWakeLeftDistance = new(2000);
+
+            public const float ScaleAdjustmentMultiplier = .75f;
         }
 
         public RockObstacleEntity(Vector2 iPosition)
@@ -23,18 +24,29 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToScene()
         {
+            Scale *= Settings.ScaleAdjustmentMultiplier;
+
             var textureAtlas = Scene.Content.LoadTexture(Content.ContentData.AssetPaths.ObjectsTileset, true);
-            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
-            var texture = spriteList[0];
-
-            _renderer = AddComponent<SpriteRenderer>();
-            _renderer.RenderLayer = 4;
-            _renderer.Sprite = texture;
-
-            _collider = AddComponent(new CircleCollider(texture.SourceRect.Width / 2f) {PhysicsLayer = PhysicsLayer, Entity = this});
-            Physics.AddCollider(_collider);
+            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 72, 72);
+            var textureOutside = spriteList[0];
+            var textureInside = spriteList[1];
 
             _character = Scene.FindEntity("character");
+            var playerProximityComponent = _character.GetComponent<PlayerProximityComponent>();
+
+            AddComponent(
+                new ProximitySpriteRenderer(
+                    textureInside,
+                    textureOutside, 
+                    () => _character.Position, 
+                    () => playerProximityComponent.Radius)
+                {
+                    RenderLayer = 4
+                });
+
+            _collider = AddComponent(new CircleCollider(textureOutside.SourceRect.Width / 3f) {PhysicsLayer = PhysicsLayer, Entity = this});
+            Physics.AddCollider(_collider);
+
 
             _rightUpdateWakeBoundX = Position.X + Settings.DoNotUpdateWakeRightDistance.Value;
             _leftUpdateWakeBoundX = Position.X - Settings.DoNotUpdateWakeLeftDistance.Value;
@@ -50,8 +62,7 @@ namespace Raspberry_Lib.Components
         {
             Physics.RemoveCollider(_collider);
         }
-
-        private SpriteRenderer _renderer;
+        
         private Collider _collider;
         private Entity _character;
         private float _rightUpdateWakeBoundX;

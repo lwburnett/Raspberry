@@ -9,8 +9,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting DoNotUpdateWakeRightDistance = new(1000);
-            public static readonly RenderSetting DoNotUpdateWakeLeftDistance = new(2000);
+            public const float ScaleAdjustmentMultiplier = .75f;
         }
 
         public BranchEntity(Vector2 iPosition)
@@ -22,23 +21,17 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToScene()
         {
+            Scale *= Settings.ScaleAdjustmentMultiplier;
+
             var textureAtlas = Scene.Content.LoadTexture(Content.ContentData.AssetPaths.ObjectsTileset, true);
-            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
-            var texture = spriteList[1];
+            var texture = new Sprite(textureAtlas, new Rectangle(0, 144, 36, 36));
 
             _renderer = AddComponent<SpriteRenderer>();
             _renderer.RenderLayer = 4;
             _renderer.Sprite = texture;
 
-            _collider = AddComponent(new CircleCollider(texture.SourceRect.Width / 3f) { PhysicsLayer = PhysicsLayer, Entity = this });
+            _collider = AddComponent(new CircleCollider(texture.SourceRect.Width / 2f) { PhysicsLayer = PhysicsLayer, Entity = this });
             Physics.AddCollider(_collider);
-
-            _character = Scene.FindEntity("character");
-
-            _rightUpdateWakeBoundX = Position.X + Settings.DoNotUpdateWakeRightDistance.Value;
-            _leftUpdateWakeBoundX = Position.X - Settings.DoNotUpdateWakeLeftDistance.Value;
-
-            AddComponent(new WakeParticleEmitter(ShouldUpdate) { RenderLayer = 4 });
 
 #if VERBOSE
             Verbose.RenderCollider(_collider);
@@ -53,17 +46,10 @@ namespace Raspberry_Lib.Components
         public void OnPlayerHit()
         {
             Physics.RemoveCollider(_collider);
+            _renderer.Enabled = false;
         }
 
         private SpriteRenderer _renderer;
         private Collider _collider;
-        private Entity _character;
-        private float _rightUpdateWakeBoundX;
-        private float _leftUpdateWakeBoundX;
-
-        private bool ShouldUpdate()
-        {
-            return _character.Position.X > _leftUpdateWakeBoundX && _character.Position.X < _rightUpdateWakeBoundX;
-        }
     }
 }
