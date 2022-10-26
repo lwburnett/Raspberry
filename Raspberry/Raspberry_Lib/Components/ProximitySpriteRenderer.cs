@@ -12,16 +12,22 @@ namespace Raspberry_Lib.Components
         {
             System.Diagnostics.Debug.Assert(iInsideSprite != null);
             System.Diagnostics.Debug.Assert(iOutsideSprite != null);
-            System.Diagnostics.Debug.Assert(iOutsideSprite.Texture2D.Bounds == iInsideSprite.Texture2D.Bounds);
+            System.Diagnostics.Debug.Assert(iOutsideSprite.SourceRect.Width == iInsideSprite.SourceRect.Width);
+            System.Diagnostics.Debug.Assert(iOutsideSprite.SourceRect.Height == iInsideSprite.SourceRect.Height);
 
             _insideSprite = iInsideSprite;
             _outsideSprite = iOutsideSprite;
-            
-            _spriteHeight = iInsideSprite.Texture2D.Height;
-            _spriteWidth = iInsideSprite.Texture2D.Width;
 
             _getPlayerPosFunc = iGetPlayerPos;
             _getProximityRadiusFunc = iGetProximityRadius;
+
+            var fullTextureWidth = _insideSprite.Texture2D.Width;
+            var fullTextureHeight = _insideSprite.Texture2D.Height;
+
+            _insideU = new Vector2(iInsideSprite.SourceRect.Left, iInsideSprite.SourceRect.Right) / fullTextureWidth;
+            _insideV = new Vector2(iInsideSprite.SourceRect.Top, iInsideSprite.SourceRect.Bottom) / fullTextureHeight;
+            _outsideU = new Vector2(iOutsideSprite.SourceRect.Left, iOutsideSprite.SourceRect.Right) / fullTextureWidth;
+            _outsideV = new Vector2(iOutsideSprite.SourceRect.Top, iOutsideSprite.SourceRect.Bottom) / fullTextureHeight;
         }
 
         public override RectangleF Bounds => _bounds;
@@ -29,19 +35,29 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToEntity()
         {
+            var spriteWidth = _insideSprite.SourceRect.Width;
+            var spriteHeight = _insideSprite.SourceRect.Height;
+
             _bounds.CalculateBounds(Entity.Transform.Position, _localOffset, _insideSprite.Origin,
                 Entity.Transform.Scale, Entity.Transform.Rotation, _insideSprite.SourceRect.Width,
                 _insideSprite.SourceRect.Height);
 
             // This seems weird to put the top left position at (0, 0), but this prevents floating point overflow on android whose max value is 2^14
             var topLeftPosition = Vector2.Zero;
-            var spriteDimensions = new Vector2(_spriteWidth, _spriteHeight) * Entity.Transform.Scale;
+            var spriteDimensions = new Vector2(spriteWidth, spriteHeight) * Entity.Transform.Scale;
             var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height);
-            _material = new ProximityMaterial(_insideSprite.Texture2D, _outsideSprite.Texture2D, spriteDimensions, screenDimensions);
+            _material = new ProximityMaterial(
+                _insideSprite.Texture2D, 
+                _insideU, _insideV,
+                _outsideSprite.Texture2D,
+                _outsideU, _outsideV,
+                spriteDimensions, 
+                screenDimensions);
+
             _material.Effect.SetSpritePosition(topLeftPosition);
 
 
-            _topLeftPos = Entity.Position + LocalOffset - new Vector2(_spriteWidth / 2f, _spriteHeight / 2f) * Entity.Transform.Scale;
+            _topLeftPos = Entity.Position + LocalOffset - new Vector2(spriteWidth / 2f, spriteHeight / 2f) * Entity.Transform.Scale;
         }
 
         public void Update()
@@ -62,10 +78,13 @@ namespace Raspberry_Lib.Components
 
         private readonly Sprite _insideSprite;
         private readonly Sprite _outsideSprite;
-        private readonly int _spriteHeight;
-        private readonly int _spriteWidth;
         private readonly Func<Vector2> _getPlayerPosFunc;
         private readonly Func<float> _getProximityRadiusFunc;
+        private readonly Vector2 _insideU;
+        private readonly Vector2 _insideV;
+        private readonly Vector2 _outsideU;
+        private readonly Vector2 _outsideV;
+
         private Vector2 _topLeftPos;
 
         private ProximityMaterial _material;

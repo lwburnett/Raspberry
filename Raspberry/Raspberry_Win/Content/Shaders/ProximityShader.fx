@@ -7,11 +7,13 @@
 #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-#define MAXSIZECOLORMAP 10
-#define COLORTOLERANCE .0001
-
 Texture2D InsideTexture;
 Texture2D OutsideTexture;
+
+float2 InsideUBounds;
+float2 InsideVBounds;
+float2 OutsideUBounds;
+float2 OutsideVBounds;
 
 float2 SpritePositionTopLeft;
 float2 SpriteDimensions;
@@ -50,28 +52,20 @@ float GetDistSafe(float2 Point1, float2 Point2)
 	return adjustedDist * ScreenDimensions.y;
 }
 
-bool ColorsEqualWithTolerance(float4 Color1, float4 Color2)
-{
-	if (abs(Color1.r - Color2.r) > COLORTOLERANCE) { return false; }
-
-	if (abs(Color1.g - Color2.g) > COLORTOLERANCE) { return false; }
-
-	if (abs(Color1.b - Color2.b) > COLORTOLERANCE) { return false; }
-
-	if (abs(Color1.a - Color2.a) > COLORTOLERANCE) { return false; }
-
-	return true;
-}
-
-
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
+	const float lerpUValue = (input.TextureCoordinates.x - InsideUBounds.x) / (InsideUBounds.y - InsideUBounds.x);
+	const float lerpVValue = (input.TextureCoordinates.y - InsideVBounds.x) / (InsideVBounds.y - InsideVBounds.x);
+
+	const float outsideU = lerp(OutsideUBounds.x, OutsideUBounds.y, lerpUValue);
+	const float outsideV = lerp(OutsideVBounds.x, OutsideVBounds.y, lerpVValue);
+	
 	float4 insideColor = tex2D(InsideTextureSampler, input.TextureCoordinates);
-	float4 outsideColor = tex2D(OutsideTextureSampler, input.TextureCoordinates);
+	float4 outsideColor = tex2D(OutsideTextureSampler, float2(outsideU, outsideV));
 
 	float4 result = outsideColor;
 
-	const float2 thisPixelPos = float2(SpritePositionTopLeft.x + (input.TextureCoordinates.x * SpriteDimensions.x), SpritePositionTopLeft.y + input.TextureCoordinates.y * SpriteDimensions.y);
+	const float2 thisPixelPos = float2(SpritePositionTopLeft.x + (lerpUValue * SpriteDimensions.x), SpritePositionTopLeft.y + lerpVValue * SpriteDimensions.y);
 	const float dist = GetDistSafe(thisPixelPos, PlayerPosition);
 
 	if (dist <= ProximityRadius)
