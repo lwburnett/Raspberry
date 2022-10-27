@@ -11,7 +11,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting RiverWidthTransitionPeriod = new(400f);
         }
 
-        public LevelBlock(IFunction iFunction, IList<Vector2> iObstacles, float iRiverWidth, float? iPreviousBlockWidth = null)
+        public LevelBlock(IFunction iFunction, IList<RiverObstacle> iObstacles, float iRiverWidth, float? iPreviousBlockWidth = null)
         {
             Function = iFunction;
             Obstacles = iObstacles;
@@ -20,7 +20,7 @@ namespace Raspberry_Lib.Components
         }
 
         public IFunction Function { get; }
-        public IList<Vector2> Obstacles { get; }
+        public IList<RiverObstacle> Obstacles { get; }
 
         public float GetRiverWidth(float iXPos)
         {

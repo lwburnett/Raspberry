@@ -66,7 +66,7 @@ namespace Raspberry_Lib.Components
             var randomWalk = RandomWalk(startingPos, Vector2.UnitX);
             Blocks = new List<LevelBlock>
             {
-                new (LeadingPoints(startingPos), new List<Vector2>(), riverWidth),
+                new (LeadingPoints(startingPos), new List<RiverObstacle>(), riverWidth),
                 new (randomWalk, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleXGapMaxUpper.Value), riverWidth)
             };
 
@@ -91,7 +91,7 @@ namespace Raspberry_Lib.Components
 
                 var nextStartingSlope = new Vector2(1f, lastBlock.Function.GetYPrimeForX(lastBlock.Function.DomainEnd));
                 var newWalk = RandomWalk(nextStartingPoint, nextStartingSlope);
-                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk, lastBlock.Obstacles.Last().X), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
+                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk, lastBlock.Obstacles.Last().Position.X), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
 
                 Blocks.Add(newBlock);
 
@@ -196,9 +196,9 @@ namespace Raspberry_Lib.Components
                 new Vector2(_scale, _scale / yScaleDivisor));
         }
 
-        private List<Vector2> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
+        private List<RiverObstacle> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
         {
-            var obstacles = new List<Vector2>();
+            var obstacles = new List<RiverObstacle>();
 
             var lastPointX = iStartingPointX ?? iFunction.DomainStart;
 
@@ -216,7 +216,10 @@ namespace Raspberry_Lib.Components
 
                 var thisPointY = iFunction.GetYForX(thisPointX) - (riverWidth / 2f) + _scale + ((float)_rng.NextDouble() * (riverWidth - 2 * _scale));
 
-                obstacles.Add(new Vector2(thisPointX, thisPointY));
+                var position = new Vector2(thisPointX, thisPointY);
+                var index = _rng.Next(0, 2) * 2;
+                var rotation = (float)_rng.NextDouble() * MathHelper.TwoPi;
+                obstacles.Add(new RiverObstacle(position, index, rotation));
 
                 lastPointX = thisPointX;
             }

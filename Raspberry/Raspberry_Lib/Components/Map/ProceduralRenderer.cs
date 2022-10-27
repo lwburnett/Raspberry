@@ -179,7 +179,8 @@ namespace Raspberry_Lib.Components
                     }
                     else if (_currentObstacleIndex < _levelBlock.Obstacles.Count)
                     {
-                        var thisObstaclePosition = _levelBlock.Obstacles[_currentObstacleIndex];
+                        var thisObstacleDescription = _levelBlock.Obstacles[_currentObstacleIndex];
+                        var thisObstaclePosition = thisObstacleDescription.Position;
 
                         Entity thisObstacle;
                         if (thisObstaclePosition.X - LastBranchSpawnX > Settings.MinXDistanceBetweenBranches.Value)
@@ -192,7 +193,7 @@ namespace Raspberry_Lib.Components
                         }
                         else
                         {
-                            thisObstacle = new RockObstacleEntity(_levelBlock.Obstacles[_currentObstacleIndex])
+                            thisObstacle = new RockObstacleEntity(thisObstaclePosition, thisObstacleDescription.RockIndex, thisObstacleDescription.RotationRadians)
                             {
                                 Scale = new Vector2(_scale)
                             };

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Nez;
 using Nez.Textures;
 
@@ -12,11 +13,20 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting DoNotUpdateWakeLeftDistance = new(2000);
 
             public const float ScaleAdjustmentMultiplier = .75f;
+
+            public static readonly Dictionary<int, float> RockToFractionalColliderSize = new()
+            {
+                {0, .31f},
+                {2, .28f},
+                {4, .30f}
+            };
         }
 
-        public RockObstacleEntity(Vector2 iPosition)
+        public RockObstacleEntity(Vector2 iPosition, int iRockIndex, float iRotation)
         {
             Position = iPosition;
+            _rockIndex = iRockIndex;
+            //Rotation = iRotation;
         }
 
 
@@ -28,8 +38,8 @@ namespace Raspberry_Lib.Components
 
             var textureAtlas = Scene.Content.LoadTexture(Content.ContentData.AssetPaths.ObjectsTileset, true);
             var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 72, 72);
-            var textureOutside = spriteList[0];
-            var textureInside = spriteList[1];
+            var textureOutside = spriteList[_rockIndex];
+            var textureInside = spriteList[_rockIndex + 1];
 
             _character = Scene.FindEntity("character");
             var playerProximityComponent = _character.GetComponent<PlayerProximityComponent>();
@@ -44,7 +54,9 @@ namespace Raspberry_Lib.Components
                     RenderLayer = 4
                 });
 
-            _collider = AddComponent(new CircleCollider(textureOutside.SourceRect.Width / 3f) {PhysicsLayer = PhysicsLayer, Entity = this});
+            System.Diagnostics.Debug.Assert(Settings.RockToFractionalColliderSize.ContainsKey(_rockIndex));
+            var colliderRadius = textureOutside.SourceRect.Width * Settings.RockToFractionalColliderSize[_rockIndex];
+            _collider = AddComponent(new CircleCollider(colliderRadius) {PhysicsLayer = PhysicsLayer, Entity = this});
             Physics.AddCollider(_collider);
 
 
@@ -67,6 +79,7 @@ namespace Raspberry_Lib.Components
         private Entity _character;
         private float _rightUpdateWakeBoundX;
         private float _leftUpdateWakeBoundX;
+        private int _rockIndex;
 
         private bool ShouldUpdate()
         {
