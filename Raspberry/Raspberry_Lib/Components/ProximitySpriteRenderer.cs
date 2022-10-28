@@ -43,7 +43,7 @@ namespace Raspberry_Lib.Components
                 _insideSprite.SourceRect.Height);
 
             // This seems weird to put the top left position at (0, 0), but this prevents floating point overflow on android whose max value is 2^14
-            var topLeftPosition = Vector2.Zero;
+            var centerPosition = Vector2.Zero;
             var spriteDimensions = new Vector2(spriteWidth, spriteHeight) * Entity.Transform.Scale;
             var screenDimensions = new Vector2(Entity.Scene.Camera.Bounds.Width, Entity.Scene.Camera.Bounds.Height);
             _material = new ProximityMaterial(
@@ -51,13 +51,14 @@ namespace Raspberry_Lib.Components
                 _insideU, _insideV,
                 _outsideSprite.Texture2D,
                 _outsideU, _outsideV,
+                Entity.Rotation,
                 spriteDimensions, 
                 screenDimensions);
 
-            _material.Effect.SetSpritePosition(topLeftPosition);
+            _material.Effect.SetSpritePosition(centerPosition);
 
 
-            _topLeftPos = Entity.Position + LocalOffset - new Vector2(spriteWidth / 2f, spriteHeight / 2f) * Entity.Transform.Scale;
+            _topLeftPos = Entity.Position + LocalOffset;
         }
 
         public void Update()

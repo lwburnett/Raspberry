@@ -26,7 +26,7 @@ namespace Raspberry_Lib.Components
         {
             Position = iPosition;
             _rockIndex = iRockIndex;
-            //Rotation = iRotation;
+            Rotation = iRotation;
         }
 
 
@@ -43,11 +43,11 @@ namespace Raspberry_Lib.Components
 
             _character = Scene.FindEntity("character");
             var playerProximityComponent = _character.GetComponent<PlayerProximityComponent>();
-
+            
             AddComponent(
                 new ProximitySpriteRenderer(
                     textureInside,
-                    textureOutside, 
+                    textureOutside,
                     () => _character.Position, 
                     () => playerProximityComponent.Radius)
                 {

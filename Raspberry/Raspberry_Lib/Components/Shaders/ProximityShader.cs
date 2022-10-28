@@ -11,6 +11,7 @@ namespace Raspberry_Lib.Components
             Vector2 iInsideUBounds, Vector2 iInsideVBounds, 
             Texture2D iOutsideTexture,
             Vector2 iOutsideUBounds, Vector2 iOutsideVBounds,
+            float iRotationRadians,
             Vector2 iSpriteDimensions, 
             Vector2 iScreenDimension)
         {
@@ -19,6 +20,7 @@ namespace Raspberry_Lib.Components
                 iInsideUBounds, iInsideVBounds, 
                 iOutsideTexture,
                 iOutsideUBounds, iOutsideVBounds,
+                iRotationRadians,
                 iSpriteDimensions, iScreenDimension);
         }
     }
@@ -30,6 +32,7 @@ namespace Raspberry_Lib.Components
             Vector2 iInsideUBounds, Vector2 iInsideVBounds, 
             Texture2D iOutsideTexture,
             Vector2 iOutsideUBounds, Vector2 iOutsideVBounds,
+            float iRotationRadians,
             Vector2 iSpriteDimensions, 
             Vector2 iScreenDimensions) :
             base(Core.GraphicsDevice, EffectResource.GetFileResourceBytes(Content.ContentData.AssetPaths.ProximityShader))
@@ -42,19 +45,20 @@ namespace Raspberry_Lib.Components
             Parameters["InsideVBounds"].SetValue(iInsideVBounds);
             Parameters["OutsideUBounds"].SetValue(iOutsideUBounds);
             Parameters["OutsideVBounds"].SetValue(iOutsideVBounds);
+            Parameters["RotationRadians"].SetValue(iRotationRadians);
 
             Parameters["SpriteDimensions"].SetValue(iSpriteDimensions);
 
             Parameters["ScreenDimensions"].SetValue(iScreenDimensions);
 
-            _positionTopLeft = Parameters["SpritePositionTopLeft"];
+            _positionCenter = Parameters["SpritePositionCenter"];
             _playerPositionParam = Parameters["PlayerPosition"];
             _proximityRadiusParam = Parameters["ProximityRadius"];
         }
 
         public void SetSpritePosition(Vector2 iSpritePosition)
         {
-            _positionTopLeft.SetValue(iSpritePosition);
+            _positionCenter.SetValue(iSpritePosition);
         }
 
         public void SetPlayerPosition(Vector2 iPlayerPosition)
@@ -67,7 +71,7 @@ namespace Raspberry_Lib.Components
             _proximityRadiusParam.SetValue(iProximityRadius);
         }
 
-        private readonly EffectParameter _positionTopLeft;
+        private readonly EffectParameter _positionCenter;
         private readonly EffectParameter _playerPositionParam;
         private readonly EffectParameter _proximityRadiusParam;
     }

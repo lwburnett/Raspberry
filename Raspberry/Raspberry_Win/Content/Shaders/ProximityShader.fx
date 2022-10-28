@@ -15,7 +15,9 @@ float2 InsideVBounds;
 float2 OutsideUBounds;
 float2 OutsideVBounds;
 
-float2 SpritePositionTopLeft;
+float RotationRadians;
+
+float2 SpritePositionCenter;
 float2 SpriteDimensions;
 float2 ScreenDimensions;
 float2 PlayerPosition;
@@ -52,6 +54,21 @@ float GetDistSafe(float2 Point1, float2 Point2)
 	return adjustedDist * ScreenDimensions.y;
 }
 
+// Expecting UV to be in the domain of [0,1]
+float2 GetCoordinatesInWorldSpace(float2 UV)
+{
+	const float2 uvPrime = UV - .5;
+	const float2 p = float2(uvPrime.x * SpriteDimensions.x, uvPrime.y * SpriteDimensions.y);
+
+	const float sinTheta = sin(RotationRadians);
+	const float cosTheta = cos(RotationRadians);
+
+	const float2x2 transform = float2x2(cosTheta, -sinTheta,
+										sinTheta, cosTheta);
+
+	return SpritePositionCenter + mul(transform, p);
+}
+
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
 	const float lerpUValue = (input.TextureCoordinates.x - InsideUBounds.x) / (InsideUBounds.y - InsideUBounds.x);
@@ -65,7 +82,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
 	float4 result = outsideColor;
 
-	const float2 thisPixelPos = float2(SpritePositionTopLeft.x + (lerpUValue * SpriteDimensions.x), SpritePositionTopLeft.y + lerpVValue * SpriteDimensions.y);
+	const float2 thisPixelPos = GetCoordinatesInWorldSpace(float2(lerpUValue, lerpVValue));
 	const float dist = GetDistSafe(thisPixelPos, PlayerPosition);
 
 	if (dist <= ProximityRadius)
