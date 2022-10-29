@@ -3,15 +3,28 @@
 Features
 	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- Daily challenge map based on today's date
+	- Settings to turn off music & sound fx
+	- Add Screens
+		- Main Menu
+		- Settings screen? (Might not actually need this)
+		- Stats screen? (With things like # of attempts, best run, average run, etc.)
+		- Post play screen with stats of that play session (might just be a popup over play session screen)
 
 Optimization
 
 Art
-	- Add Menus
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- Iterate on generated tile art
+	- Iterate on energy art
 	- Change rocks' color pallete to better match the brown pallete of the desert
-	- Put black border around player boat
+	- Sound effects
+		- Generic river
+		- Rowing
+		- Turning
+		- Picking up energy
+		- Bumping rocks
+		- Bumping shoreline
+		
 
 Bugs
 	- Rocks sometimes placed badly at transitions
@@ -52,6 +65,7 @@ Art
 	- Particle effect from the oars when the player turns
 	- Add in rocking of the player boat modelled after a damped oscillator
 	- Different sprites for rocks when inside and outside the player radius
+	- Put black border around player boat
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
