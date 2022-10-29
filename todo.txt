@@ -1,6 +1,7 @@
 ------------------------ Outstanding ------------------------
 
 Features
+	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- Daily challenge map based on today's date
 
 Optimization
@@ -9,7 +10,8 @@ Art
 	- Add Menus
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- Iterate on generated tile art
-	- Different sprites for rocks when inside and outside the player radius
+	- Change rocks' color pallete to better match the brown pallete of the desert
+	- Put black border around player boat
 
 Bugs
 	- Rocks sometimes placed badly at transitions
@@ -49,6 +51,7 @@ Art
 	- Particle effect from the oars when the player rows
 	- Particle effect from the oars when the player turns
 	- Add in rocking of the player boat modelled after a damped oscillator
+	- Different sprites for rocks when inside and outside the player radius
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
