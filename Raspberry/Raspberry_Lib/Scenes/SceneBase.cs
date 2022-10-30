@@ -70,7 +70,7 @@ namespace Raspberry_Lib.Scenes
             // Need to make the first argument iPath because Android is bugged and
             //    uses that instead of the Uri to load the asset.
             // Reference found here: https://github.com/MonoGame/MonoGame/issues/3935
-            _backgroundSong = Song.FromUri(iPath, uri);
+            //_backgroundSong = Song.FromUri(iPath, uri);
         }
 
         private Song _backgroundSong;

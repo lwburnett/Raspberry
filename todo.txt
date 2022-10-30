@@ -1,7 +1,7 @@
 ------------------------ Outstanding ------------------------
 
 Features
-	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
+	-* Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- Daily challenge map based on today's date
 	- Settings to turn off music & sound fx
 	- Add Screens
@@ -33,6 +33,7 @@ Bugs
 	- Boat rocking is simply based on (PlayerVelocity - RiverVelocity) and it looks wrong sometimes
 		especially when facing backwards
 	- Row wakes look wrong when facing backwards
+	-* Balance volume of music between main menu and play screen so that they are the same volume
 
 Balance
 	- Rounds last kind of long
