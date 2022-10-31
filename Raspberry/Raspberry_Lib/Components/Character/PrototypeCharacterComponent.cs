@@ -4,10 +4,10 @@ namespace Raspberry_Lib.Components
 {
     internal class PrototypeCharacterComponent : Component
     {
-        public PrototypeCharacterComponent(System.Action iOnFatalCollision)
+        public PrototypeCharacterComponent(System.Action iOnMainMenu)
         {
-            _collisionComponent = new CharacterCollisionComponent(iOnFatalCollision);
-            _playerProximityComponent = new PlayerProximityComponent(iOnFatalCollision);
+            _collisionComponent = new CharacterCollisionComponent(iOnMainMenu);
+            _playerProximityComponent = new PlayerProximityComponent(iOnMainMenu);
         }
 
         public override void OnAddedToEntity()

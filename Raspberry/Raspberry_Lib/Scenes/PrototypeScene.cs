@@ -14,9 +14,9 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
         }
 
-        public PrototypeScene(Action iOnFatalCollision)
+        public PrototypeScene(Action iOnMainMenu)
         {
-            _onFatalCollision = iOnFatalCollision;
+            _onMainMenu = iOnMainMenu;
             ClearColor = ContentData.ColorPallets.Desert.Color2;
         }
 
@@ -38,7 +38,7 @@ namespace Raspberry_Lib.Scenes
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
-            character.AddComponent(new PrototypeCharacterComponent(OnFatalCollision));
+            character.AddComponent(new PrototypeCharacterComponent(OnMainMenu));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 
             SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic);
@@ -49,11 +49,11 @@ namespace Raspberry_Lib.Scenes
 #endif
         }
 
-        private readonly Action _onFatalCollision;
+        private readonly Action _onMainMenu;
 
-        private void OnFatalCollision()
+        private void OnMainMenu()
         {
-            _onFatalCollision();
+            _onMainMenu();
         }
     }
 }
