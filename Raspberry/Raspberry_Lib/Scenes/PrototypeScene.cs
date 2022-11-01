@@ -53,6 +53,11 @@ namespace Raspberry_Lib.Scenes
 
         private void OnMainMenu()
         {
+#if VERBOSE
+            Verbose.ClearCollidersToRender();
+            Verbose.ClearMetrics();
+#endif
+
             _onMainMenu();
         }
     }
