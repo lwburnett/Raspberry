@@ -56,6 +56,7 @@ namespace Raspberry_Lib.Scenes
             {
                 MediaPlayer.Play(_backgroundSong);
                 MediaPlayer.IsRepeating = true;
+                MediaPlayer.Volume = _backgroundSongVolume;
             }
         }
 
@@ -64,16 +65,19 @@ namespace Raspberry_Lib.Scenes
             MediaPlayer.Stop();
         }
 
-        protected void SetBackgroundSong(string iPath)
+        // Volume's domain is 0f to 1f
+        protected void SetBackgroundSong(string iPath, float iVolume)
         {
             var uri = new Uri(iPath, UriKind.Relative);
             // Need to make the first argument iPath because Android is bugged and
             //    uses that instead of the Uri to load the asset.
             // Reference found here: https://github.com/MonoGame/MonoGame/issues/3935
-            //_backgroundSong = Song.FromUri(iPath, uri);
+            _backgroundSong = Song.FromUri(iPath, uri);
+            _backgroundSongVolume = iVolume;
         }
 
         private Song _backgroundSong;
+        private float _backgroundSongVolume;
         private bool _isFirstUpdate;
     }
 }

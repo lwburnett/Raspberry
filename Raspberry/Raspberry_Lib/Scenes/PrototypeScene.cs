@@ -41,7 +41,7 @@ namespace Raspberry_Lib.Scenes
             character.AddComponent(new PrototypeCharacterComponent(OnMainMenu));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 
-            SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic);
+            SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic, .35f);
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");

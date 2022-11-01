@@ -54,7 +54,7 @@ namespace Raspberry_Lib.Scenes
             exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             table.Add(exitButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
 
-            SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic);
+            SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic, .6f);
         }
 
         private readonly Action _onStart;
