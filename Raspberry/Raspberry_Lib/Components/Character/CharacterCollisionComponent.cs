@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Microsoft.Xna.Framework;
 using Nez;
 using Nez.PhysicsShapes;
 #if VERBOSE
@@ -18,9 +20,8 @@ namespace Raspberry_Lib.Components
             public const float ColliderHeight = 15;
         }
 
-        public CharacterCollisionComponent(System.Action iOnFatalCollision)
+        public CharacterCollisionComponent()
         {
-            _onFatalCollision = iOnFatalCollision;
             _collider = new BoxCollider(
                 -Settings.ColliderWidth / 2 + Settings.ColliderXOffset,
                 -Settings.ColliderHeight / 2 + Settings.ColliderYOffset,
@@ -32,6 +33,7 @@ namespace Raspberry_Lib.Components
         {
             Entity.AddComponent(_collider);
             _playerProximityComponent = Entity.GetComponent<PlayerProximityComponent>();
+            _playerMovementComponent = Entity.GetComponent<CharacterMovementComponent>();
 
 #if VERBOSE
             Verbose.RenderCollider(_collider);
@@ -73,9 +75,18 @@ namespace Raspberry_Lib.Components
                 Debug.DrawPixel(new Vector2(vertex.X, lowerBankY), 4, Color.Yellow);
 #endif
 
-                if (upperBankY >= vertex.Y || lowerBankY <= vertex.Y)
+                if (upperBankY > vertex.Y)
                 {
-                    OnFatalCollision();
+                    var slope = new Vector2(1f, thisBlock.Function.GetYPrimeForX(vertex.X));
+                    var minYDistToMove = upperBankY - vertex.Y;
+                    HandleShorelineCollision(slope, minYDistToMove);
+                    break;
+                }
+                else if (lowerBankY < vertex.Y)
+                {
+                    var slope = new Vector2(1f, thisBlock.Function.GetYPrimeForX(vertex.X));
+                    var minYDistToMove = lowerBankY - vertex.Y;
+                    HandleShorelineCollision(slope, minYDistToMove);
                     break;
                 }
             }
@@ -88,7 +99,7 @@ namespace Raspberry_Lib.Components
 
             if (collisionResult.Collider.Entity is RockObstacleEntity)
             {
-                OnFatalCollision();
+                _playerMovementComponent.AdjustMovementAfterCollision(-collisionResult.Normal, collisionResult.MinimumTranslationVector);
             }
             else if (collisionResult.Collider.Entity is BranchEntity branch)
             {
@@ -98,18 +109,22 @@ namespace Raspberry_Lib.Components
         }
 
         private readonly BoxCollider _collider;
-        private readonly System.Action _onFatalCollision;
         private ProceduralGeneratorComponent _proceduralGenerator;
         private PlayerProximityComponent _playerProximityComponent;
+        private CharacterMovementComponent _playerMovementComponent;
 
-        private void OnFatalCollision()
+        private void HandleShorelineCollision(Vector2 iShorelineSlope, float iMinYDistToMove)
         {
-#if VERBOSE
-            Verbose.ClearCollidersToRender();
-            Verbose.ClearMetrics();
-#endif
+            var normal = new Vector2(-iShorelineSlope.Y, iShorelineSlope.X);
 
-            _onFatalCollision();
+            if (iMinYDistToMove < 0)
+                normal *= -1;
+
+            normal.Normalize();
+
+            var minTranslation = normal * Math.Abs(iMinYDistToMove);
+
+            _playerMovementComponent.AdjustMovementAfterCollision(normal, minTranslation);
         }
     }
 }

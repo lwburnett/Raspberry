@@ -6,7 +6,7 @@ namespace Raspberry_Lib.Components
     {
         public PrototypeCharacterComponent(System.Action iOnMainMenu)
         {
-            _collisionComponent = new CharacterCollisionComponent(iOnMainMenu);
+            _collisionComponent = new CharacterCollisionComponent();
             _playerProximityComponent = new PlayerProximityComponent(iOnMainMenu);
         }
 

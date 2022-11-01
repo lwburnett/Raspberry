@@ -28,6 +28,9 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting RowForceMedium = new(65);
             public static readonly RenderSetting RowForceGood = new(90);
             public static readonly RenderSetting RowForceNeutral = new(75);
+            
+            public const float FinalVelocityPercentAfterCollision = .6f;
+            public static readonly RenderSetting MinimumPostCollisionVelocity = new(50f);
         }
 
         public CharacterMovementComponent()
@@ -240,6 +243,26 @@ namespace Raspberry_Lib.Components
         public void OnPlayerInput(CharacterInputController.InputDescription iInput)
         {
             CurrentInput = iInput;
+        }
+
+        public void AdjustMovementAfterCollision(Vector2 iNormal, Vector2 iMinimumTranslationVector)
+        {
+            iNormal.Normalize();
+
+            Entity.Position += iMinimumTranslationVector;
+
+            var workingVelocity = _currentVelocity;
+
+            var finalVelocityMag = workingVelocity.Length() * Settings.FinalVelocityPercentAfterCollision;
+            if (finalVelocityMag < Settings.MinimumPostCollisionVelocity.Value)
+                finalVelocityMag = Settings.MinimumPostCollisionVelocity.Value;
+            
+            var perpendicularEntrySpeed = Math.Abs(Vector2.Dot(workingVelocity, iNormal));
+
+            var potentialFinalVelocity = workingVelocity + 2 * perpendicularEntrySpeed * iNormal;
+            potentialFinalVelocity.Normalize();
+
+            _currentVelocity = potentialFinalVelocity * finalVelocityMag;
         }
 
         public float TotalDistanceTraveled { get; private set; }
