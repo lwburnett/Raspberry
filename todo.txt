@@ -1,7 +1,6 @@
 ------------------------ Outstanding ------------------------
 
 Features
-	-* Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- Daily challenge map based on today's date
 	- Settings to turn off music & sound fx
 	- Add Screens
@@ -42,6 +41,7 @@ Balance
 ------------------------- Completed -------------------------
 
 Features
+	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- "Active Reload" for rowing
 	- Player proximity enhancements
 		- Positive collectable that increases size of player proximity
