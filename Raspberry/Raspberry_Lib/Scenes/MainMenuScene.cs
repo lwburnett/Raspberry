@@ -12,7 +12,7 @@ namespace Raspberry_Lib.Scenes
         {
             public static readonly RenderSetting LabelTopPadding = new(20);
             public static readonly RenderSetting FontScale = new(5);
-            public static readonly RenderSetting MinButtonHeight = new(50);
+            public static readonly RenderSetting MinButtonHeight = new(80);
 
             public static readonly RenderSetting TablePositionX = new(300);
             public static readonly RenderSetting TablePositionY = new(200);
@@ -40,7 +40,7 @@ namespace Raspberry_Lib.Scenes
 
             var table = canvas.Stage.AddElement(new Table());
             table.SetPosition(Settings.TablePositionX.Value, Settings.TablePositionY.Value);
-            table.Add(new Label("Awesome Title").SetFontScale(5).SetFontColor(Color.Black));
+            table.Add(new Label("Concurrent Streams").SetFontScale(5).SetFontColor(Color.Black));
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
             
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
