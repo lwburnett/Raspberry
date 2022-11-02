@@ -9,9 +9,8 @@ using Xamarin.Essentials;
 namespace Raspberry_Android
 {
     [Activity(
-        Label = "@string/app_name",
         MainLauncher = true,
-        Icon = "@drawable/icon",
+        Icon = "@mipmap/ic_launcher",
         Theme="@android:style/Theme.NoTitleBar.Fullscreen",
         AlwaysRetainTaskState = true,
         LaunchMode = LaunchMode.SingleInstance,
