@@ -1,3 +1,17 @@
+---------------------- Sprint Priority ----------------------
+
+Must
+	- Feature: How to play screen
+	- Feature: Credits screen
+	- Bug: Fix android crash
+
+Should
+	- Balance: Make the game harder
+
+Could
+	- Art: Recolor rocks
+	- Art: Iterate on energy art
+
 ------------------------ Outstanding ------------------------
 
 Features
@@ -8,14 +22,16 @@ Features
 		- Settings screen? (Might not actually need this)
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
+		- *How to play screen
+		- Credits
 
 Optimization
 
 Art
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Iterate on generated tile art
-	- Iterate on energy art
-	- Change rocks' color pallete to better match the brown pallete of the desert
+	- *Iterate on generated tile art
+	- *Iterate on energy art
+	- *Change rocks' color pallete to better match the brown pallete of the desert
 	- Sound effects
 		- Generic river
 		- Rowing
@@ -32,10 +48,10 @@ Bugs
 	- Boat rocking is simply based on (PlayerVelocity - RiverVelocity) and it looks wrong sometimes
 		especially when facing backwards
 	- Row wakes look wrong when facing backwards
-	-* Balance volume of music between main menu and play screen so that they are the same volume
+	- *Android version crashes after making it a certain distance
 
 Balance
-	- Rounds last kind of long
+	- After collisions no longer cause an instant loss, the game is super easy
 
 
 ------------------------- Completed -------------------------
@@ -83,6 +99,7 @@ Bugs
 		- I don't think this was actually true. It looks better now that transitions are spread out over a larger domain
 	- Turn wake particles move too fast
 	- Wake particles are too small compared to row wake and turn wake particles
+	- Balance volume of music between main menu and play screen so that they are the same volume
 
 Balance
 	- First half of rounds are kinda easy
