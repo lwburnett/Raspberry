@@ -105,6 +105,7 @@ namespace Raspberry_Lib.Components
             {
                 System.Diagnostics.Debug.Assert(_rowForceForCurrentRow.HasValue);
 
+                // ReSharper disable once PossibleInvalidOperationException
                 var potentialRowForce = directionVector * _rowForceForCurrentRow.Value;
                 var potentialVelocity = _currentVelocity + potentialRowForce * Time.DeltaTime;
 
