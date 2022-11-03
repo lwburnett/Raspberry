@@ -13,6 +13,13 @@ Could
 	- Art: Iterate on energy art
 	- Feature: Release version # display in corner of main menu
 
+-------------------- Playtester Feedback --------------------
+
+- Allow usage of left & right on desktop as up & down respectively (Mark)
+- More frequent energy spawns at the beginning, less energy spawns at the end (Mark, Nolan)
+- Spamming red/yellow rows is a much better strategy than green (Mark)
+- Not obvious that you can use right thumb to row (Nolan)
+
 ------------------------ Outstanding ------------------------
 
 Features
