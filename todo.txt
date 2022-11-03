@@ -11,6 +11,7 @@ Should
 Could
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
+	- Feature: Release version # display in corner of main menu
 
 ------------------------ Outstanding ------------------------
 
@@ -23,7 +24,8 @@ Features
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
 		- *How to play screen
-		- Credits
+		- *Credits
+	- *Release version # display in corner of main menu
 
 Optimization
 
@@ -51,7 +53,7 @@ Bugs
 	- *Android version crashes after making it a certain distance
 
 Balance
-	- After collisions no longer cause an instant loss, the game is super easy
+	- *After collisions no longer cause an instant loss, the game is super easy
 
 
 ------------------------- Completed -------------------------
