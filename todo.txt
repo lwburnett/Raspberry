@@ -11,7 +11,7 @@ Should
 	o Balance: Drastically reduce row force of red and yellow rows
 
 Could
-	- Feature: Move row indicator back to the right
+	o Feature: Move row indicator back to the right
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
 	- Feature: Release version # display in corner of main menu
@@ -39,7 +39,6 @@ Features
 		- *How to play screen
 		- *Credits
 	- *Release version # display in corner of main menu
-	- *Move row indicator back to the right
 
 Optimization
 
@@ -99,6 +98,7 @@ Art
 	- Add in rocking of the player boat modelled after a damped oscillator
 	- Different sprites for rocks when inside and outside the player radius
 	- Put black border around player boat
+	- Move row indicator back to the right
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
