@@ -47,9 +47,12 @@ namespace Raspberry_Lib.Components
             TotalDistanceTraveled = 0;
 
 #if VERBOSE
+            _turningDragForce = 0f;
+
             Verbose.TrackMetric(() => _currentVelocity.Length(), v => $"SpeedT: {v:G6}");
             Verbose.TrackMetric(() => _currentVelocity.X, v => $"SpeedX: {v:G6}");
             Verbose.TrackMetric(() => _currentVelocity.Y, v => $"SpeedY: {v:G6}");
+            Verbose.TrackMetric(() => _turningDragForce, v => $"Turning Drag Force: {v:G6}");
 #endif
         }
 
@@ -145,7 +148,8 @@ namespace Raspberry_Lib.Components
             // Apply rotation drag force
             if (CurrentInput.Rotation != 0f)
             {
-                var playerParallelVelocityToWaterSpeedDiffInRiverFrame = ScalarProject(_currentVelocity, flowDirectionVector) - flowSpeed;
+                var playerParallelVelocityToWaterSpeedDiffInRiverFrame =
+                    ScalarProject(_currentVelocity, flowDirectionVector) - flowSpeed;
 
                 float rotationDragForceParallel;
                 if (playerParallelVelocityToWaterSpeedDiffInRiverFrame <= 0)
@@ -154,15 +158,30 @@ namespace Raspberry_Lib.Components
                 }
                 else
                 {
-                    rotationDragForceParallel = Settings.RotationDragGrowthSlope.Value * playerParallelVelocityToWaterSpeedDiffInRiverFrame;
+                    rotationDragForceParallel = Settings.RotationDragGrowthSlope.Value *
+                                                playerParallelVelocityToWaterSpeedDiffInRiverFrame;
                 }
-                
-                forceVec += -flowDirectionVector * rotationDragForceParallel * Math.Abs(CurrentInput.Rotation);
 
-                var playerPerpendicularVelocityInRiverFrame = ScalarProject(_currentVelocity, flowPerpendicularDirection);
-                var rotationDragForcePerpendicular = Settings.RotationDragGrowthSlope.Value * playerPerpendicularVelocityInRiverFrame;
-                forceVec += -flowPerpendicularDirection * rotationDragForcePerpendicular * Math.Abs(CurrentInput.Rotation);
+                var forceParallel = -flowDirectionVector * rotationDragForceParallel * Math.Abs(CurrentInput.Rotation);
+                forceVec += forceParallel;
+
+                var playerPerpendicularVelocityInRiverFrame =
+                    ScalarProject(_currentVelocity, flowPerpendicularDirection);
+                var rotationDragForcePerpendicular =
+                    Settings.RotationDragGrowthSlope.Value * playerPerpendicularVelocityInRiverFrame;
+                var forcePerp = -flowPerpendicularDirection * rotationDragForcePerpendicular *
+                                Math.Abs(CurrentInput.Rotation);
+                forceVec += forcePerp;
+#if !VERBOSE
             }
+#else
+                _turningDragForce = (forceParallel + forcePerp).Length();
+            }
+            else
+            {
+                _turningDragForce = 0f;
+            }
+#endif
 
             // Apply river drag force
             var dotProductParallel = Vector2.Dot(directionVector, flowDirectionVector);
@@ -277,6 +296,10 @@ namespace Raspberry_Lib.Components
         private CharacterCollisionComponent _collisionComponent;
         private float? _globalMaxPositionXAchievedSoFar;
         private float? _rowForceForCurrentRow;
+
+#if VERBOSE
+        private float _turningDragForce;
+#endif
 
         private Vector2 GetRotationAsDirectionVector()
         {
