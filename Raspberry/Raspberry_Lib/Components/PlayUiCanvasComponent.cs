@@ -35,8 +35,9 @@ namespace Raspberry_Lib.Components
             _distanceLabel.SetPosition(Screen.Width / 2f, Settings.Margin.Value);
             _distanceLabel.SetFontScale(Settings.FontScale);
 
+            const int cellSize = 32;
             var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.IconsTileset, true);
-            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, 32, 32);
+            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, cellSize, cellSize);
 
             _upDefaultIcon = new SpriteDrawable(spriteList[4]);
             _upPressedIcon = new SpriteDrawable(spriteList[5]);
@@ -65,7 +66,7 @@ namespace Raspberry_Lib.Components
             _downIndicator.SetColor(drawColor);
 
             _rowIndicator = canvas.Stage.AddElement(new Image(spriteList[0]));
-            _rowIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f);
+            _rowIndicator.SetPosition(Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value, Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f);
             _rowIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
