@@ -8,35 +8,37 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting SpeedDifMax = new(20);
-
             public const float MinimumSpeedAsPercentOfFlowSpeed = .5f;
             public static readonly RenderSetting Acceleration = new(20);
-
-            public const float RotationRateDegreesPerSecondMin = 30f;
-            public const float RotationRateDegreesPerSecondMax = 60f;
+            
             public const float RowTime = .5f;
             public static readonly RenderSetting RotationDragGrowthSlope = new(.125f);
 
             public static readonly RenderSetting DragCoefficient = new(.005f);
 
-            public const float RowTransition1 = .5f;
+            public const float RowTransition1 = .7f;
             public const float RowTransition2 = .9f;
             public const float RowTransition3 = 1.25f;
 
-            public static readonly RenderSetting RowForceBad = new(40);
-            public static readonly RenderSetting RowForceMedium = new(65);
+            public static readonly RenderSetting RowForceBad = new(5);
+            public static readonly RenderSetting RowForceMedium = new(40);
             public static readonly RenderSetting RowForceGood = new(90);
             public static readonly RenderSetting RowForceNeutral = new(75);
             
             public const float FinalVelocityPercentAfterCollision = .6f;
             public static readonly RenderSetting MinimumPostCollisionVelocity = new(50f);
+
+            public const float RotationRateDegreesPerSecondMax = 60f;
+            public const float AngularWaterForce = 1f;
+            public const float AngularBoatForce = 60f;
+            public const float AngularFrictionForce = .2f;
         }
 
         public CharacterMovementComponent()
         {
             CurrentInput = new CharacterInputController.InputDescription();
             _currentVelocity = new Vector2(.01f, 0.0f);
+            _angularVelocity = 0f;
             _thisIterationMotion = Vector2.Zero;
             _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
@@ -88,14 +90,9 @@ namespace Raspberry_Lib.Components
 
             var flowPerpendicularDirection = GetClockwisePerpendicularUnitVector(flowDirectionVector);
 
-            var playerVelocityToWaterSpeedDiffInPlayerFrame = _currentVelocity.Length() - ScalarProject(flowSpeed * flowDirectionVector, _currentVelocity);
 
             // Apply rotation input
-            var lerpValue = MathHelper.Clamp(playerVelocityToWaterSpeedDiffInPlayerFrame / Settings.SpeedDifMax.Value, 0, 1);
-            float rotationSpeed = MathHelper.Lerp(Settings.RotationRateDegreesPerSecondMin, Settings.RotationRateDegreesPerSecondMax, lerpValue);
-            var rotationDegreesToApply = CurrentInput.Rotation * rotationSpeed * Time.DeltaTime;
-
-            Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
+            HandleRotationalForces(riverFlow);
 
             var directionVector = GetRotationAsDirectionVector();
             directionVector.Normalize();
@@ -146,7 +143,7 @@ namespace Raspberry_Lib.Components
             }
 
             // Apply rotation drag force
-            if (Math.Abs(rotationSpeed) > 0f)
+            if (CurrentInput.Rotation != 0f)
             {
                 var playerParallelVelocityToWaterSpeedDiffInRiverFrame = ScalarProject(_currentVelocity, flowDirectionVector) - flowSpeed;
 
@@ -272,6 +269,7 @@ namespace Raspberry_Lib.Components
         public float LastRowTimeSecond { get; private set; }
         
         private Vector2 _currentVelocity;
+        private float _angularVelocity;
         private Vector2 _thisIterationMotion;
         private readonly Mover _mover;
         private SubpixelVector2 _subPixelV2;
@@ -294,6 +292,55 @@ namespace Raspberry_Lib.Components
             var newVec = new Vector2(-iVec.Y, iVec.X);
             newVec.Normalize();
             return newVec;
+        }
+
+        private void HandleRotationalForces(Vector2 iWaterVelocity)
+        {
+            var cumulativeAngularForce = 0f;
+
+            var waterDirection = iWaterVelocity;
+            waterDirection.Normalize();
+
+            var currentDirection = GetRotationAsDirectionVector();
+            var currentDirection3D = new Vector3(GetRotationAsDirectionVector(), 0f);
+            currentDirection3D.Normalize();
+            var waterVelocity3D = new Vector3(iWaterVelocity, 0f);
+            waterVelocity3D.Normalize();
+
+            var crossProduct = Vector3.Cross(currentDirection3D, waterVelocity3D);
+            var crossScalar = crossProduct.Z != 0f ? crossProduct.Z / Math.Abs(crossProduct.Z) : 0f;
+
+            var dotProduct = Vector2.Dot(waterDirection, currentDirection);
+            var dotScalar = 0.5f - dotProduct / 2f;
+
+            var angularForceMultiplier = dotScalar * crossScalar;
+            cumulativeAngularForce += angularForceMultiplier * Settings.AngularWaterForce;
+            
+            if (CurrentInput.Rotation > 0f)
+            {
+                cumulativeAngularForce += Settings.AngularBoatForce;
+            }
+            else if (CurrentInput.Rotation < 0f)
+            {
+                cumulativeAngularForce += -Settings.AngularBoatForce;
+            }
+            else
+            {
+                if (_angularVelocity > 0f)
+                {
+                    cumulativeAngularForce += -Settings.AngularFrictionForce * _angularVelocity * _angularVelocity;
+                }
+                else if (_angularVelocity < 0f)
+                {
+                    cumulativeAngularForce += Settings.AngularFrictionForce * _angularVelocity * _angularVelocity;
+                }
+            }
+
+            _angularVelocity += cumulativeAngularForce * Time.DeltaTime;
+            _angularVelocity = MathHelper.Clamp(_angularVelocity, -Settings.RotationRateDegreesPerSecondMax, Settings.RotationRateDegreesPerSecondMax);
+            var rotationDegreesToApply = _angularVelocity * Time.DeltaTime;
+
+            Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
         }
     }
 }
