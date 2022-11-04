@@ -6,9 +6,12 @@ Must
 	- Bug: Fix android crash
 
 Should
-	- Balance: Make the game harder
+	o Balance: Make turning be "force" based so the movement doesn't feel icy
+	- Balance: Make collisions reduce radius based on speed of collision
+	o Balance: Drastically reduce row force of red and yellow rows
 
 Could
+	- Feature: Move row indicator back to the right
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
 	- Feature: Release version # display in corner of main menu
@@ -17,8 +20,11 @@ Could
 
 - Allow usage of left & right on desktop as up & down respectively (Mark)
 - More frequent energy spawns at the beginning, less energy spawns at the end (Mark, Nolan)
-- Spamming red/yellow rows is a much better strategy than green (Mark)
 - Not obvious that you can use right thumb to row (Nolan)
+- Movement isn't in a great place. Feedback
+	- Spamming red/yellow rows is a much better strategy than green (Mark)
+	- Movement feels "slippery" like you're on ice (Nolan)
+	- 
 
 ------------------------ Outstanding ------------------------
 
@@ -33,6 +39,7 @@ Features
 		- *How to play screen
 		- *Credits
 	- *Release version # display in corner of main menu
+	- *Move row indicator back to the right
 
 Optimization
 
@@ -60,7 +67,7 @@ Bugs
 	- *Android version crashes after making it a certain distance
 
 Balance
-	- *After collisions no longer cause an instant loss, the game is super easy
+	- *Make collisions reduce radius based on speed of collision
 
 
 ------------------------- Completed -------------------------
@@ -113,3 +120,5 @@ Bugs
 Balance
 	- First half of rounds are kinda easy
 		(Solved this with the active reload rowing feature; it makes everything pretty darn challenging)
+	- Drastically reduce row force of red and yellow rows
+	- Make turning be "force" based so the movement doesn't feel icy
