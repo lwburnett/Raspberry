@@ -3,9 +3,6 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.PhysicsShapes;
-#if VERBOSE
-using Microsoft.Xna.Framework;
-#endif
 
 namespace Raspberry_Lib.Components
 {
@@ -97,9 +94,14 @@ namespace Raspberry_Lib.Components
             if (collisionResult.Collider == null) 
                 return;
 
-            if (collisionResult.Collider.Entity is RockObstacleEntity)
+            if (collisionResult.Collider.Entity is RockObstacleEntity rock)
             {
                 _playerMovementComponent.AdjustMovementAfterCollision(-collisionResult.Normal, collisionResult.MinimumTranslationVector);
+
+                var incidentVector = rock.Position - Entity.Position;
+                incidentVector.Normalize();
+                var speedOfImpact = Vector2.Dot(_playerMovementComponent.CurrentVelocity, incidentVector) / incidentVector.Length();
+                _playerProximityComponent.OnObstacleHit(speedOfImpact);
             }
             else if (collisionResult.Collider.Entity is BranchEntity branch)
             {
@@ -125,6 +127,9 @@ namespace Raspberry_Lib.Components
             var minTranslation = normal * Math.Abs(iMinYDistToMove);
 
             _playerMovementComponent.AdjustMovementAfterCollision(normal, minTranslation);
+            
+            var speedOfImpact = Vector2.Dot(_playerMovementComponent.CurrentVelocity, normal) / normal.Length();
+            _playerProximityComponent.OnObstacleHit(speedOfImpact);
         }
     }
 }

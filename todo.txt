@@ -43,6 +43,7 @@ Features
 	- *Release version # display in corner of main menu
 	- *Add keyboard support
 	- *On keyboard & controller, have right mimic down and left mimic up
+	- Screen shake on collision
 
 Optimization
 
