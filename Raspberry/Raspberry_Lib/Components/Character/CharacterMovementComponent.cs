@@ -4,7 +4,7 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterMovementComponent : Component, IUpdatable, IBeginPlay
+    internal class CharacterMovementComponent : Component, IUpdatable, IBeginPlay, IPausable
     {
         private static class Settings
         {
@@ -42,7 +42,7 @@ namespace Raspberry_Lib.Components
             _thisIterationMotion = Vector2.Zero;
             _mover = new Mover();
             _subPixelV2 = new SubpixelVector2();
-            LastRowTimeSecond = float.MinValue;
+            SecondsSinceLastRow = Settings.RowTransition3;
             _globalMaxPositionXAchievedSoFar = null;
             TotalDistanceTraveled = 0;
 
@@ -55,6 +55,8 @@ namespace Raspberry_Lib.Components
             Verbose.TrackMetric(() => _turningDragForce, v => $"Turning Drag Force: {v:G6}");
 #endif
         }
+
+        public bool IsPaused { get; set; }
 
         public int BeginPlayOrder => 98;
 
@@ -74,6 +76,11 @@ namespace Raspberry_Lib.Components
 
         public void Update()
         {
+            if (IsPaused)
+            {
+                return;
+            }
+
             if (_generator == null)
                 return;
 
@@ -101,7 +108,8 @@ namespace Raspberry_Lib.Components
             directionVector.Normalize();
 
             // Apply row input
-            if (Time.TotalTime - LastRowTimeSecond < Settings.RowTime)
+            SecondsSinceLastRow += Time.DeltaTime;
+            if (SecondsSinceLastRow < Settings.RowTime)
             {
                 System.Diagnostics.Debug.Assert(_rowForceForCurrentRow.HasValue);
 
@@ -131,17 +139,16 @@ namespace Raspberry_Lib.Components
                 
                 if (CurrentInput.Row)
                 {
-                    var timeDiff = Time.TotalTime - LastRowTimeSecond;
-                    if (timeDiff < Settings.RowTransition1) 
+                    if (SecondsSinceLastRow < Settings.RowTransition1) 
                         _rowForceForCurrentRow = Settings.RowForceBad.Value;
-                    else if (timeDiff < Settings.RowTransition2)
+                    else if (SecondsSinceLastRow < Settings.RowTransition2)
                         _rowForceForCurrentRow = Settings.RowForceMedium.Value;
-                    else if (timeDiff < Settings.RowTransition3)
+                    else if (SecondsSinceLastRow < Settings.RowTransition3)
                         _rowForceForCurrentRow = Settings.RowForceGood.Value;
                     else
                         _rowForceForCurrentRow = Settings.RowForceNeutral.Value;
 
-                    LastRowTimeSecond = Time.TotalTime; 
+                    SecondsSinceLastRow = 0; 
                 }
             }
 
@@ -285,7 +292,7 @@ namespace Raspberry_Lib.Components
         public float TotalDistanceTraveled { get; private set; }
         public Vector2 CurrentVelocity => _currentVelocity;
         public CharacterInputController.InputDescription CurrentInput { get; private set; }
-        public float LastRowTimeSecond { get; private set; }
+        public float SecondsSinceLastRow { get; private set; }
         
         private Vector2 _currentVelocity;
         private float _angularVelocity;

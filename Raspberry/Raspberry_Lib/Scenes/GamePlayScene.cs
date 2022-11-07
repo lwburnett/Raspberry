@@ -33,8 +33,7 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent<ProceduralRenderer>();
             map.AddComponent<RiverParticleManager>();
 
-            var uiEntity = CreateEntity("ui");
-            uiEntity.AddComponent(new PlayUiCanvasComponent());
+            InitializeUi();
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
@@ -47,6 +46,12 @@ namespace Raspberry_Lib.Scenes
             var debugMetricRenderer = CreateEntity("metrics");
             debugMetricRenderer.AddComponent(Verbose.GetRenderer());
 #endif
+        }
+
+        protected virtual void InitializeUi()
+        {
+            var uiEntity = CreateEntity("ui");
+            uiEntity.AddComponent(new PlayUiCanvasComponent());
         }
 
         private readonly Action _onMainMenu;

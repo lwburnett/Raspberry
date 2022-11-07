@@ -4,7 +4,7 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class PlayerProximityComponent : Component, IUpdatable
+    internal class PlayerProximityComponent : Component, IUpdatable, IPausable
     {
         private static class Settings
         {
@@ -28,17 +28,20 @@ namespace Raspberry_Lib.Components
             _lastBranchHitTime = 0;
             _lastObstacleHitTime = null;
             _decayMultiplier = null;
+            _timeSpentPaused = 0;
 
 #if VERBOSE
             Verbose.TrackMetric(() => _decayMultiplier ?? 0.0f, v => $"Radius Decay Multiplier: {v:G6}");
 #endif
         }
 
+        public bool IsPaused { get; set; }
+
         public float Radius { get; private set; }
 
         public void OnBranchHit()
         {
-            _lastBranchHitTime = Time.TotalTime;
+            _lastBranchHitTime = Time.TotalTime - _timeSpentPaused;
 
             _decayMultiplier = null;
             _lastObstacleHitTime = null;
@@ -46,7 +49,15 @@ namespace Raspberry_Lib.Components
 
         public void Update()
         {
-            if (Time.TotalTime - _lastBranchHitTime > Settings.BranchHitIncreaseOverTimeSeconds)
+            if (IsPaused)
+            {
+                _timeSpentPaused += Time.DeltaTime;
+                return;
+            }
+
+            var adjustedTime = Time.TotalTime - _timeSpentPaused;
+
+            if (adjustedTime - _lastBranchHitTime > Settings.BranchHitIncreaseOverTimeSeconds)
             {
                 if (!_decayMultiplier.HasValue || !_lastObstacleHitTime.HasValue)
                 {
@@ -54,7 +65,7 @@ namespace Raspberry_Lib.Components
                 }
                 else
                 {
-                    if (Time.TotalTime - _lastObstacleHitTime.Value < Settings.ImpactDecayTimespanSeconds)
+                    if (adjustedTime - _lastObstacleHitTime.Value < Settings.ImpactDecayTimespanSeconds)
                     {
                         Radius -= _decayMultiplier.Value * Settings.RadiusDecayPerSecond.Value * Time.DeltaTime;
                     }
@@ -79,6 +90,8 @@ namespace Raspberry_Lib.Components
 
         public void OnObstacleHit(float iImpactSpeed)
         {
+            var adjustedTime = Time.TotalTime - _timeSpentPaused;
+
             var impactSpeedMag = Math.Abs(iImpactSpeed);
             if (impactSpeedMag <= Settings.MinimumImpactSpeed.Value)
                 return;
@@ -92,20 +105,20 @@ namespace Raspberry_Lib.Components
 
             if (_decayMultiplier.HasValue && _lastObstacleHitTime.HasValue)
             {
-                var oldDecayTimeRemaining = Settings.ImpactDecayTimespanSeconds - (Time.TotalTime - _lastObstacleHitTime.Value);
+                var oldDecayTimeRemaining = Settings.ImpactDecayTimespanSeconds - (adjustedTime - _lastObstacleHitTime.Value);
 
                 var oldDecayEffect = _decayMultiplier.Value * oldDecayTimeRemaining;
                 var newDecayEffect = newDecayMultiplier * Settings.ImpactDecayTimespanSeconds;
 
                 if (newDecayEffect >= oldDecayEffect || oldDecayTimeRemaining <= 0)
                 {
-                    _lastObstacleHitTime = Time.TotalTime;
+                    _lastObstacleHitTime = adjustedTime;
                     _decayMultiplier = newDecayMultiplier;
                 }
             }
             else
             {
-                _lastObstacleHitTime = Time.TotalTime;
+                _lastObstacleHitTime = adjustedTime;
                 _decayMultiplier = newDecayMultiplier;
             }
         }
@@ -115,5 +128,7 @@ namespace Raspberry_Lib.Components
 
         private float? _lastObstacleHitTime;
         private float? _decayMultiplier;
+
+        private float _timeSpentPaused;
     }
 }

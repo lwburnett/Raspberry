@@ -4,7 +4,7 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterInputController: Component, IUpdatable
+    internal class CharacterInputController: Component, IUpdatable, IPausable
     {
         public class InputDescription
         {
@@ -30,6 +30,8 @@ namespace Raspberry_Lib.Components
             _onStateChangedCallback = iOnStateChangedCallback;
         }
 
+        public bool IsPaused { get; set; }
+
         public override void OnAddedToEntity()
         {
             if (!Input.Touch.IsConnected)
@@ -41,6 +43,9 @@ namespace Raspberry_Lib.Components
 
         public void Update()
         {
+            if (IsPaused)
+                return;
+
             if (Input.Touch.IsConnected)
             {
                 var rotation = 0f;

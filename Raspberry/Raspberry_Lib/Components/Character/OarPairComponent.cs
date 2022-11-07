@@ -177,7 +177,7 @@ namespace Raspberry_Lib.Components
             // Spawn more row groups if need be
             if (input.Row)
             {
-                var timeDiff = Time.TotalTime - _movementComponent.LastRowTimeSecond;
+                var timeDiff = _movementComponent.SecondsSinceLastRow;
                 float? rowVelocityAsPercent;
                 if (timeDiff < Settings.RowTransition1)
                 {

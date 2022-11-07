@@ -18,9 +18,10 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting TablePositionY = new(200);
         }
 
-        public MainMenuScene(Action iOnStart, Action iOnExit)
+        public MainMenuScene(Action iOnStart, Action iOnTutorial, Action iOnExit)
         {
             _onStart = iOnStart;
+            _onTutorial = iOnTutorial;
             _onExit = iOnExit;
         }
 
@@ -49,6 +50,12 @@ namespace Raspberry_Lib.Scenes
             table.Add(playButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
+            var tutorialButton = new TextButton("Tutorial", Skin.CreateDefaultSkin());
+            tutorialButton.OnClicked += OnTutorialClicked;
+            tutorialButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(tutorialButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
+
             var exitButton = new TextButton("Exit", Skin.CreateDefaultSkin());
             exitButton.OnClicked += OnExitClicked;
             exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
@@ -58,11 +65,17 @@ namespace Raspberry_Lib.Scenes
         }
 
         private readonly Action _onStart;
+        private readonly Action _onTutorial;
         private readonly Action _onExit;
 
         private void OnPlayClicked(Button iButton)
         {
             _onStart();
+        }
+
+        private void OnTutorialClicked(Button iButton)
+        {
+            _onTutorial();
         }
 
         private void OnExitClicked(Button iButton)

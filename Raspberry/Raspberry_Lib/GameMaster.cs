@@ -59,17 +59,22 @@ namespace Raspberry_Lib
             }
 
             Batcher.UseFnaHalfPixelMatrix = true;
-            Scene = new MainMenuScene(() => { Scene = new GamePlayScene(OnMainMenu); }, Exit);
+            Scene = new MainMenuScene(OnPlay, OnTutorial, Exit);
         }
 
         private void OnMainMenu()
         {
-            Scene = new MainMenuScene(OnPlay, Exit);
+            Scene = new MainMenuScene(OnPlay, OnTutorial, Exit);
         }
 
         private void OnPlay()
         {
             Scene = new GamePlayScene(OnMainMenu);
+        }
+
+        private void OnTutorial()
+        {
+            Scene = new TutorialScene(OnMainMenu);
         }
     }
 }

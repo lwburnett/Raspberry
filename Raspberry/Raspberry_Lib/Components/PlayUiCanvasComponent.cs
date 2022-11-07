@@ -30,6 +30,53 @@ namespace Raspberry_Lib.Components
 
         public override void OnAddedToEntity()
         {
+            OnAddedToEntityInternal();
+        }
+
+        public int BeginPlayOrder => 97;
+        public void OnBeginPlay()
+        {
+            BeginPlayInternal();
+        }
+
+        public void Update()
+        {
+            UpdateInternal();
+        }
+
+        private enum RowColor
+        {
+            White,
+            Red,
+            Yellow,
+            Green
+        }
+
+        protected CharacterMovementComponent MovementComponent;
+        private Label _distanceLabel;
+
+        private Image _upIndicator;
+        private Image _downIndicator;
+        private Image _rowIndicator;
+
+        private bool _upPressed;
+        private bool _downPressed;
+
+        private Nez.UI.IDrawable _upDefaultIcon;
+        private Nez.UI.IDrawable _upPressedIcon;
+
+        private Nez.UI.IDrawable _downDefaultIcon;
+        private Nez.UI.IDrawable _downPressedIcon;
+
+        private RowColor _rowColor;
+
+        private Nez.UI.IDrawable _rowWhiteIcon;
+        private Nez.UI.IDrawable _rowRedIcon;
+        private Nez.UI.IDrawable _rowYellowIcon;
+        private Nez.UI.IDrawable _rowGreenIcon;
+
+        protected virtual void OnAddedToEntityInternal()
+        {
             var canvas = Entity.AddComponent(new UICanvas());
             _distanceLabel = canvas.Stage.AddElement(new Label("0 m"));
             _distanceLabel.SetPosition(Screen.Width / 2f, Settings.Margin.Value);
@@ -52,7 +99,7 @@ namespace Raspberry_Lib.Components
 
             var drawColor = Color.White;
             drawColor.A = 127;
-            
+
             _upIndicator = canvas.Stage.AddElement(new Image(_upDefaultIcon));
             _upIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f);
             _upIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
@@ -75,25 +122,17 @@ namespace Raspberry_Lib.Components
             canvas.SetRenderLayer(-1);
         }
 
-        public int BeginPlayOrder => 97;
-        public void OnBeginPlay()
+        protected virtual void UpdateInternal()
         {
-            _movementComponent = Entity.Scene.FindEntity("character").GetComponent<CharacterMovementComponent>();
-
-            System.Diagnostics.Debug.Assert(_movementComponent != null);
-        }
-
-        public void Update()
-        {
-            if (_movementComponent == null)
+            if (MovementComponent == null)
                 return;
 
             // Handle Distance Display
-            var distanceTraveled = (int)Mathf.Round(_movementComponent.TotalDistanceTraveled / Settings.DistanceToMetersFactor.Value);
+            var distanceTraveled = (int)Mathf.Round(MovementComponent.TotalDistanceTraveled / Settings.DistanceToMetersFactor.Value);
             _distanceLabel.SetText($"{distanceTraveled} m");
 
             // Handle Turning Indicators
-            var input = _movementComponent.CurrentInput;
+            var input = MovementComponent.CurrentInput;
 
             var upPressed = input.Rotation < 0f;
             if (_upPressed != upPressed)
@@ -110,10 +149,9 @@ namespace Raspberry_Lib.Components
             }
 
             // Handle Row Indicator
-            var rowTime = _movementComponent.LastRowTimeSecond;
-            var timeDiff = Time.TotalTime - rowTime;
+            var secondsSinceLastRow = MovementComponent.SecondsSinceLastRow;
 
-            if (timeDiff < Settings.RowTransition1)
+            if (secondsSinceLastRow < Settings.RowTransition1)
             {
                 if (_rowColor != RowColor.Red)
                 {
@@ -121,7 +159,7 @@ namespace Raspberry_Lib.Components
                     _rowColor = RowColor.Red;
                 }
             }
-            else if (timeDiff < Settings.RowTransition2)
+            else if (secondsSinceLastRow < Settings.RowTransition2)
             {
                 if (_rowColor != RowColor.Yellow)
                 {
@@ -129,7 +167,7 @@ namespace Raspberry_Lib.Components
                     _rowColor = RowColor.Yellow;
                 }
             }
-            else if (timeDiff < Settings.RowTransition3)
+            else if (secondsSinceLastRow < Settings.RowTransition3)
             {
                 if (_rowColor != RowColor.Green)
                 {
@@ -147,35 +185,11 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        private enum RowColor
+        protected virtual void BeginPlayInternal()
         {
-            White,
-            Red,
-            Yellow,
-            Green
+            MovementComponent = Entity.Scene.FindEntity("character").GetComponent<CharacterMovementComponent>();
+
+            System.Diagnostics.Debug.Assert(MovementComponent != null);
         }
-
-        private CharacterMovementComponent _movementComponent;
-        private Label _distanceLabel;
-
-        private Image _upIndicator;
-        private Image _downIndicator;
-        private Image _rowIndicator;
-
-        private bool _upPressed;
-        private bool _downPressed;
-
-        private Nez.UI.IDrawable _upDefaultIcon;
-        private Nez.UI.IDrawable _upPressedIcon; 
-        
-        private Nez.UI.IDrawable _downDefaultIcon;
-        private Nez.UI.IDrawable _downPressedIcon;
-
-        private RowColor _rowColor;
-
-        private Nez.UI.IDrawable _rowWhiteIcon;
-        private Nez.UI.IDrawable _rowRedIcon;
-        private Nez.UI.IDrawable _rowYellowIcon;
-        private Nez.UI.IDrawable _rowGreenIcon;
     }
 }
