@@ -7,7 +7,7 @@ Must
 
 Should
 	o Balance: Make turning be "force" based so the movement doesn't feel icy
-	- Balance: Make collisions reduce radius based on speed of collision
+	o Balance: Make collisions reduce radius based on speed of collision
 	o Balance: Drastically reduce row force of red and yellow rows
 
 Could
@@ -21,12 +21,12 @@ Could
 -------------------- Playtester Feedback --------------------
 
 - Allow usage of left & right on desktop as up & down respectively (Mark)
+	- Add keyboard support with W/A as up, S/D as down, Space/Left Click as row (William, Stephen)
 - More frequent energy spawns at the beginning, less energy spawns at the end (Mark, Nolan)
 - Not obvious that you can use right thumb to row (Nolan)
 - Movement isn't in a great place. Feedback
 	- Spamming red/yellow rows is a much better strategy than green (Mark)
 	- Movement feels "slippery" like you're on ice (Nolan)
-	- 
 
 ------------------------ Outstanding ------------------------
 
@@ -71,7 +71,7 @@ Bugs
 	- *Android version crashes after making it a certain distance
 
 Balance
-	- *Make collisions reduce radius based on speed of collision
+	- Make energy spawns less frequent when later in a run than earlier
 
 
 ------------------------- Completed -------------------------
@@ -127,3 +127,4 @@ Balance
 		(Solved this with the active reload rowing feature; it makes everything pretty darn challenging)
 	- Drastically reduce row force of red and yellow rows
 	- Make turning be "force" based so the movement doesn't feel icy
+	- Make collisions reduce radius based on speed of collision
