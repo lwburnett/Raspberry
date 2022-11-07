@@ -5,7 +5,7 @@ using System;
 
 namespace Raspberry_Lib.Scenes
 {
-    internal class PrototypeScene : SceneBase
+    internal class GamePlayScene : SceneBase
     {
         private static class Settings
         {
@@ -14,7 +14,7 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
         }
 
-        public PrototypeScene(Action iOnMainMenu)
+        public GamePlayScene(Action iOnMainMenu)
         {
             _onMainMenu = iOnMainMenu;
             ClearColor = ContentData.ColorPallets.Desert.Color2;
@@ -38,7 +38,7 @@ namespace Raspberry_Lib.Scenes
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
-            character.AddComponent(new PrototypeCharacterComponent(OnMainMenu));
+            character.AddComponent(new BoatCharacterComponent(OnMainMenu));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 
             SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic, .35f);

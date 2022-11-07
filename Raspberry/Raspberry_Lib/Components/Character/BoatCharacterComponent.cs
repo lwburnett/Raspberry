@@ -2,9 +2,9 @@
 
 namespace Raspberry_Lib.Components
 {
-    internal class PrototypeCharacterComponent : Component
+    internal class BoatCharacterComponent : Component
     {
-        public PrototypeCharacterComponent(System.Action iOnMainMenu)
+        public BoatCharacterComponent(System.Action iOnMainMenu)
         {
             _collisionComponent = new CharacterCollisionComponent();
             _playerProximityComponent = new PlayerProximityComponent(iOnMainMenu);
