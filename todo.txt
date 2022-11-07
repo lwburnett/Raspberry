@@ -15,6 +15,8 @@ Could
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
 	- Feature: Release version # display in corner of main menu
+	- Feature: Add keyboard support
+	- Feature: On keyboard & controller, have right mimic down and left mimic up
 
 -------------------- Playtester Feedback --------------------
 
@@ -39,6 +41,8 @@ Features
 		- *How to play screen
 		- *Credits
 	- *Release version # display in corner of main menu
+	- *Add keyboard support
+	- *On keyboard & controller, have right mimic down and left mimic up
 
 Optimization
 
