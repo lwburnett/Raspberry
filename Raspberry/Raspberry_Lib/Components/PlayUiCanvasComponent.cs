@@ -12,6 +12,8 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting DistanceToMetersFactor = new(40);
             public static readonly RenderSetting Margin = new(100);
             public const int FontScale = 6;
+            public static readonly RenderSetting DistanceLabelWidth = new(200);
+            public static readonly RenderSetting DistanceLabelHeight = new(75);
 
             public static readonly RenderSetting IndicatorSizeX = new(150);
             public static readonly RenderSetting IndicatorSizeY = new(150);
@@ -53,7 +55,7 @@ namespace Raspberry_Lib.Components
         }
 
         protected CharacterMovementComponent MovementComponent;
-        private Label _distanceLabel;
+        protected Label DistanceLabel;
 
         protected UICanvas Canvas;
 
@@ -80,9 +82,13 @@ namespace Raspberry_Lib.Components
         protected virtual void OnAddedToEntityInternal()
         {
             Canvas = Entity.AddComponent(new UICanvas());
-            _distanceLabel = Canvas.Stage.AddElement(new Label("0 m"));
-            _distanceLabel.SetPosition(Screen.Width / 2f, Settings.Margin.Value);
-            _distanceLabel.SetFontScale(Settings.FontScale);
+            DistanceLabel = Canvas.Stage.AddElement(new Label("0 m"));
+            DistanceLabel.SetBounds(
+                (Screen.Width - Settings.DistanceLabelWidth.Value) / 2f, 
+                Settings.Margin.Value / 2f,
+                Settings.DistanceLabelWidth.Value,
+                Settings.DistanceLabelHeight.Value);
+            DistanceLabel.SetFontScale(Settings.FontScale);
 
             const int cellSize = 32;
             var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.IconsTileset, true);
@@ -131,7 +137,7 @@ namespace Raspberry_Lib.Components
 
             // Handle Distance Display
             var distanceTraveled = (int)Mathf.Round(MovementComponent.TotalDistanceTraveled / Settings.DistanceToMetersFactor.Value);
-            _distanceLabel.SetText($"{distanceTraveled} m");
+            DistanceLabel.SetText($"{distanceTraveled} m");
 
             // Handle Turning Indicators
             var input = MovementComponent.CurrentInput;
