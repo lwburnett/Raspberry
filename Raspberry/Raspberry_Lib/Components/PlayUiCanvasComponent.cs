@@ -55,6 +55,8 @@ namespace Raspberry_Lib.Components
         protected CharacterMovementComponent MovementComponent;
         private Label _distanceLabel;
 
+        protected UICanvas Canvas;
+
         private Image _upIndicator;
         private Image _downIndicator;
         private Image _rowIndicator;
@@ -77,8 +79,8 @@ namespace Raspberry_Lib.Components
 
         protected virtual void OnAddedToEntityInternal()
         {
-            var canvas = Entity.AddComponent(new UICanvas());
-            _distanceLabel = canvas.Stage.AddElement(new Label("0 m"));
+            Canvas = Entity.AddComponent(new UICanvas());
+            _distanceLabel = Canvas.Stage.AddElement(new Label("0 m"));
             _distanceLabel.SetPosition(Screen.Width / 2f, Settings.Margin.Value);
             _distanceLabel.SetFontScale(Settings.FontScale);
 
@@ -100,26 +102,26 @@ namespace Raspberry_Lib.Components
             var drawColor = Color.White;
             drawColor.A = 127;
 
-            _upIndicator = canvas.Stage.AddElement(new Image(_upDefaultIcon));
+            _upIndicator = Canvas.Stage.AddElement(new Image(_upDefaultIcon));
             _upIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f);
             _upIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _upIndicator.SetScaling(Scaling.Fill);
             _upIndicator.SetColor(drawColor);
 
-            _downIndicator = canvas.Stage.AddElement(new Image(_downDefaultIcon));
+            _downIndicator = Canvas.Stage.AddElement(new Image(_downDefaultIcon));
             _downIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .85f - Settings.IndicatorSizeY.Value / 2f);
             _downIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _downIndicator.SetScaling(Scaling.Fill);
             _downIndicator.SetColor(drawColor);
 
-            _rowIndicator = canvas.Stage.AddElement(new Image(spriteList[0]));
+            _rowIndicator = Canvas.Stage.AddElement(new Image(spriteList[0]));
             _rowIndicator.SetPosition(Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value, Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f);
             _rowIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
 
             // This needs to match the render layer of the ScreenSpaceRenderer in SceneBase ctor
-            canvas.SetRenderLayer(-1);
+            Canvas.SetRenderLayer(-1);
         }
 
         protected virtual void UpdateInternal()
