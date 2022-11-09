@@ -22,6 +22,7 @@ namespace Raspberry_Lib.Components
             public const float EnergyDecayMinimumScale = .33f;
 
             public const float BlinkPeriodSeconds = 1f;
+            public const float RowPeriodSeconds = 2f;
         }
 
         public enum State
@@ -36,6 +37,7 @@ namespace Raspberry_Lib.Components
             EnergyDecay,
             TurningUp,
             TurningDown,
+            Rowing1,
             EndPlay
         }
 
@@ -162,6 +164,18 @@ namespace Raspberry_Lib.Components
                         InputOverride = new CharacterInputController.InputDescription(rotation, false);
                     }
                 }
+                else if (_currentState == State.Rowing1)
+                {
+                    if (_timeSinceLastBlinkToggle.Value >= Settings.RowPeriodSeconds)
+                    {
+                        _timeSinceLastBlinkToggle = 0;
+                        InputOverride = new CharacterInputController.InputDescription(0, true);
+                    }
+                    else
+                    {
+                        InputOverride = new CharacterInputController.InputDescription(0, false);
+                    }
+                }
             }
             
             if (_currentState == State.EnergyDecay)
@@ -262,6 +276,7 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.TurningUp:
                 case State.TurningDown:
+                case State.Rowing1:
                     _timeSinceLastBlinkToggle = null;
                     InputOverride = null;
                     break;
@@ -308,6 +323,9 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.TurningDown:
                     HandleTurningDown();
+                    break;
+                case State.Rowing1:
+                    HandleRowing();
                     break;
                 case State.EndPlay:
                     HandleEndPlay();
@@ -360,7 +378,7 @@ namespace Raspberry_Lib.Components
         private void HandleTurningUp()
         {
             _blinkToggle = false;
-            _timeSinceLastBlinkToggle = 0;
+            _timeSinceLastBlinkToggle = Settings.BlinkPeriodSeconds;
 
             if (Input.Touch.IsConnected)
             {
@@ -379,7 +397,7 @@ namespace Raspberry_Lib.Components
         private void HandleTurningDown()
         {
             _blinkToggle = false;
-            _timeSinceLastBlinkToggle = 0;
+            _timeSinceLastBlinkToggle = Settings.BlinkPeriodSeconds;
 
             if (Input.Touch.IsConnected)
             {
@@ -392,6 +410,24 @@ namespace Raspberry_Lib.Components
             else
             {
                 HandleGenericTextChange("Press S or D with the keyboard to turn\nclockwise.");
+            }
+        }
+
+        private void HandleRowing()
+        {
+            _timeSinceLastBlinkToggle = Settings.RowPeriodSeconds;
+
+            if (Input.Touch.IsConnected)
+            {
+                HandleGenericTextChange("Tap anywhere on the right half of the\nscreen to row.");
+            }
+            else if (Input.GamePads.Any())
+            {
+                HandleGenericTextChange("Tap the A/X face button to row.");
+            }
+            else
+            {
+                HandleGenericTextChange("Press left click or space to row.");
             }
         }
 

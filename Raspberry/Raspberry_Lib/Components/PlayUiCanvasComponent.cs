@@ -80,6 +80,7 @@ namespace Raspberry_Lib.Components
         private Nez.UI.IDrawable _rowGreenIcon;
 
         protected CharacterInputController.InputDescription InputOverride;
+        private float? _lastRowTimeOverride;
 
         protected virtual void OnAddedToEntityInternal()
         {
@@ -168,7 +169,29 @@ namespace Raspberry_Lib.Components
             }
 
             // Handle Row Indicator
-            var secondsSinceLastRow = MovementComponent.SecondsSinceLastRow;
+            float secondsSinceLastRow;
+            if (InputOverride == null)
+            {
+                _lastRowTimeOverride = null;
+
+                secondsSinceLastRow = MovementComponent.SecondsSinceLastRow;
+            }
+            else
+            {
+                if (InputOverride.Row)
+                {
+                    _lastRowTimeOverride = 0f;
+                }
+                else
+                {
+                    if (_lastRowTimeOverride != null)
+                        _lastRowTimeOverride += Time.DeltaTime;
+                    else
+                        _lastRowTimeOverride = Settings.RowTransition3; 
+                }
+
+                secondsSinceLastRow = _lastRowTimeOverride.Value;
+            }
 
             if (secondsSinceLastRow < Settings.RowTransition1)
             {
