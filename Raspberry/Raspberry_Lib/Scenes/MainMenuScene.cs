@@ -15,7 +15,7 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting MinButtonHeight = new(80);
 
             public static readonly RenderSetting TablePositionX = new(300);
-            public static readonly RenderSetting TablePositionY = new(200);
+            public static readonly RenderSetting TablePositionY = new(300);
 
             public const string Version = "Version 0.5.0";
             public static readonly RenderSetting VersionInsetX = new(225);
@@ -23,10 +23,11 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting VersionFontScale = new(3);
         }
 
-        public MainMenuScene(Action iOnStart, Action iOnTutorial, Action iOnExit)
+        public MainMenuScene(Action iOnStart, Action iOnTutorial, Action iOnCredits, Action iOnExit)
         {
             _onStart = iOnStart;
             _onTutorial = iOnTutorial;
+            _onCredits = iOnCredits;
             _onExit = iOnExit;
         }
 
@@ -63,6 +64,12 @@ namespace Raspberry_Lib.Scenes
             table.Add(tutorialButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
+            var creditsButton = new TextButton("Credits", Skin.CreateDefaultSkin());
+            creditsButton.OnClicked += OnCreditsClicked;
+            creditsButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(creditsButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
+
             var exitButton = new TextButton("Exit", Skin.CreateDefaultSkin());
             exitButton.OnClicked += OnExitClicked;
             exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
@@ -81,6 +88,7 @@ namespace Raspberry_Lib.Scenes
 
         private readonly Action _onStart;
         private readonly Action _onTutorial;
+        private readonly Action _onCredits;
         private readonly Action _onExit;
 
         private void OnPlayClicked(Button iButton)
@@ -91,6 +99,11 @@ namespace Raspberry_Lib.Scenes
         private void OnTutorialClicked(Button iButton)
         {
             _onTutorial();
+        }
+
+        private void OnCreditsClicked(Button iButton)
+        {
+            _onCredits();
         }
 
         private void OnExitClicked(Button iButton)
