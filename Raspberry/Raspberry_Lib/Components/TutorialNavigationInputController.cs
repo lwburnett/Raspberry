@@ -8,7 +8,7 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public const float TimeBetweenNavigationSeconds = .5f;
+            public const float TimeBetweenNavigationSeconds = 1f;
         }
 
         public TutorialNavigationInputController(System.Action iOnNavigationClick)
