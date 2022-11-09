@@ -20,6 +20,8 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting EnergyDisplayThickness = new(7);
             public const float EnergyDecayPercentLossPerSecond = .15f;
             public const float EnergyDecayMinimumScale = .33f;
+            public static readonly RenderSetting ObstacleAlertRadius = new(1000);
+            public const float ObstacleCircleSizeMultiplier = .5f;
 
             public const float BlinkPeriodSeconds = 1f;
             public const float RowPeriodSeconds = 2f;
@@ -41,6 +43,13 @@ namespace Raspberry_Lib.Components
             Rowing2,
             Rowing3,
             Rowing4,
+            FirstPlayInstructions,
+            FirstPlay,
+            Collision,
+            SecondPlayInstructions,
+            SecondPlay,
+            Energy,
+            GoodLuck,
             EndPlay
         }
 
@@ -67,6 +76,8 @@ namespace Raspberry_Lib.Components
 
         private Nez.UI.IDrawable _distanceDisplayBackground;
         private Image _energyDisplay;
+        private Vector2 _firstRockLocation;
+        private Vector2 _firstEnergyLocation;
 
         protected sealed override void OnAddedToEntityInternal()
         {
@@ -100,15 +111,25 @@ namespace Raspberry_Lib.Components
             base.BeginPlayInternal();
 
             var characterEntity = Entity.Scene.FindEntity("character");
+            System.Diagnostics.Debug.Assert(characterEntity != null);
+
             _characterProximity = characterEntity.GetComponent<PlayerProximityComponent>();
             _characterInputController = characterEntity.GetComponent<CharacterInputController>();
-
             System.Diagnostics.Debug.Assert(_characterProximity != null);
             System.Diagnostics.Debug.Assert(_characterInputController != null);
 
             var energyDisplayTexture = CreateEnergyDisplayTexture(_characterProximity.Radius);
             _energyDisplay = Canvas.Stage.AddElement(new Image(energyDisplayTexture));
             _energyDisplay.SetIsVisible(false);
+
+            var map = Entity.Scene.FindEntity("map");
+            System.Diagnostics.Debug.Assert(map != null);
+
+            var proceduralGenerator = map.GetComponent<ProceduralGeneratorComponent>();
+            System.Diagnostics.Debug.Assert(proceduralGenerator != null);
+
+            _firstRockLocation = proceduralGenerator.Blocks[1].Obstacles[0].Position;
+            _firstEnergyLocation = proceduralGenerator.Blocks[1].Obstacles[1].Position;
 
             OnNavigationChanged(State.Welcome, State.Welcome);
         }
@@ -179,6 +200,44 @@ namespace Raspberry_Lib.Components
                         InputOverride = new CharacterInputController.InputDescription(0, false);
                     }
                 }
+                else if (_currentState == State.Collision)
+                {
+                    var rockPositionInScreenSpace =
+                        Entity.Scene.Camera.WorldToScreenPoint(_firstRockLocation);
+
+                    var radius = _characterProximity.Radius * _energyDisplaySizeMultiplier;
+                    _energyDisplay.SetBounds(
+                        rockPositionInScreenSpace.X - radius,
+                        rockPositionInScreenSpace.Y - radius,
+                        radius * 2,
+                        radius * 2);
+
+                    if (_timeSinceLastBlinkToggle.Value >= Settings.BlinkPeriodSeconds)
+                    {
+                        _blinkToggle = !_blinkToggle;
+                        _timeSinceLastBlinkToggle = 0;
+                        _energyDisplay.SetIsVisible(_blinkToggle);
+                    }
+                }
+                else if (_currentState == State.Energy)
+                {
+                    var energyPositionInScreenSpace =
+                        Entity.Scene.Camera.WorldToScreenPoint(_firstEnergyLocation);
+
+                    var radius = _characterProximity.Radius * _energyDisplaySizeMultiplier;
+                    _energyDisplay.SetBounds(
+                        energyPositionInScreenSpace.X - radius,
+                        energyPositionInScreenSpace.Y - radius,
+                        radius * 2,
+                        radius * 2);
+
+                    if (_timeSinceLastBlinkToggle.Value >= Settings.BlinkPeriodSeconds)
+                    {
+                        _blinkToggle = !_blinkToggle;
+                        _timeSinceLastBlinkToggle = 0;
+                        _energyDisplay.SetIsVisible(_blinkToggle);
+                    }
+                }
             }
             
             if (_currentState == State.EnergyDecay)
@@ -193,6 +252,22 @@ namespace Raspberry_Lib.Components
                     boatPosition.Y - _characterProximity.Radius * _energyDisplaySizeMultiplier,
                     2 * _characterProximity.Radius * _energyDisplaySizeMultiplier,
                     2 * _characterProximity.Radius * _energyDisplaySizeMultiplier);
+            }
+            else if (_currentState == State.FirstPlay)
+            {
+                if (Vector2.Distance(_characterProximity.Entity.Position, _firstRockLocation) <=
+                    Settings.ObstacleAlertRadius.Value)
+                {
+                    OnNavigation();
+                }
+            }
+            else if (_currentState == State.SecondPlay)
+            {
+                if (Vector2.Distance(_characterProximity.Entity.Position, _firstEnergyLocation) <=
+                    Settings.ObstacleAlertRadius.Value)
+                {
+                    OnNavigation();
+                }
             }
         }
 
@@ -268,6 +343,8 @@ namespace Raspberry_Lib.Components
                     _timeSinceLastBlinkToggle = null;
                     break;
                 case State.EnergyDisplay:
+                case State.Collision:
+                case State.Energy:
                     _energyDisplay.SetIsVisible(false);
                     _timeSinceLastBlinkToggle = null;
                     break;
@@ -283,14 +360,19 @@ namespace Raspberry_Lib.Components
                     _timeSinceLastBlinkToggle = null;
                     InputOverride = null;
                     break;
-                case State.Rowing1:
-                case State.Rowing2:
-                case State.Rowing3:
                 case State.Welcome:
+                case State.GameGoal1:
                 case State.StoryIntro1:
                 case State.StoryIntro2:
                 case State.StoryIntro3:
-                case State.GameGoal1:
+                case State.Rowing1:
+                case State.Rowing2:
+                case State.Rowing3:
+                case State.FirstPlayInstructions:
+                case State.FirstPlay:
+                case State.SecondPlayInstructions:
+                case State.SecondPlay:
+                case State.GoodLuck:
                 case State.EndPlay:
                     break;
                 default:
@@ -342,8 +424,29 @@ namespace Raspberry_Lib.Components
                 case State.Rowing4:
                     HandleGenericTextChange("Yellow yields very little power.\nRed yields almost no power.");
                     break;
+                case State.FirstPlayInstructions:
+                    HandleFirstPlayInstruction();
+                    break;
+                case State.FirstPlay:
+                    HandlePlay();
+                    break;
+                case State.Collision:
+                    HandleCollision();
+                    break;
+                case State.SecondPlayInstructions:
+                    HandleSecondPlayInstruction();
+                    break;
+                case State.SecondPlay:
+                    HandlePlay();
+                    break;
+                case State.Energy:
+                    HandleEnergy();
+                    break;
+                case State.GoodLuck:
+                    HandleGenericTextChange("And that's it! Tap to continue playing.\nGood luck!");
+                    break;
                 case State.EndPlay:
-                    HandleEndPlay();
+                    HandlePlay();
                     break;
                 default:
                     System.Diagnostics.Debug.Fail($"Unknown type of {nameof(State)}");
@@ -446,7 +549,55 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        private void HandleEndPlay()
+        private void HandleFirstPlayInstruction()
+        {
+            if (Input.Touch.IsConnected)
+            {
+                HandleGenericTextChange("Why don't you give it a try.\nTap the screen to begin.");
+            }
+            else if (Input.GamePads.Any())
+            {
+                HandleGenericTextChange("Why don't you give it a try.\nPress the A/X face button to begin.");
+            }
+            else
+            {
+                HandleGenericTextChange("Why don't you give it a try.\nPress left click or space to begin.");
+            }
+        }
+
+        private void HandleCollision()
+        {
+            _timeSinceLastBlinkToggle = 0;
+            _energyDisplay.SetIsVisible(true);
+            _energyDisplaySizeMultiplier = Settings.ObstacleCircleSizeMultiplier;
+            HandleGenericTextChange("You lose energy when colliding with rocks\nand the shoreline. The faster your speed\nat impact, the more energy is lost.");
+        }
+
+        private void HandleSecondPlayInstruction()
+        {
+            if (Input.Touch.IsConnected)
+            {
+                HandleGenericTextChange("Tap the screen to continue.");
+            }
+            else if (Input.GamePads.Any())
+            {
+                HandleGenericTextChange("Press the A/X face button to continue.");
+            }
+            else
+            {
+                HandleGenericTextChange("Press left click or space to continue.");
+            }
+        }
+
+        private void HandleEnergy()
+        {
+            _timeSinceLastBlinkToggle = 0;
+            _energyDisplay.SetIsVisible(true);
+            _energyDisplaySizeMultiplier = Settings.ObstacleCircleSizeMultiplier;
+            HandleGenericTextChange("Pick up this energy to give yourself more time!");
+        }
+
+        private void HandlePlay()
         {
             SetPauseState(false);
             _textBox.SetIsVisible(false);
