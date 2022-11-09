@@ -40,7 +40,7 @@ namespace Raspberry_Lib.Scenes
                 "The Soul-Crushing Monotony Of Isolation (Instrumental Mix) by Punch Deck"
             };
 
-            public static readonly RenderSetting CreditScrollPerSecond = new(50f);
+            public static readonly RenderSetting CreditScrollPerSecond = new(20f);
         }
 
         public CreditsScene(System.Action iOnBack)
@@ -57,7 +57,7 @@ namespace Raspberry_Lib.Scenes
             var canvas = CreateEntity("UiCanvas").AddComponent(new UICanvas());
             canvas.IsFullScreen = true;
             
-            var mainTable = new Table().PadTop(Settings.MarginBig.Value);
+            var mainTable = new Table().PadTop(Settings.MarginBig.Value).PadBottom(Settings.MarginBig.Value);
             mainTable.Row();
             mainTable.Add(CreateLabel("Credits", Settings.HeaderFontScale.Value));
 
@@ -84,7 +84,7 @@ namespace Raspberry_Lib.Scenes
             AddAssetsToTable(ref assetTable);
 
             mainTable.Add(assetTable);
-            mainTable.Row().SetPadTop(Settings.MarginBig.Value).SetPadBottom(Settings.MarginBig.Value);
+            mainTable.Row().SetPadTop(Settings.MarginBig.Value);
 
             _creditPane = new ScrollPane(mainTable);
             _creditPane.SetBounds(0, 0, Screen.Width, Screen.Height);
