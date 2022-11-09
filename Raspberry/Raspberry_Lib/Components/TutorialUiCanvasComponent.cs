@@ -455,7 +455,7 @@ namespace Raspberry_Lib.Components
                     HandleEnergy();
                     break;
                 case State.GoodLuck:
-                    HandleGenericTextChange("And that's it! Tap to continue playing.\nGood luck!");
+                    HandleGenericTextChange("And that's it! Press row to continue playing.\nGood luck!");
                     break;
                 case State.EndPlay:
                     HandlePlay();
