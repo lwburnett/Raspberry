@@ -36,8 +36,15 @@ namespace Raspberry_Lib.Components
         {
             if (!Input.Touch.IsConnected)
             {
-                _rotationInput = new VirtualAxis(new VirtualAxis.GamePadLeftStickY());
-                _rowInput = new VirtualButton(new VirtualButton.GamePadButton(0, Buttons.A));
+                _rotationInput = new VirtualAxis(
+                    new VirtualAxis.GamePadLeftStickY(),
+                    new VirtualAxis.GamePadLeftStickX(),
+                    new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.W, Keys.S),
+                    new VirtualAxis.KeyboardKeys(VirtualInput.OverlapBehavior.TakeNewer, Keys.A, Keys.D));
+                _rowInput = new VirtualButton(
+                    new VirtualButton.GamePadButton(0, Buttons.A),
+                    new VirtualButton.MouseLeftButton(),
+                    new VirtualButton.KeyboardKey(Keys.Space));
             }
         }
 
