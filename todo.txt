@@ -1,7 +1,7 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	- Feature: How to play screen
+	o Feature: How to play screen
 	- Feature: Credits screen
 	- Bug: Fix android crash
 
@@ -38,7 +38,6 @@ Features
 		- Settings screen? (Might not actually need this)
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
-		- *How to play screen
 		- *Credits
 	- *Release version # display in corner of main menu
 	- *Add keyboard support
@@ -83,6 +82,8 @@ Features
 		- Positive collectable that increases size of player proximity
 		- Slowly decay over time
 		- The player looses when the proximity decays too low
+	- Add Screens		
+		- How to play screen
 
 Optimization
 	- Put generation in background thread
