@@ -15,8 +15,8 @@ Could
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
 	- Feature: Release version # display in corner of main menu
-	- Feature: Add keyboard support
-	- Feature: On keyboard & controller, have right mimic down and left mimic up
+	o Feature: Add keyboard support
+	o Feature: On keyboard & controller, have right mimic down and left mimic up
 
 -------------------- Playtester Feedback --------------------
 
@@ -40,8 +40,6 @@ Features
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
 		- *Credits
 	- *Release version # display in corner of main menu
-	- *Add keyboard support
-	- *On keyboard & controller, have right mimic down and left mimic up
 	- Screen shake on collision
 
 Optimization
@@ -84,6 +82,8 @@ Features
 		- The player looses when the proximity decays too low
 	- Add Screens		
 		- How to play screen
+	- Add keyboard support
+	- On keyboard & controller, have right mimic down and left mimic up
 
 Optimization
 	- Put generation in background thread
