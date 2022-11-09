@@ -38,6 +38,9 @@ namespace Raspberry_Lib.Components
             TurningUp,
             TurningDown,
             Rowing1,
+            Rowing2,
+            Rowing3,
+            Rowing4,
             EndPlay
         }
 
@@ -164,7 +167,7 @@ namespace Raspberry_Lib.Components
                         InputOverride = new CharacterInputController.InputDescription(rotation, false);
                     }
                 }
-                else if (_currentState == State.Rowing1)
+                else if (_currentState is State.Rowing1 or State.Rowing2 or State.Rowing3 or State.Rowing4)
                 {
                     if (_timeSinceLastBlinkToggle.Value >= Settings.RowPeriodSeconds)
                     {
@@ -276,10 +279,13 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.TurningUp:
                 case State.TurningDown:
-                case State.Rowing1:
+                case State.Rowing4:
                     _timeSinceLastBlinkToggle = null;
                     InputOverride = null;
                     break;
+                case State.Rowing1:
+                case State.Rowing2:
+                case State.Rowing3:
                 case State.Welcome:
                 case State.StoryIntro1:
                 case State.StoryIntro2:
@@ -325,7 +331,16 @@ namespace Raspberry_Lib.Components
                     HandleTurningDown();
                     break;
                 case State.Rowing1:
-                    HandleRowing();
+                    HandleRowing1();
+                    break;
+                case State.Rowing2:
+                    HandleGenericTextChange("After rowing, the row indicator will cycle\nthrough levels of power.");
+                    break;
+                case State.Rowing3:
+                    HandleGenericTextChange("Rowing again on green yields the most power.\nWhite yields a little less power.");
+                    break;
+                case State.Rowing4:
+                    HandleGenericTextChange("Yellow yields very little power.\nRed yields almost no power.");
                     break;
                 case State.EndPlay:
                     HandleEndPlay();
@@ -413,7 +428,7 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        private void HandleRowing()
+        private void HandleRowing1()
         {
             _timeSinceLastBlinkToggle = Settings.RowPeriodSeconds;
 
