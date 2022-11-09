@@ -17,7 +17,7 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting TablePositionX = new(300);
             public static readonly RenderSetting TablePositionY = new(300);
 
-            public const string Version = "Version 0.5.0";
+            public const string Version = "Version 0.6.0";
             public static readonly RenderSetting VersionInsetX = new(225);
             public static readonly RenderSetting VersionInsetY = new(50);
             public static readonly RenderSetting VersionFontScale = new(3);
