@@ -17,10 +17,12 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting BackgroundTextureHeight = new(200);
             public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
             public static readonly Color HighlightDisplayBackgroundTextureColor = new(136, 8, 8, 200);
-            public static readonly RenderSetting EnergyDisplayThickness = new(7);
+            public static readonly RenderSetting EnergyDisplayThickness = new(10);
             public const float EnergyDecayPercentLossPerSecond = .15f;
             public const float EnergyDecayMinimumScale = .33f;
             public static readonly RenderSetting ObstacleAlertRadius = new(1000);
+
+            public static readonly RenderSetting ObstacleAlertThickness = new(7.5f);
             public const float ObstacleCircleSizeMultiplier = .5f;
 
             public const float BlinkPeriodSeconds = 1f;
@@ -76,6 +78,7 @@ namespace Raspberry_Lib.Components
 
         private Nez.UI.IDrawable _distanceDisplayBackground;
         private Image _energyDisplay;
+        private Image _obstacleAlert;
         private Vector2 _firstRockLocation;
         private Vector2 _firstEnergyLocation;
 
@@ -118,9 +121,15 @@ namespace Raspberry_Lib.Components
             System.Diagnostics.Debug.Assert(_characterProximity != null);
             System.Diagnostics.Debug.Assert(_characterInputController != null);
 
-            var energyDisplayTexture = CreateEnergyDisplayTexture(_characterProximity.Radius);
+            var energyDisplayTexture = CreateCircleDisplayTexture(_characterProximity.Radius, Settings.EnergyDisplayThickness.Value);
             _energyDisplay = Canvas.Stage.AddElement(new Image(energyDisplayTexture));
             _energyDisplay.SetIsVisible(false);
+
+            var obstacleAlertTexture = CreateCircleDisplayTexture(
+                _characterProximity.Radius * Settings.ObstacleCircleSizeMultiplier,
+                Settings.ObstacleAlertThickness.Value);
+            _obstacleAlert = Canvas.Stage.AddElement(new Image(obstacleAlertTexture));
+            _obstacleAlert.SetIsVisible(false);
 
             var map = Entity.Scene.FindEntity("map");
             System.Diagnostics.Debug.Assert(map != null);
@@ -205,8 +214,8 @@ namespace Raspberry_Lib.Components
                     var rockPositionInScreenSpace =
                         Entity.Scene.Camera.WorldToScreenPoint(_firstRockLocation);
 
-                    var radius = _characterProximity.Radius * _energyDisplaySizeMultiplier;
-                    _energyDisplay.SetBounds(
+                    var radius = _characterProximity.Radius * Settings.ObstacleCircleSizeMultiplier;
+                    _obstacleAlert.SetBounds(
                         rockPositionInScreenSpace.X - radius,
                         rockPositionInScreenSpace.Y - radius,
                         radius * 2,
@@ -216,7 +225,7 @@ namespace Raspberry_Lib.Components
                     {
                         _blinkToggle = !_blinkToggle;
                         _timeSinceLastBlinkToggle = 0;
-                        _energyDisplay.SetIsVisible(_blinkToggle);
+                        _obstacleAlert.SetIsVisible(_blinkToggle);
                     }
                 }
                 else if (_currentState == State.Energy)
@@ -224,8 +233,8 @@ namespace Raspberry_Lib.Components
                     var energyPositionInScreenSpace =
                         Entity.Scene.Camera.WorldToScreenPoint(_firstEnergyLocation);
 
-                    var radius = _characterProximity.Radius * _energyDisplaySizeMultiplier;
-                    _energyDisplay.SetBounds(
+                    var radius = _characterProximity.Radius * Settings.ObstacleCircleSizeMultiplier;
+                    _obstacleAlert.SetBounds(
                         energyPositionInScreenSpace.X - radius,
                         energyPositionInScreenSpace.Y - radius,
                         radius * 2,
@@ -235,7 +244,7 @@ namespace Raspberry_Lib.Components
                     {
                         _blinkToggle = !_blinkToggle;
                         _timeSinceLastBlinkToggle = 0;
-                        _energyDisplay.SetIsVisible(_blinkToggle);
+                        _obstacleAlert.SetIsVisible(_blinkToggle);
                     }
                 }
             }
@@ -299,7 +308,7 @@ namespace Raspberry_Lib.Components
             return texture;
         }
 
-        private Texture2D CreateEnergyDisplayTexture(float iRadius)
+        private Texture2D CreateCircleDisplayTexture(float iRadius, float iLineThickness)
         {
             var radiusInt = (int)iRadius;
 
@@ -316,7 +325,7 @@ namespace Raspberry_Lib.Components
 
                 var diff = iRadius - distance;
 
-                if (0 < diff && diff < Settings.EnergyDisplayThickness.Value)
+                if (0 < diff && diff < iLineThickness)
                     textureData[jj * diameter + ii] = Settings.HighlightDisplayBackgroundTextureColor;
                 else
                     textureData[jj * diameter + ii] = Color.Transparent;
@@ -343,8 +352,6 @@ namespace Raspberry_Lib.Components
                     _timeSinceLastBlinkToggle = null;
                     break;
                 case State.EnergyDisplay:
-                case State.Collision:
-                case State.Energy:
                     _energyDisplay.SetIsVisible(false);
                     _timeSinceLastBlinkToggle = null;
                     break;
@@ -359,6 +366,11 @@ namespace Raspberry_Lib.Components
                 case State.Rowing4:
                     _timeSinceLastBlinkToggle = null;
                     InputOverride = null;
+                    break;
+                case State.Collision:
+                case State.Energy:
+                    _obstacleAlert.SetIsVisible(false);
+                    _timeSinceLastBlinkToggle = null;
                     break;
                 case State.Welcome:
                 case State.GameGoal1:
@@ -568,8 +580,7 @@ namespace Raspberry_Lib.Components
         private void HandleCollision()
         {
             _timeSinceLastBlinkToggle = 0;
-            _energyDisplay.SetIsVisible(true);
-            _energyDisplaySizeMultiplier = Settings.ObstacleCircleSizeMultiplier;
+            _obstacleAlert.SetIsVisible(true);
             HandleGenericTextChange("You lose energy when colliding with rocks\nand the shoreline. The faster your speed\nat impact, the more energy is lost.");
         }
 
@@ -592,8 +603,7 @@ namespace Raspberry_Lib.Components
         private void HandleEnergy()
         {
             _timeSinceLastBlinkToggle = 0;
-            _energyDisplay.SetIsVisible(true);
-            _energyDisplaySizeMultiplier = Settings.ObstacleCircleSizeMultiplier;
+            _obstacleAlert.SetIsVisible(true);
             HandleGenericTextChange("Pick up this energy to give yourself more time!");
         }
 
