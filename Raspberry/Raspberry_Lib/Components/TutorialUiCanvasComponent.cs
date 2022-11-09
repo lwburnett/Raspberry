@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
@@ -16,7 +17,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting BackgroundTextureHeight = new(200);
             public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
             public static readonly Color HighlightDisplayBackgroundTextureColor = new(136, 8, 8, 200);
-            public static readonly RenderSetting EnergyDisplayThickness = new(5);
+            public static readonly RenderSetting EnergyDisplayThickness = new(7);
             public const float EnergyDecayPercentLossPerSecond = .15f;
             public const float EnergyDecayMinimumScale = .33f;
 
@@ -33,6 +34,7 @@ namespace Raspberry_Lib.Components
             DistanceDisplay,
             EnergyDisplay,
             EnergyDecay,
+            TurningUp,
             EndPlay
         }
 
@@ -139,6 +141,16 @@ namespace Raspberry_Lib.Components
                         _energyDisplay.SetIsVisible(_blinkToggle);
                     }
                 }
+                else if (_currentState == State.TurningUp)
+                {
+                    if (_timeSinceLastBlinkToggle.Value >= Settings.BlinkPeriodSeconds)
+                    {
+                        _blinkToggle = !_blinkToggle;
+                        _timeSinceLastBlinkToggle = 0;
+                        var rotation = _blinkToggle ? -1 : 0;
+                        InputOverride = new CharacterInputController.InputDescription(rotation, false);
+                    }
+                }
             }
             
             if (_currentState == State.EnergyDecay)
@@ -237,6 +249,10 @@ namespace Raspberry_Lib.Components
                     var boatPosition = Entity.Scene.Camera.WorldToScreenPoint(_characterProximity.Entity.Position);
                     _energyDisplay.SetBounds(boatPosition.X - radius, boatPosition.Y - radius, radius * 2, radius * 2);
                     break;
+                case State.TurningUp:
+                    _timeSinceLastBlinkToggle = null;
+                    InputOverride = null;
+                    break;
                 case State.Welcome:
                 case State.StoryIntro1:
                 case State.StoryIntro2:
@@ -274,6 +290,9 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.EnergyDecay:
                     HandleEnergyDecay();
+                    break;
+                case State.TurningUp:
+                    HandleTurningUp();
                     break;
                 case State.EndPlay:
                     HandleEndPlay();
@@ -321,6 +340,25 @@ namespace Raspberry_Lib.Components
             _energyDisplay.SetIsVisible(true);
             _energyDisplaySizeMultiplier = 1f;
             HandleGenericTextChange("Over time your energy level will decay,\nmaking the bubble smaller. If the bubble\nencloses around the boat, you lose.");
+        }
+
+        private void HandleTurningUp()
+        {
+            _blinkToggle = false;
+            _timeSinceLastBlinkToggle = 0;
+
+            if (Input.Touch.IsConnected)
+            {
+                HandleGenericTextChange("Press and hold this button to turn\ncounterclockwise.");
+            }
+            else if (Input.GamePads.Any())
+            {
+                HandleGenericTextChange("Press up or left with the left stick\nto turn counterclockwise.");
+            }
+            else
+            {
+                HandleGenericTextChange("Press W or A with the keyboard to turn\ncounterclockwise.");
+            }
         }
 
         private void HandleEndPlay()

@@ -79,6 +79,8 @@ namespace Raspberry_Lib.Components
         private Nez.UI.IDrawable _rowYellowIcon;
         private Nez.UI.IDrawable _rowGreenIcon;
 
+        protected CharacterInputController.InputDescription InputOverride;
+
         protected virtual void OnAddedToEntityInternal()
         {
             Canvas = Entity.AddComponent(new UICanvas());
@@ -109,20 +111,29 @@ namespace Raspberry_Lib.Components
             drawColor.A = 127;
 
             _upIndicator = Canvas.Stage.AddElement(new Image(_upDefaultIcon));
-            _upIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f);
-            _upIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
+            _upIndicator.SetBounds(
+                Settings.Margin.Value, 
+                Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f,
+                Settings.IndicatorSizeX.Value, 
+                Settings.IndicatorSizeY.Value);
             _upIndicator.SetScaling(Scaling.Fill);
             _upIndicator.SetColor(drawColor);
 
             _downIndicator = Canvas.Stage.AddElement(new Image(_downDefaultIcon));
-            _downIndicator.SetPosition(Settings.Margin.Value, Screen.Height * .85f - Settings.IndicatorSizeY.Value / 2f);
-            _downIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
+            _downIndicator.SetBounds(
+                Settings.Margin.Value, 
+                Screen.Height * .85f - Settings.IndicatorSizeY.Value / 2f,
+                Settings.IndicatorSizeX.Value, 
+                Settings.IndicatorSizeY.Value);
             _downIndicator.SetScaling(Scaling.Fill);
             _downIndicator.SetColor(drawColor);
 
             _rowIndicator = Canvas.Stage.AddElement(new Image(spriteList[0]));
-            _rowIndicator.SetPosition(Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value, Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f);
-            _rowIndicator.SetSize(Settings.IndicatorSizeX.Value, Settings.IndicatorSizeY.Value);
+            _rowIndicator.SetBounds(
+                Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value, 
+                Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f, 
+                Settings.IndicatorSizeX.Value, 
+                Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
 
@@ -140,7 +151,7 @@ namespace Raspberry_Lib.Components
             DistanceLabel.SetText($"{distanceTraveled} m");
 
             // Handle Turning Indicators
-            var input = MovementComponent.CurrentInput;
+            var input = InputOverride ?? MovementComponent.CurrentInput;
 
             var upPressed = input.Rotation < 0f;
             if (_upPressed != upPressed)

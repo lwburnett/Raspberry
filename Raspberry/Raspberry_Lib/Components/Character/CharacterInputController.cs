@@ -14,10 +14,10 @@ namespace Raspberry_Lib.Components
                 Row = false;
             }
 
-            public InputDescription(float iRotationInputAction, bool iJumpInput)
+            public InputDescription(float iRotationInputAction, bool iRowInput)
             {
                 Rotation = iRotationInputAction;
-                Row = iJumpInput;
+                Row = iRowInput;
             }
 
             // Left thumb with domain [-1, 1] for how high or low their thumb is on the Y axis of the touch screen
