@@ -514,7 +514,7 @@ namespace Raspberry_Lib.Components
             {
                 HandleGenericTextChange("Press and hold this button to turn\ncounterclockwise.");
             }
-            else if (Input.GamePads.Any())
+            else if (Input.GamePads.Any(gp => gp.IsConnected()))
             {
                 HandleGenericTextChange("Press up or left with the left stick\nto turn counterclockwise.");
             }
@@ -533,7 +533,7 @@ namespace Raspberry_Lib.Components
             {
                 HandleGenericTextChange("Press and hold this button to turn\nclockwise.");
             }
-            else if (Input.GamePads.Any())
+            else if (Input.GamePads.Any(gp => gp.IsConnected()))
             {
                 HandleGenericTextChange("Press down or right with the left stick\nto turn clockwise.");
             }
@@ -551,7 +551,7 @@ namespace Raspberry_Lib.Components
             {
                 HandleGenericTextChange("Tap anywhere on the right half of the\nscreen to row.");
             }
-            else if (Input.GamePads.Any())
+            else if (Input.GamePads.Any(gp => gp.IsConnected()))
             {
                 HandleGenericTextChange("Tap the A/X face button to row.");
             }
@@ -567,7 +567,7 @@ namespace Raspberry_Lib.Components
             {
                 HandleGenericTextChange("Why don't you give it a try.\nTap the screen to begin.");
             }
-            else if (Input.GamePads.Any())
+            else if (Input.GamePads.Any(gp => gp.IsConnected()))
             {
                 HandleGenericTextChange("Why don't you give it a try.\nPress the A/X face button to begin.");
             }
@@ -590,7 +590,7 @@ namespace Raspberry_Lib.Components
             {
                 HandleGenericTextChange("Tap the screen to continue.");
             }
-            else if (Input.GamePads.Any())
+            else if (Input.GamePads.Any(gp => gp.IsConnected()))
             {
                 HandleGenericTextChange("Press the A/X face button to continue.");
             }
