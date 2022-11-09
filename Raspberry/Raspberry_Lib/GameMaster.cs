@@ -14,7 +14,7 @@ namespace Raspberry_Lib
 
         public GameServiceContainer Service => Core.Services;
 
-        public GameMaster(bool iFullScreen, bool iIsTouch) : base(windowTitle: "Raspberry")
+        public GameMaster(bool iFullScreen, bool iIsTouch) : base(windowTitle: "Concurrent Streams")
         {
             _fullScreen = iFullScreen;
             _isTouch = iIsTouch;
@@ -59,12 +59,12 @@ namespace Raspberry_Lib
             }
 
             Batcher.UseFnaHalfPixelMatrix = true;
-            Scene = new MainMenuScene(OnPlay, OnTutorial, Exit);
+            Scene = new MainMenuScene(OnPlay, OnTutorial, OnCredits, Exit);
         }
 
         private void OnMainMenu()
         {
-            Scene = new MainMenuScene(OnPlay, OnTutorial, Exit);
+            Scene = new MainMenuScene(OnPlay, OnTutorial, OnCredits, Exit);
         }
 
         private void OnPlay()
@@ -75,6 +75,11 @@ namespace Raspberry_Lib
         private void OnTutorial()
         {
             Scene = new TutorialScene(OnMainMenu);
+        }
+
+        private void OnCredits()
+        {
+            Scene = new CreditsScene(OnMainMenu);
         }
     }
 }
