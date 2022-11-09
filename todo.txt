@@ -14,7 +14,7 @@ Could
 	o Feature: Move row indicator back to the right
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
-	- Feature: Release version # display in corner of main menu
+	o Feature: Release version # display in corner of main menu
 	o Feature: Add keyboard support
 	o Feature: On keyboard & controller, have right mimic down and left mimic up
 
@@ -39,7 +39,6 @@ Features
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
 		- *Credits
-	- *Release version # display in corner of main menu
 	- Screen shake on collision
 
 Optimization
@@ -84,6 +83,7 @@ Features
 		- How to play screen
 	- Add keyboard support
 	- On keyboard & controller, have right mimic down and left mimic up
+	- Release version # display in corner of main menu
 
 Optimization
 	- Put generation in background thread
