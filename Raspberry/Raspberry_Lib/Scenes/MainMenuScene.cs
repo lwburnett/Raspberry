@@ -16,6 +16,11 @@ namespace Raspberry_Lib.Scenes
 
             public static readonly RenderSetting TablePositionX = new(300);
             public static readonly RenderSetting TablePositionY = new(200);
+
+            public const string Version = "Version 0.5.0";
+            public static readonly RenderSetting VersionInsetX = new(225);
+            public static readonly RenderSetting VersionInsetY = new(50);
+            public static readonly RenderSetting VersionFontScale = new(3);
         }
 
         public MainMenuScene(Action iOnStart, Action iOnTutorial, Action iOnExit)
@@ -41,7 +46,9 @@ namespace Raspberry_Lib.Scenes
 
             var table = canvas.Stage.AddElement(new Table());
             table.SetPosition(Settings.TablePositionX.Value, Settings.TablePositionY.Value);
-            table.Add(new Label("Concurrent Streams").SetFontScale(5).SetFontColor(Color.Black));
+            table.Add(new Label("Concurrent Streams").
+                SetFontScale(Settings.FontScale.Value).
+                SetFontColor(Color.Black));
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
             
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
@@ -60,6 +67,14 @@ namespace Raspberry_Lib.Scenes
             exitButton.OnClicked += OnExitClicked;
             exitButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             table.Add(exitButton).SetFillX().SetMinHeight(Settings.MinButtonHeight.Value);
+
+            canvas.Stage.
+                AddElement(new Label(Settings.Version)).
+                SetFontScale(Settings.VersionFontScale.Value).
+                SetFontColor(Color.Black).
+                SetPosition(
+                    Screen.Width - Settings.VersionInsetX.Value, 
+                    Screen.Height - Settings.VersionInsetY.Value);
 
             SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic, .6f);
         }
