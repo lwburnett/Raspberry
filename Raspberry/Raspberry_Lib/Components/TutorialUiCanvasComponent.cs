@@ -35,6 +35,7 @@ namespace Raspberry_Lib.Components
             EnergyDisplay,
             EnergyDecay,
             TurningUp,
+            TurningDown,
             EndPlay
         }
 
@@ -151,6 +152,16 @@ namespace Raspberry_Lib.Components
                         InputOverride = new CharacterInputController.InputDescription(rotation, false);
                     }
                 }
+                else if (_currentState == State.TurningDown)
+                {
+                    if (_timeSinceLastBlinkToggle.Value >= Settings.BlinkPeriodSeconds)
+                    {
+                        _blinkToggle = !_blinkToggle;
+                        _timeSinceLastBlinkToggle = 0;
+                        var rotation = _blinkToggle ? 1 : 0;
+                        InputOverride = new CharacterInputController.InputDescription(rotation, false);
+                    }
+                }
             }
             
             if (_currentState == State.EnergyDecay)
@@ -250,6 +261,7 @@ namespace Raspberry_Lib.Components
                     _energyDisplay.SetBounds(boatPosition.X - radius, boatPosition.Y - radius, radius * 2, radius * 2);
                     break;
                 case State.TurningUp:
+                case State.TurningDown:
                     _timeSinceLastBlinkToggle = null;
                     InputOverride = null;
                     break;
@@ -293,6 +305,9 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.TurningUp:
                     HandleTurningUp();
+                    break;
+                case State.TurningDown:
+                    HandleTurningDown();
                     break;
                 case State.EndPlay:
                     HandleEndPlay();
@@ -358,6 +373,25 @@ namespace Raspberry_Lib.Components
             else
             {
                 HandleGenericTextChange("Press W or A with the keyboard to turn\ncounterclockwise.");
+            }
+        }
+
+        private void HandleTurningDown()
+        {
+            _blinkToggle = false;
+            _timeSinceLastBlinkToggle = 0;
+
+            if (Input.Touch.IsConnected)
+            {
+                HandleGenericTextChange("Press and hold this button to turn\nclockwise.");
+            }
+            else if (Input.GamePads.Any())
+            {
+                HandleGenericTextChange("Press down or right with the left stick\nto turn clockwise.");
+            }
+            else
+            {
+                HandleGenericTextChange("Press S or D with the keyboard to turn\nclockwise.");
             }
         }
 
