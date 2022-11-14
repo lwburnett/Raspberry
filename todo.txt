@@ -1,32 +1,22 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	o Feature: How to play screen
-	o Feature: Credits screen
-	- Bug: Fix android crash
+	- Feature: After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
+	- Balance: Make energy spawns more frequent at the beginning and less frequent at the end
 
 Should
-	o Balance: Make turning be "force" based so the movement doesn't feel icy
-	o Balance: Make collisions reduce radius based on speed of collision
-	o Balance: Drastically reduce row force of red and yellow rows
-
-Could
-	o Feature: Move row indicator back to the right
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
-	o Feature: Release version # display in corner of main menu
-	o Feature: Add keyboard support
-	o Feature: On keyboard & controller, have right mimic down and left mimic up
+	- Art: Iterate on generated tile art
+
+Could
 
 -------------------- Playtester Feedback --------------------
 
-- Allow usage of left & right on desktop as up & down respectively (Mark)
-	- Add keyboard support with W/A as up, S/D as down, Space/Left Click as row (William, Stephen)
-- More frequent energy spawns at the beginning, less energy spawns at the end (Mark, Nolan)
-- Not obvious that you can use right thumb to row (Nolan)
-- Movement isn't in a great place. Feedback
-	- Spamming red/yellow rows is a much better strategy than green (Mark)
-	- Movement feels "slippery" like you're on ice (Nolan)
+- Movement still feels like asteroids (nolan)
+	- After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
+- Movement is too fast (nick)
+
 
 ------------------------ Outstanding ------------------------
 
@@ -39,6 +29,9 @@ Features
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
 	- Screen shake on collision
+	- Rapids section where the water speed temporarily gets way faster???
+		- Match up rapids section with drop in music?
+	- *After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
 
 Optimization
 
@@ -54,7 +47,9 @@ Art
 		- Picking up energy
 		- Bumping rocks
 		- Bumping shoreline
-		
+	- More music
+		- Multiple rotating songs for play screen
+		- Song for the tutorial mode
 
 Bugs
 	- Rocks sometimes placed badly at transitions
@@ -63,10 +58,11 @@ Bugs
 	- Boat rocking is simply based on (PlayerVelocity - RiverVelocity) and it looks wrong sometimes
 		especially when facing backwards
 	- Row wakes look wrong when facing backwards
-	- *Android version crashes after making it a certain distance
+	- Android version crashes after making it a certain distance
+		Nobody else is experiencing this so I'll shelf it for now
 
 Balance
-	- Make energy spawns less frequent when later in a run than earlier
+	- *Make energy spawns less frequent when later in a run than earlier
 
 
 ------------------------- Completed -------------------------
