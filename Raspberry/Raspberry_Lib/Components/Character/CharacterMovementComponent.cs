@@ -27,11 +27,16 @@ namespace Raspberry_Lib.Components
             
             public const float FinalVelocityPercentAfterCollision = .6f;
             public static readonly RenderSetting MinimumPostCollisionVelocity = new(50f);
+            
+            public static readonly RenderSetting VelocityDiffMax = new(300);
 
-            public const float RotationRateDegreesPerSecondMax = 60f;
+            public const float AngularBoatForceMinimum = .15f;
+
             public const float AngularWaterForce = 1f;
-            public const float AngularBoatForce = 60f;
+            public const float AngularBoatForce = 300f;
             public const float AngularFrictionForce = .2f;
+
+            public static readonly RenderSetting BoatForceDueToTurning = new(20f);
         }
 
         public CharacterMovementComponent()
@@ -48,11 +53,13 @@ namespace Raspberry_Lib.Components
 
 #if VERBOSE
             _turningDragForce = 0f;
+            _turningMultiplier = 0f;
 
             Verbose.TrackMetric(() => _currentVelocity.Length(), v => $"SpeedT: {v:G6}");
             Verbose.TrackMetric(() => _currentVelocity.X, v => $"SpeedX: {v:G6}");
             Verbose.TrackMetric(() => _currentVelocity.Y, v => $"SpeedY: {v:G6}");
             Verbose.TrackMetric(() => _turningDragForce, v => $"Turning Drag Force: {v:G6}");
+            Verbose.TrackMetric(() => _turningMultiplier, v => $"Turning Multiplier: {v:G6}");
 #endif
         }
 
@@ -102,7 +109,8 @@ namespace Raspberry_Lib.Components
 
 
             // Apply rotation input
-            HandleRotationalForces(riverFlow);
+            HandleRotationalForces(riverFlow, out var turningForceOnBoat);
+            forceVec += turningForceOnBoat;
 
             var directionVector = GetRotationAsDirectionVector();
             directionVector.Normalize();
@@ -306,6 +314,7 @@ namespace Raspberry_Lib.Components
 
 #if VERBOSE
         private float _turningDragForce;
+        private float _turningMultiplier;
 #endif
 
         private Vector2 GetRotationAsDirectionVector()
@@ -324,19 +333,21 @@ namespace Raspberry_Lib.Components
             return newVec;
         }
 
-        private void HandleRotationalForces(Vector2 iWaterVelocity)
+        private void HandleRotationalForces(Vector2 iWaterVelocity, out Vector2 oForceOnBoat)
         {
-            var cumulativeAngularForce = 0f;
+            oForceOnBoat = Vector2.Zero;
 
+            var cumulativeAngularForce = 0f;
+            
             var waterDirection = iWaterVelocity;
             waterDirection.Normalize();
-
+            
             var currentDirection = GetRotationAsDirectionVector();
             var currentDirection3D = new Vector3(GetRotationAsDirectionVector(), 0f);
             currentDirection3D.Normalize();
             var waterVelocity3D = new Vector3(iWaterVelocity, 0f);
             waterVelocity3D.Normalize();
-
+            
             var crossProduct = Vector3.Cross(currentDirection3D, waterVelocity3D);
             var crossScalar = crossProduct.Z != 0f ? crossProduct.Z / Math.Abs(crossProduct.Z) : 0f;
 
@@ -345,31 +356,45 @@ namespace Raspberry_Lib.Components
 
             var angularForceMultiplier = dotScalar * crossScalar;
             cumulativeAngularForce += angularForceMultiplier * Settings.AngularWaterForce;
-            
+
+            var waterVelocityInPlayerDirection = dotProduct / currentDirection.Length();
+            var playerVelocityInPlayerDirection = Vector2.Dot(_currentVelocity, currentDirection) / currentDirection.Length();
+            var velocityDiff = playerVelocityInPlayerDirection - waterVelocityInPlayerDirection;
+
+            var lerpAmount = MathHelper.Clamp(velocityDiff / Settings.VelocityDiffMax.Value, 0f, 1f);
+            var turningLerpValue = MathHelper.Lerp(Settings.AngularBoatForceMinimum, 1f, lerpAmount);
+            var boatVelocityLerpValue = MathHelper.Lerp(0f, 1f, lerpAmount);
+
+#if VERBOSE
+            _turningMultiplier = turningLerpValue;
+#endif
+
             if (CurrentInput.Rotation > 0f)
             {
-                cumulativeAngularForce += Settings.AngularBoatForce;
+                cumulativeAngularForce += Settings.AngularBoatForce * turningLerpValue;
+
+                var forceDirection = GetClockwisePerpendicularUnitVector(currentDirection);
+                oForceOnBoat = forceDirection * boatVelocityLerpValue * Settings.BoatForceDueToTurning.Value;
             }
             else if (CurrentInput.Rotation < 0f)
             {
-                cumulativeAngularForce += -Settings.AngularBoatForce;
+                cumulativeAngularForce += -Settings.AngularBoatForce * turningLerpValue;
+
+                var forceDirection = -GetClockwisePerpendicularUnitVector(currentDirection);
+                oForceOnBoat = forceDirection * boatVelocityLerpValue * Settings.BoatForceDueToTurning.Value;
             }
-            else
+
+            if (_angularVelocity > 0f)
             {
-                if (_angularVelocity > 0f)
-                {
-                    cumulativeAngularForce += -Settings.AngularFrictionForce * _angularVelocity * _angularVelocity;
-                }
-                else if (_angularVelocity < 0f)
-                {
-                    cumulativeAngularForce += Settings.AngularFrictionForce * _angularVelocity * _angularVelocity;
-                }
+                cumulativeAngularForce += -Settings.AngularFrictionForce * _angularVelocity * _angularVelocity;
+            }
+            else if (_angularVelocity < 0f)
+            {
+                cumulativeAngularForce += Settings.AngularFrictionForce * _angularVelocity * _angularVelocity;
             }
 
             _angularVelocity += cumulativeAngularForce * Time.DeltaTime;
-            _angularVelocity = MathHelper.Clamp(_angularVelocity, -Settings.RotationRateDegreesPerSecondMax, Settings.RotationRateDegreesPerSecondMax);
             var rotationDegreesToApply = _angularVelocity * Time.DeltaTime;
-
             Entity.Transform.SetRotationDegrees(Entity.Transform.RotationDegrees + rotationDegreesToApply);
         }
     }
