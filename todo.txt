@@ -10,6 +10,8 @@ Should
 	- Art: Iterate on generated tile art
 
 Could
+	- Feature: Settings screen
+	- Feature: Post play stats screen
 
 -------------------- Playtester Feedback --------------------
 
@@ -26,6 +28,9 @@ Features
 	- Add Screens
 		- Main Menu
 		- Settings screen? (Might not actually need this)
+			- Music toggle
+			- SFX toggle
+			- Screen shake toggle
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 		- Post play screen with stats of that play session (might just be a popup over play session screen)
 	- Screen shake on collision
@@ -36,7 +41,7 @@ Features
 Optimization
 
 Art
-	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- *Iterate on generated tile art
 	- *Iterate on energy art
 	- *Change rocks' color pallete to better match the brown pallete of the desert
@@ -50,6 +55,10 @@ Art
 	- More music
 		- Multiple rotating songs for play screen
 		- Song for the tutorial mode
+	- New font
+	- Art of buttons & tutorial dialogue
+	- Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
+	- Death animation
 
 Bugs
 	- Rocks sometimes placed badly at transitions
