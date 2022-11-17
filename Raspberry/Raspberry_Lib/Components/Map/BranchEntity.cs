@@ -10,6 +10,7 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public const float ScaleAdjustmentMultiplier = .75f;
+            public static readonly RenderSetting ColliderRadius = new(30);
         }
 
         public BranchEntity(Vector2 iPosition)
@@ -30,7 +31,7 @@ namespace Raspberry_Lib.Components
             _renderer.RenderLayer = 4;
             _renderer.Sprite = texture;
 
-            _collider = AddComponent(new CircleCollider(texture.SourceRect.Width / 2f) { PhysicsLayer = PhysicsLayer, Entity = this });
+            _collider = AddComponent(new CircleCollider(Settings.ColliderRadius.Value) { PhysicsLayer = PhysicsLayer, Entity = this });
             Physics.AddCollider(_collider);
 
 #if VERBOSE
