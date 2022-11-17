@@ -1,7 +1,8 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	- Feature: After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
+	- Feature: While turning, add some lateral force to the boat that scales with speed relative to water
+	- Feature: Increase rotational force if turning while rowing
 	- Balance: Make energy spawns more frequent at the beginning and less frequent at the end
 	o Feature: Increase collision radius of energy
 
@@ -37,7 +38,8 @@ Features
 	- Screen shake on collision
 	- Rapids section where the water speed temporarily gets way faster???
 		- Match up rapids section with drop in music?
-	- *After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
+	- *While turning, add some lateral force to the boat that scales with speed relative to water
+	- *Increase rotational force if turning while rowing
 
 Optimization
 
