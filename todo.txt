@@ -3,6 +3,7 @@
 Must
 	- Feature: After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
 	- Balance: Make energy spawns more frequent at the beginning and less frequent at the end
+	o Feature: Increase collision radius of energy
 
 Should
 	- Art: Recolor rocks
@@ -134,3 +135,4 @@ Balance
 	- Drastically reduce row force of red and yellow rows
 	- Make turning be "force" based so the movement doesn't feel icy
 	- Make collisions reduce radius based on speed of collision
+	- Increase collision radius of energy
