@@ -301,7 +301,7 @@ namespace Raspberry_Lib.Components
         public Vector2 CurrentVelocity => _currentVelocity;
         public CharacterInputController.InputDescription CurrentInput { get; private set; }
         public float SecondsSinceLastRow { get; private set; }
-        
+
         private Vector2 _currentVelocity;
         private float _angularVelocity;
         private Vector2 _thisIterationMotion;
@@ -362,8 +362,18 @@ namespace Raspberry_Lib.Components
             var velocityDiff = playerVelocityInPlayerDirection - waterVelocityInPlayerDirection;
 
             var lerpAmount = MathHelper.Clamp(velocityDiff / Settings.VelocityDiffMax.Value, 0f, 1f);
-            var turningLerpValue = MathHelper.Lerp(Settings.AngularBoatForceMinimum, 1f, lerpAmount);
-            var boatVelocityLerpValue = MathHelper.Lerp(0f, 1f, lerpAmount);
+
+            var lerpAdjustment = 0f;
+            if (_rowForceForCurrentRow.HasValue)
+            {
+                var denominator = Settings.RowForceGood.Value * 2;
+                var multiplier = _rowForceForCurrentRow.Value / denominator;
+
+                lerpAdjustment = (1f - lerpAmount) * multiplier;
+            }
+
+            var turningLerpValue = MathHelper.Lerp(Settings.AngularBoatForceMinimum, 1f, lerpAmount + lerpAdjustment);
+            var boatVelocityLerpValue = MathHelper.Lerp(0f, 1f, lerpAmount + lerpAdjustment);
 
 #if VERBOSE
             _turningMultiplier = turningLerpValue;
