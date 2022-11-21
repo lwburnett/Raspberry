@@ -36,7 +36,7 @@ namespace Raspberry_Lib.Components
             public const float AngularBoatForce = 300f;
             public const float AngularFrictionForce = .2f;
 
-            public static readonly RenderSetting BoatForceDueToTurning = new(20f);
+            public static readonly RenderSetting BoatForceDueToTurning = new(25f);
         }
 
         public CharacterMovementComponent()
