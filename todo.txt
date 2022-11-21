@@ -1,8 +1,8 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	- Feature: While turning, add some lateral force to the boat that scales with speed relative to water
-	- Feature: Increase rotational force if turning while rowing
+	o Feature: While turning, add some lateral force to the boat that scales with speed relative to water
+	o Feature: Increase rotational force if turning while rowing
 	- Balance: Make energy spawns more frequent at the beginning and less frequent at the end
 	o Feature: Increase collision radius of energy
 
@@ -38,8 +38,6 @@ Features
 	- Screen shake on collision
 	- Rapids section where the water speed temporarily gets way faster???
 		- Match up rapids section with drop in music?
-	- *While turning, add some lateral force to the boat that scales with speed relative to water
-	- *Increase rotational force if turning while rowing
 
 Optimization
 
@@ -92,6 +90,8 @@ Features
 	- Add keyboard support
 	- On keyboard & controller, have right mimic down and left mimic up
 	- Release version # display in corner of main menu
+	- While turning, add some lateral force to the boat that scales with speed relative to water
+	- Increase rotational force if turning while rowing
 
 Optimization
 	- Put generation in background thread
