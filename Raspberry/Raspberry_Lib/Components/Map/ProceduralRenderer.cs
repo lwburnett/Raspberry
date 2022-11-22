@@ -11,7 +11,6 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public const int NumTilesToProcessPerTick = 5;
-            public static readonly RenderSetting MinXDistanceBetweenBranches = new(3000);
         }
 
         public ProceduralRenderer()
@@ -183,20 +182,20 @@ namespace Raspberry_Lib.Components
                         var thisObstaclePosition = thisObstacleDescription.Position;
 
                         Entity thisObstacle;
-                        if (thisObstaclePosition.X - LastBranchSpawnX > Settings.MinXDistanceBetweenBranches.Value)
+                        if (thisObstacleDescription.RockIndex >= 0)
+                        {
+                            thisObstacle = new RockObstacleEntity(thisObstaclePosition, thisObstacleDescription.RockIndex, thisObstacleDescription.RotationRadians)
+                            {
+                                Scale = new Vector2(_scale)
+                            };
+                        }
+                        else
                         {
                             thisObstacle = new BranchEntity(thisObstaclePosition)
                             {
                                 Scale = new Vector2(_scale)
                             };
                             LastBranchSpawnX = thisObstaclePosition.X;
-                        }
-                        else
-                        {
-                            thisObstacle = new RockObstacleEntity(thisObstaclePosition, thisObstacleDescription.RockIndex, thisObstacleDescription.RotationRadians)
-                            {
-                                Scale = new Vector2(_scale)
-                            };
                         }
 
                         _onTileGenerated(thisObstacle);

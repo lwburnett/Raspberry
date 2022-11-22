@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
@@ -25,14 +26,19 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting ObstacleXGapMinUpper = new(800);
             public static readonly RenderSetting ObstacleXGapMinLower = new(200);
 
-            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1400);
+            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1200);
             public static readonly RenderSetting ObstacleXGapMaxLower = new(600);
+
+            public static readonly RenderSetting EnergyXGapLower = new(2000);
+            public static readonly RenderSetting EnergyXGapHigher = new(6000);
 
             public const float YScaleDivisorLower = 8f;
             public const float YScaleDivisorUpper = 4f;
             
             public static readonly RenderSetting FlowSpeedLower = new(60);
             public static readonly RenderSetting FlowSpeedUpper = new(120);
+
+            public static readonly RenderSetting MinDistanceBetweenObstacles = new(150);
         }
 
         public ProceduralGeneratorComponent()
@@ -63,11 +69,13 @@ namespace Raspberry_Lib.Components
 
             var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
 
+            _nextRockPointX = Settings.ObstacleXGapMaxUpper.Value * 1.5f;
+            _nextEnergyPointX = _nextRockPointX + Settings.ObstacleXGapMinUpper.Value / 2f;
             var randomWalk = RandomWalk(startingPos, Vector2.UnitX);
             Blocks = new List<LevelBlock>
             {
                 new (LeadingPoints(startingPos), new List<RiverObstacle>(), riverWidth),
-                new (randomWalk, GetObstaclesForBlock(randomWalk, randomWalk.DomainStart + Settings.ObstacleXGapMaxUpper.Value), riverWidth)
+                new (randomWalk, GetObstaclesForBlock(randomWalk), riverWidth)
             };
 
             _nextScorePointX = randomWalk.DomainEnd;
@@ -91,7 +99,7 @@ namespace Raspberry_Lib.Components
 
                 var nextStartingSlope = new Vector2(1f, lastBlock.Function.GetYPrimeForX(lastBlock.Function.DomainEnd));
                 var newWalk = RandomWalk(nextStartingPoint, nextStartingSlope);
-                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk, lastBlock.Obstacles.Last().Position.X), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
+                var newBlock = new LevelBlock(newWalk, GetObstaclesForBlock(newWalk), riverWidth, lastBlock.GetRiverWidth(lastBlock.Function.DomainEnd));
 
                 Blocks.Add(newBlock);
 
@@ -142,7 +150,9 @@ namespace Raspberry_Lib.Components
         private float _nextGenerationPointX;
         private float _nextScorePointX;
         private float _playerScoreRating;
-        private System.Random _rng;
+        private float _nextRockPointX;
+        private float _nextEnergyPointX;
+        private readonly System.Random _rng;
 
         private IFunction LeadingPoints(Vector2 iStartingPoint)
         {
@@ -196,32 +206,65 @@ namespace Raspberry_Lib.Components
                 new Vector2(_scale, _scale / yScaleDivisor));
         }
 
-        private List<RiverObstacle> GetObstaclesForBlock(IFunction iFunction, float? iStartingPointX = null)
+        private List<RiverObstacle> GetObstaclesForBlock(IFunction iFunction)
         {
             var obstacles = new List<RiverObstacle>();
 
-            var lastPointX = iStartingPointX ?? iFunction.DomainStart;
+            var lerpValue = 1 - _playerScoreRating / Settings.PlayerScoreRatingMax;
 
-            var gapMin = MathHelper.Lerp(Settings.ObstacleXGapMinLower.Value, Settings.ObstacleXGapMinUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
-            var gapMax = MathHelper.Lerp(Settings.ObstacleXGapMaxLower.Value, Settings.ObstacleXGapMaxUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
-            var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, 1 - _playerScoreRating / Settings.PlayerScoreRatingMax);
+            var riverWidth = MathHelper.Lerp(Settings.RiverWidthLower.Value, Settings.RiverWidthUpper.Value, lerpValue);
 
-            while (lastPointX < iFunction.DomainEnd)
+            while (_nextRockPointX < iFunction.DomainEnd ||
+                   _nextEnergyPointX < iFunction.DomainEnd)
             {
-                var thisPointX = lastPointX + gapMin + 
-                                 (float)_rng.NextDouble() * (gapMax - gapMin);
+                var posX = Math.Min(_nextRockPointX, _nextEnergyPointX);
+                
+                var posYRngValue = (float)_rng.NextDouble();
+                var riverPosY = iFunction.GetYForX(posX);
+                var thisPointY = riverPosY - (riverWidth / 2f) + _scale + (posYRngValue * (riverWidth - 2 * _scale));
 
-                if (thisPointX > iFunction.DomainEnd)
-                    break;
+                var potentialPoint = new Vector2(posX, thisPointY);
+                var lastPoint = obstacles.LastOrDefault()?.Position;
 
-                var thisPointY = iFunction.GetYForX(thisPointX) - (riverWidth / 2f) + _scale + ((float)_rng.NextDouble() * (riverWidth - 2 * _scale));
+                var chosenPosition = potentialPoint;
+                if (lastPoint.HasValue &&
+                    Vector2.Distance(potentialPoint, lastPoint.Value) < Settings.MinDistanceBetweenObstacles.Value)
+                {
+                    var lastPointRiverY = iFunction.GetYForX(lastPoint.Value.X);
+                    var diff = lastPoint.Value.Y - lastPointRiverY;
 
-                var position = new Vector2(thisPointX, thisPointY);
-                var index = _rng.Next(0, 2) * 2;
-                var rotation = (float)_rng.NextDouble() * MathHelper.TwoPi;
-                obstacles.Add(new RiverObstacle(position, index, rotation));
+                    float newY;
+                    if (diff > 0)
+                    {
+                        newY = lastPoint.Value.Y - Settings.MinDistanceBetweenObstacles.Value;
+                    }
+                    else
+                    {
+                        newY = lastPoint.Value.Y + Settings.MinDistanceBetweenObstacles.Value;
+                    }
 
-                lastPointX = thisPointX;
+                    chosenPosition = new Vector2(posX, newY);
+                }
+
+                if (_nextRockPointX < _nextEnergyPointX)
+                {
+                    var index = _rng.Next(0, 2) * 2;
+                    var rotation = (float)_rng.NextDouble() * MathHelper.TwoPi;
+                    obstacles.Add(new RiverObstacle(chosenPosition, index, rotation));
+
+                    var gapMin = MathHelper.Lerp(Settings.ObstacleXGapMinLower.Value, Settings.ObstacleXGapMinUpper.Value, lerpValue);
+                    var gapMax = MathHelper.Lerp(Settings.ObstacleXGapMaxLower.Value, Settings.ObstacleXGapMaxUpper.Value, lerpValue);
+                    _nextRockPointX += gapMin + (float)_rng.NextDouble() * (gapMax - gapMin);
+                }
+                else
+                {
+                    const int index = -1;
+                    const float rotation = 0f;
+                    obstacles.Add(new RiverObstacle(chosenPosition, index, rotation));
+
+                    var gap = MathHelper.Lerp(Settings.EnergyXGapHigher.Value, Settings.EnergyXGapLower.Value, lerpValue);
+                    _nextEnergyPointX += gap;
+                }
             }
 
             return obstacles;
