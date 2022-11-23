@@ -4,20 +4,22 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class PlayerProximityComponent : Component, IUpdatable, IPausable
+    internal class PlayerProximityComponent : Component, IUpdatable, IBeginPlay, IPausable
     {
         private static class Settings
         {
             public static readonly RenderSetting StartingRadius = new(300);
             public static readonly RenderSetting BranchHitIncrease = new(100);
             public const float BranchHitIncreaseOverTimeSeconds = 1f;
-            public static readonly RenderSetting RadiusDecayPerSecond = new(7.5f);
+            public static readonly RenderSetting RadiusDecayPerSecondLower = new(7.5f);
+            public static readonly RenderSetting RadiusDecayPerSecondUpper = new(15.0f);
             public static readonly RenderSetting MaximumRadius = new(500);
             public static readonly RenderSetting MinimumRadius = new(100);
 
             public static readonly RenderSetting MinimumImpactSpeed = new(10);
             public static readonly RenderSetting MaximumImpactSpeed = new(150);
-            public const float MaximumImpactDecayMultiplier = 6.0f;
+            public const float MaximumImpactDecayMultiplierLower = 6.0f;
+            public const float MaximumImpactDecayMultiplierUpper = 18.0f;
             public const float ImpactDecayTimespanSeconds = .5f;
         }
 
@@ -31,8 +33,23 @@ namespace Raspberry_Lib.Components
             _timeSpentPaused = 0;
 
 #if VERBOSE
+            _radiusDecayPerSecond = Settings.RadiusDecayPerSecondLower.Value;
+
+            Verbose.TrackMetric(() => _radiusDecayPerSecond, v => $"Radius Decay Per Second: {v:G6}");
             Verbose.TrackMetric(() => _decayMultiplier ?? 0.0f, v => $"Radius Decay Multiplier: {v:G6}");
 #endif
+        }
+
+        public int BeginPlayOrder => 95;
+        public void OnBeginPlay()
+        {
+            var mapEntity = Entity.Scene.FindEntity("map");
+
+            System.Diagnostics.Debug.Assert(mapEntity != null);
+
+            _proceduralGenerator = mapEntity.GetComponent<ProceduralGeneratorComponent>();
+
+            System.Diagnostics.Debug.Assert(_proceduralGenerator != null);
         }
 
         public bool IsPaused { get; set; }
@@ -59,19 +76,28 @@ namespace Raspberry_Lib.Components
 
             if (adjustedTime - _lastBranchHitTime > Settings.BranchHitIncreaseOverTimeSeconds)
             {
+                var radiusDecayPerSecond = MathHelper.Lerp(
+                    Settings.RadiusDecayPerSecondLower.Value,
+                    Settings.RadiusDecayPerSecondUpper.Value,
+                    _proceduralGenerator.PlayerScoreRating / _proceduralGenerator.MaxPlayerScoreRating);
+
+#if VERBOSE
+                _radiusDecayPerSecond = radiusDecayPerSecond;
+#endif
+
                 if (!_decayMultiplier.HasValue || !_lastObstacleHitTime.HasValue)
                 {
-                    Radius -= Settings.RadiusDecayPerSecond.Value * Time.DeltaTime;
+                    Radius -= radiusDecayPerSecond * Time.DeltaTime;
                 }
                 else
                 {
                     if (adjustedTime - _lastObstacleHitTime.Value < Settings.ImpactDecayTimespanSeconds)
                     {
-                        Radius -= _decayMultiplier.Value * Settings.RadiusDecayPerSecond.Value * Time.DeltaTime;
+                        Radius -= _decayMultiplier.Value * radiusDecayPerSecond * Time.DeltaTime;
                     }
                     else
                     {
-                        Radius -= Settings.RadiusDecayPerSecond.Value * Time.DeltaTime;
+                        Radius -= radiusDecayPerSecond * Time.DeltaTime;
                         _decayMultiplier = null;
                         _lastObstacleHitTime = null;
                     }
@@ -101,7 +127,12 @@ namespace Raspberry_Lib.Components
 
             var clampedLerpValue = MathHelper.Clamp(lerpValue, 0.0f, 1.0f);
 
-            var newDecayMultiplier = MathHelper.Lerp(1.0f, Settings.MaximumImpactDecayMultiplier, clampedLerpValue);
+            var maximumImpactDecayMultiplier = MathHelper.Lerp(
+                Settings.MaximumImpactDecayMultiplierLower,
+                Settings.MaximumImpactDecayMultiplierUpper,
+                _proceduralGenerator.PlayerScoreRating / _proceduralGenerator.MaxPlayerScoreRating);
+
+            var newDecayMultiplier = MathHelper.Lerp(1.0f, maximumImpactDecayMultiplier, clampedLerpValue);
 
             if (_decayMultiplier.HasValue && _lastObstacleHitTime.HasValue)
             {
@@ -130,5 +161,11 @@ namespace Raspberry_Lib.Components
         private float? _decayMultiplier;
 
         private float _timeSpentPaused;
+
+        private ProceduralGeneratorComponent _proceduralGenerator;
+
+#if VERBOSE
+        private float _radiusDecayPerSecond;
+#endif
     }
 }
