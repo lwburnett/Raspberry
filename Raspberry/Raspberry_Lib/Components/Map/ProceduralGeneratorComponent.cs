@@ -23,10 +23,10 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting RiverWidthUpper = new(800);
             public static readonly RenderSetting RiverWidthLower = new(400);
 
-            public static readonly RenderSetting ObstacleXGapMinUpper = new(800);
+            public static readonly RenderSetting ObstacleXGapMinUpper = new(900);
             public static readonly RenderSetting ObstacleXGapMinLower = new(200);
 
-            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1200);
+            public static readonly RenderSetting ObstacleXGapMaxUpper = new(1400);
             public static readonly RenderSetting ObstacleXGapMaxLower = new(600);
 
             public static readonly RenderSetting EnergyXGapLower = new(2000);
