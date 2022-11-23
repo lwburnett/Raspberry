@@ -251,7 +251,7 @@ namespace Raspberry_Lib.Components
 
                 if (_nextRockPointX < _nextEnergyPointX)
                 {
-                    var index = _rng.Next(0, 2) * 2;
+                    var index = _rng.Next(0, 3) * 2;
                     var rotation = (float)_rng.NextDouble() * MathHelper.TwoPi;
                     obstacles.Add(new RiverObstacle(chosenPosition, index, rotation));
 
