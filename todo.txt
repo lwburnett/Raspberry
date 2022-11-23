@@ -8,6 +8,7 @@ Must
 	o Balance: Increase impact radius decay and passive radius decay with distance
 
 Should
+	o Feature: Update tutorial to inform player how passive and collision energy decay scale with distance
 	- Art: Recolor rocks
 	- Art: Iterate on energy art
 	- Art: Iterate on generated tile art
@@ -96,6 +97,7 @@ Features
 	- Release version # display in corner of main menu
 	- While turning, add some lateral force to the boat that scales with speed relative to water
 	- Increase rotational force if turning while rowing
+	- Update tutorial to inform player how passive and collision energy decay scale with distance
 
 Optimization
 	- Put generation in background thread
