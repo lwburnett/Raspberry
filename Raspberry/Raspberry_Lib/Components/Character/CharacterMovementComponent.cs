@@ -33,10 +33,10 @@ namespace Raspberry_Lib.Components
             public const float AngularBoatForceMinimum = .15f;
 
             public const float AngularWaterForce = 1f;
-            public const float AngularBoatForce = 300f;
+            public const float AngularBoatForce = 350f;
             public const float AngularFrictionForce = .2f;
 
-            public static readonly RenderSetting BoatForceDueToTurning = new(25f);
+            public static readonly RenderSetting BoatForceDueToTurning = new(30f);
         }
 
         public CharacterMovementComponent()
