@@ -38,7 +38,8 @@ namespace Raspberry_Lib.Components
             GameGoal1,
             DistanceDisplay,
             EnergyDisplay,
-            EnergyDecay,
+            EnergyDecay1,
+            EnergyDecay2,
             TurningUp,
             TurningDown,
             Rowing1,
@@ -47,7 +48,8 @@ namespace Raspberry_Lib.Components
             Rowing4,
             FirstPlayInstructions,
             FirstPlay,
-            Collision,
+            Collision1,
+            Collision2,
             SecondPlayInstructions,
             SecondPlay,
             Energy,
@@ -209,7 +211,7 @@ namespace Raspberry_Lib.Components
                         InputOverride = new CharacterInputController.InputDescription(0, false);
                     }
                 }
-                else if (_currentState == State.Collision)
+                else if (_currentState == State.Collision1 || _currentState == State.Collision2)
                 {
                     var rockPositionInScreenSpace =
                         Entity.Scene.Camera.WorldToScreenPoint(_firstRockLocation);
@@ -249,7 +251,7 @@ namespace Raspberry_Lib.Components
                 }
             }
             
-            if (_currentState == State.EnergyDecay)
+            if (_currentState == State.EnergyDecay1 || _currentState == State.EnergyDecay2)
             {
                 var currentScale = _energyDisplay.GetWidth() / (_characterProximity.Radius * 2); 
                 var potentialNewScale = currentScale - Settings.EnergyDecayPercentLossPerSecond * Time.DeltaTime;
@@ -355,7 +357,7 @@ namespace Raspberry_Lib.Components
                     _energyDisplay.SetIsVisible(false);
                     _timeSinceLastBlinkToggle = null;
                     break;
-                case State.EnergyDecay:
+                case State.EnergyDecay2:
                     _energyDisplay.SetIsVisible(false);
                     var radius = _characterProximity.Radius;
                     var boatPosition = Entity.Scene.Camera.WorldToScreenPoint(_characterProximity.Entity.Position);
@@ -367,7 +369,7 @@ namespace Raspberry_Lib.Components
                     _timeSinceLastBlinkToggle = null;
                     InputOverride = null;
                     break;
-                case State.Collision:
+                case State.Collision2:
                 case State.Energy:
                     _obstacleAlert.SetIsVisible(false);
                     _timeSinceLastBlinkToggle = null;
@@ -377,11 +379,13 @@ namespace Raspberry_Lib.Components
                 case State.StoryIntro1:
                 case State.StoryIntro2:
                 case State.StoryIntro3:
+                case State.EnergyDecay1:
                 case State.Rowing1:
                 case State.Rowing2:
                 case State.Rowing3:
                 case State.FirstPlayInstructions:
                 case State.FirstPlay:
+                case State.Collision1:
                 case State.SecondPlayInstructions:
                 case State.SecondPlay:
                 case State.GoodLuck:
@@ -415,8 +419,11 @@ namespace Raspberry_Lib.Components
                 case State.EnergyDisplay:
                     HandleEnergyDisplay();
                     break;
-                case State.EnergyDecay:
-                    HandleEnergyDecay();
+                case State.EnergyDecay1:
+                    HandleEnergyDecay1();
+                    break;
+                case State.EnergyDecay2:
+                    HandleGenericTextChange("Careful! The further you get, the faster\nthe energy will decay.");
                     break;
                 case State.TurningUp:
                     HandleTurningUp();
@@ -442,8 +449,11 @@ namespace Raspberry_Lib.Components
                 case State.FirstPlay:
                     HandlePlay();
                     break;
-                case State.Collision:
-                    HandleCollision();
+                case State.Collision1:
+                    HandleCollision1();
+                    break;
+                case State.Collision2:
+                    HandleGenericTextChange("Careful! The further you get, the more\nenergy will be lost by collisions.");
                     break;
                 case State.SecondPlayInstructions:
                     HandleSecondPlayInstruction();
@@ -497,7 +507,7 @@ namespace Raspberry_Lib.Components
             HandleGenericTextChange("Energy level is shown by the size of the\nbubble around the boat.");
         }
 
-        private void HandleEnergyDecay()
+        private void HandleEnergyDecay1()
         {
             _timeSinceLastBlinkToggle = null;
             _energyDisplay.SetIsVisible(true);
@@ -577,7 +587,7 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        private void HandleCollision()
+        private void HandleCollision1()
         {
             _timeSinceLastBlinkToggle = 0;
             _obstacleAlert.SetIsVisible(true);
