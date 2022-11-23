@@ -72,6 +72,12 @@ namespace Raspberry_Lib.Components
                 return;
             }
 
+            if (_proceduralGenerator == null)
+            {
+                OnBeginPlay();
+                return;
+            }
+
             var adjustedTime = Time.TotalTime - _timeSpentPaused;
 
             if (adjustedTime - _lastBranchHitTime > Settings.BranchHitIncreaseOverTimeSeconds)
