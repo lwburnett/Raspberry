@@ -3,8 +3,9 @@
 Must
 	o Feature: While turning, add some lateral force to the boat that scales with speed relative to water
 	o Feature: Increase rotational force if turning while rowing
-	- Balance: Make energy spawns more frequent at the beginning and less frequent at the end
+	o Balance: Make energy spawns more frequent at the beginning and less frequent at the end
 	o Feature: Increase collision radius of energy
+	o Balance: Increase impact radius decay and passive radius decay with distance
 
 Should
 	- Art: Recolor rocks
@@ -12,6 +13,8 @@ Should
 	- Art: Iterate on generated tile art
 
 Could
+	o Art: Add in another unique rock sprite
+	- Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- Feature: Settings screen
 	- Feature: Post play stats screen
 
@@ -60,6 +63,7 @@ Art
 	- Art of buttons & tutorial dialogue
 	- Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 	- Death animation
+	- Add in another (4th) unique rock sprite
 
 Bugs
 	- Rocks sometimes placed badly at transitions
@@ -70,9 +74,9 @@ Bugs
 	- Row wakes look wrong when facing backwards
 	- Android version crashes after making it a certain distance
 		Nobody else is experiencing this so I'll shelf it for now
+	- The third rock sprite has a few eroneous pixels on the edge
 
 Balance
-	- *Make energy spawns less frequent when later in a run than earlier
 
 
 ------------------------- Completed -------------------------
@@ -113,6 +117,7 @@ Art
 	- Different sprites for rocks when inside and outside the player radius
 	- Put black border around player boat
 	- Move row indicator back to the right
+	- Add in another (3rd) unique rock sprite
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
@@ -138,3 +143,5 @@ Balance
 	- Make turning be "force" based so the movement doesn't feel icy
 	- Make collisions reduce radius based on speed of collision
 	- Increase collision radius of energy
+	- Make energy spawns less frequent when later in a run than earlier
+	- Increase impact radius decay and passive radius decay with distance
