@@ -103,10 +103,10 @@ namespace Raspberry_Lib.Components
                 var speedOfImpact = Vector2.Dot(_playerMovementComponent.CurrentVelocity, incidentVector) / incidentVector.Length();
                 _playerProximityComponent.OnObstacleHit(speedOfImpact);
             }
-            else if (collisionResult.Collider.Entity is BranchEntity branch)
+            else if (collisionResult.Collider.Entity is EnergyEntity energy)
             {
-                _playerProximityComponent.OnBranchHit();
-                branch.OnPlayerHit();
+                _playerProximityComponent.OnEnergyHit();
+                energy.OnPlayerHit();
             }
         }
 

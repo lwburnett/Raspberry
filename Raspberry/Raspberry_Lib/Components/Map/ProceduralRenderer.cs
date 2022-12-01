@@ -96,7 +96,7 @@ namespace Raspberry_Lib.Components
             var tileIncrement = 32 * Entity.Transform.Scale.X;
             var character = Entity.Scene.FindEntity("character");
             var playerProximityComponent = character.GetComponent<PlayerProximityComponent>();
-            var lastBranchSpawnX = _generationJob?.LastBranchSpawnX ?? character.Position.X;
+            var lastEnergySpawnX = _generationJob?.LastEnergySpawnX ?? character.Position.X;
             _generationJob = new GenerationJob(
                 iNewBlock,
                 OnTileGenerated,
@@ -104,7 +104,7 @@ namespace Raspberry_Lib.Components
                 Entity.Transform.Scale.X,
                 () => character.Position,
                 () => playerProximityComponent.Radius,
-                lastBranchSpawnX,
+                lastEnergySpawnX,
                 Settings.NumTilesToProcessPerTick);
 
             System.Diagnostics.Debug.Assert(!_deleteFirstBlock);
@@ -131,7 +131,7 @@ namespace Raspberry_Lib.Components
                 float iScale,
                 Func<Vector2> iGetPlayerPosFunc,
                 Func<float> iGetProximityRadius,
-                float iLastBranchSpawnX,
+                float iLastEnergySpawnX,
                 int iNumToProcessPerFrame = int.MaxValue)
             {
                 System.Diagnostics.Debug.Assert(iNumToProcessPerFrame > 0);
@@ -146,7 +146,7 @@ namespace Raspberry_Lib.Components
                 _getProximityRadius = iGetProximityRadius;
                 _numToProcessPerFrame = iNumToProcessPerFrame;
 
-                LastBranchSpawnX = iLastBranchSpawnX;
+                LastEnergySpawnX = iLastEnergySpawnX;
 
                 _currentXPos = _levelBlock.Function.DomainStart;
                 _currentObstacleIndex = 0;
@@ -191,11 +191,11 @@ namespace Raspberry_Lib.Components
                         }
                         else
                         {
-                            thisObstacle = new BranchEntity(thisObstaclePosition)
+                            thisObstacle = new EnergyEntity(thisObstaclePosition)
                             {
                                 Scale = new Vector2(_scale)
                             };
-                            LastBranchSpawnX = thisObstaclePosition.X;
+                            LastEnergySpawnX = thisObstaclePosition.X;
                         }
 
                         _onTileGenerated(thisObstacle);
@@ -210,7 +210,7 @@ namespace Raspberry_Lib.Components
             }
 
             public bool IsFinished { get; private set; }
-            public float LastBranchSpawnX { get; private set; }
+            public float LastEnergySpawnX { get; private set; }
             
             private readonly LevelBlock _levelBlock;
             private readonly Action<Entity> _onTileGenerated;

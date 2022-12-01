@@ -5,7 +5,7 @@ using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class BranchEntity : Entity
+    internal class EnergyEntity : Entity
     {
         private static class Settings
         {
@@ -13,7 +13,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting ColliderRadius = new(30);
         }
 
-        public BranchEntity(Vector2 iPosition)
+        public EnergyEntity(Vector2 iPosition)
         {
             Position = iPosition;
         }

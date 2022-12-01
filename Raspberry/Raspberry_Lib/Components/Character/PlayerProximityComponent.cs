@@ -9,8 +9,8 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public static readonly RenderSetting StartingRadius = new(300);
-            public static readonly RenderSetting BranchHitIncrease = new(100);
-            public const float BranchHitIncreaseOverTimeSeconds = 1f;
+            public static readonly RenderSetting EnergyHitIncrease = new(100);
+            public const float EnergyHitIncreaseOverTimeSeconds = 1f;
             public static readonly RenderSetting RadiusDecayPerSecondLower = new(7.5f);
             public static readonly RenderSetting RadiusDecayPerSecondUpper = new(15.0f);
             public static readonly RenderSetting MaximumRadius = new(500);
@@ -27,7 +27,7 @@ namespace Raspberry_Lib.Components
         {
             Radius = Settings.StartingRadius.Value;
             _onRadiusTooLow = iOnRadiusTooLow;
-            _lastBranchHitTime = 0;
+            _lastEnergyHitTime = 0;
             _lastObstacleHitTime = null;
             _decayMultiplier = null;
             _timeSpentPaused = 0;
@@ -56,9 +56,9 @@ namespace Raspberry_Lib.Components
 
         public float Radius { get; private set; }
 
-        public void OnBranchHit()
+        public void OnEnergyHit()
         {
-            _lastBranchHitTime = Time.TotalTime - _timeSpentPaused;
+            _lastEnergyHitTime = Time.TotalTime - _timeSpentPaused;
 
             _decayMultiplier = null;
             _lastObstacleHitTime = null;
@@ -80,7 +80,7 @@ namespace Raspberry_Lib.Components
 
             var adjustedTime = Time.TotalTime - _timeSpentPaused;
 
-            if (adjustedTime - _lastBranchHitTime > Settings.BranchHitIncreaseOverTimeSeconds)
+            if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitIncreaseOverTimeSeconds)
             {
                 var radiusDecayPerSecond = MathHelper.Lerp(
                     Settings.RadiusDecayPerSecondLower.Value,
@@ -114,7 +114,7 @@ namespace Raspberry_Lib.Components
             }
             else
             {
-                Radius += Settings.BranchHitIncrease.Value * Time.DeltaTime / Settings.BranchHitIncreaseOverTimeSeconds;
+                Radius += Settings.EnergyHitIncrease.Value * Time.DeltaTime / Settings.EnergyHitIncreaseOverTimeSeconds;
                 if (Radius > Settings.MaximumRadius.Value)
                     Radius = Settings.MaximumRadius.Value;
             }
@@ -161,7 +161,7 @@ namespace Raspberry_Lib.Components
         }
 
         private readonly Action _onRadiusTooLow;
-        private float _lastBranchHitTime;
+        private float _lastEnergyHitTime;
 
         private float? _lastObstacleHitTime;
         private float? _decayMultiplier;
