@@ -12,9 +12,18 @@ namespace Raspberry_Lib.Components
         private static class Settings
         {
             public const float Frequency = 8f;
+
+            public static readonly List<Color> Colors = new()
+            {
+                Color.LightYellow,
+                Color.Orange,
+                Color.Violet,
+                Color.Aqua,
+                Color.Salmon
+            };
         }
 
-        public EnergyAnimationComponent()
+        public EnergyAnimationComponent(int iColorIndex)
         {
             RenderLayer = 4;
 
@@ -23,6 +32,9 @@ namespace Raspberry_Lib.Components
 
             _indexTracker = 0f;
             _isIndexIncreasing = true;
+
+            var colorIndexToUse = Math.Abs(iColorIndex + 1);
+            _colorToUse = Settings.Colors[colorIndexToUse];
         }
 
         public override void OnAddedToEntity()
@@ -107,7 +119,7 @@ namespace Raspberry_Lib.Components
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
-            iBatcher.Draw(_currentSprite, Entity.Transform.Position + LocalOffset, Color,
+            iBatcher.Draw(_currentSprite, Entity.Transform.Position + LocalOffset, _colorToUse,
                 Entity.Transform.Rotation, _currentSprite.Origin, Entity.Transform.Scale, _spriteEffect, _layerDepth);
         }
 
@@ -118,5 +130,7 @@ namespace Raspberry_Lib.Components
         private int _amplitude;
         private float _indexTracker;
         private bool _isIndexIncreasing;
+
+        private readonly Color _colorToUse;
     }
 }

@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Nez;
-using Nez.Sprites;
-using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
@@ -14,9 +11,10 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting ColliderRadius = new(30);
         }
 
-        public EnergyEntity(Vector2 iPosition)
+        public EnergyEntity(Vector2 iPosition, int iColorIndex)
         {
             Position = iPosition;
+            _colorIndex = iColorIndex;
         }
 
         public int PhysicsLayer = 1;
@@ -25,7 +23,7 @@ namespace Raspberry_Lib.Components
         {
             Scale *= Settings.ScaleAdjustmentMultiplier;
 
-            _animationComponent = AddComponent(new EnergyAnimationComponent());
+            _animationComponent = AddComponent(new EnergyAnimationComponent(_colorIndex));
 
             _collider = AddComponent(new CircleCollider(Settings.ColliderRadius.Value) { PhysicsLayer = PhysicsLayer, Entity = this });
             Physics.AddCollider(_collider);
@@ -48,5 +46,7 @@ namespace Raspberry_Lib.Components
 
         private EnergyAnimationComponent _animationComponent;
         private Collider _collider;
+
+        private readonly int _colorIndex;
     }
 }

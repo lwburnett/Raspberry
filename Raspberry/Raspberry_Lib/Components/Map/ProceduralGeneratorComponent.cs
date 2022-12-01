@@ -261,7 +261,8 @@ namespace Raspberry_Lib.Components
                 }
                 else
                 {
-                    const int index = -1;
+                    // Kinda jank but this negative value gets converted to an index within the range of the color list in EnergyAnimationComponent.cs
+                    var index = _rng.Next(-5, -1);
                     const float rotation = 0f;
                     obstacles.Add(new RiverObstacle(chosenPosition, index, rotation));
 

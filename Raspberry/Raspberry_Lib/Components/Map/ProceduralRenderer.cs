@@ -191,7 +191,7 @@ namespace Raspberry_Lib.Components
                         }
                         else
                         {
-                            thisObstacle = new EnergyEntity(thisObstaclePosition)
+                            thisObstacle = new EnergyEntity(thisObstaclePosition, thisObstacleDescription.RockIndex)
                             {
                                 Scale = new Vector2(_scale)
                             };
