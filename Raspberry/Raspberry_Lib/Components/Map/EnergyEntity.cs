@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Nez;
 using Nez.Sprites;
 using Nez.Textures;
@@ -24,12 +25,7 @@ namespace Raspberry_Lib.Components
         {
             Scale *= Settings.ScaleAdjustmentMultiplier;
 
-            var textureAtlas = Scene.Content.LoadTexture(Content.ContentData.AssetPaths.ObjectsTileset, true);
-            var texture = new Sprite(textureAtlas, new Rectangle(0, 144, 36, 36));
-
-            _renderer = AddComponent<SpriteRenderer>();
-            _renderer.RenderLayer = 4;
-            _renderer.Sprite = texture;
+            _animationComponent = AddComponent(new EnergyAnimationComponent());
 
             _collider = AddComponent(new CircleCollider(Settings.ColliderRadius.Value) { PhysicsLayer = PhysicsLayer, Entity = this });
             Physics.AddCollider(_collider);
@@ -47,10 +43,10 @@ namespace Raspberry_Lib.Components
         public void OnPlayerHit()
         {
             Physics.RemoveCollider(_collider);
-            _renderer.Enabled = false;
+            _animationComponent.Enabled = false;
         }
 
-        private SpriteRenderer _renderer;
+        private EnergyAnimationComponent _animationComponent;
         private Collider _collider;
     }
 }
