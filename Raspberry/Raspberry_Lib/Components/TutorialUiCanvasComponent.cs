@@ -57,8 +57,8 @@ namespace Raspberry_Lib.Components
             EndPlay
         }
 
-        public TutorialUiCanvasComponent(System.Action iOnMainMenu) :
-            base(iOnMainMenu)
+        public TutorialUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu) :
+            base(iOnPlayAgain, iOnMainMenu)
         {
             _currentState = 0;
             _timeSinceLastBlinkToggle = null;

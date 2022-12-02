@@ -69,12 +69,12 @@ namespace Raspberry_Lib
 
         private void OnPlay()
         {
-            Scene = new GamePlayScene(OnMainMenu);
+            Scene = new GamePlayScene(OnPlay, OnMainMenu);
         }
 
         private void OnTutorial()
         {
-            Scene = new TutorialScene(OnMainMenu);
+            Scene = new TutorialScene(OnPlay, OnMainMenu);
         }
 
         private void OnCredits()

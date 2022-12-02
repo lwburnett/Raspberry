@@ -5,14 +5,14 @@ namespace Raspberry_Lib.Scenes
 {
     internal class TutorialScene : GamePlayScene
     {
-        public TutorialScene(Action iOnMainMenu) : base(iOnMainMenu)
+        public TutorialScene(Action iOnPlayAgain, Action iOnMainMenu) : base(iOnPlayAgain, iOnMainMenu)
         {
         }
 
-        protected sealed override PlayUiCanvasComponent InitializeUi(System.Action iOnMainMenu)
+        protected sealed override PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
-            return uiEntity.AddComponent(new TutorialUiCanvasComponent(iOnMainMenu));
+            return uiEntity.AddComponent(new TutorialUiCanvasComponent(iOnPlayAgain, iOnMainMenu));
         }
     }
 }

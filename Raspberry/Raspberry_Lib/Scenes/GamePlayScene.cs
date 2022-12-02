@@ -14,9 +14,10 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
         }
 
-        public GamePlayScene(Action iOnMainMenu)
+        public GamePlayScene(Action iOnPlayAgain, Action iOnMainMenu)
         {
             _onMainMenu = iOnMainMenu;
+            _onPlayAgain = iOnPlayAgain;
             ClearColor = ContentData.ColorPallets.Desert.Color2;
         }
 
@@ -33,7 +34,7 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent<ProceduralRenderer>();
             map.AddComponent<RiverParticleManager>();
 
-            _uiComponent = InitializeUi(OnMainMenu);
+            _uiComponent = InitializeUi(OnPlayAgain, OnMainMenu);
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
@@ -48,12 +49,13 @@ namespace Raspberry_Lib.Scenes
 #endif
         }
 
-        protected virtual PlayUiCanvasComponent InitializeUi(System.Action iOnMainMenu)
+        protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
-            return uiEntity.AddComponent(new PlayUiCanvasComponent(iOnMainMenu));
+            return uiEntity.AddComponent(new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu));
         }
 
+        private readonly Action _onPlayAgain;
         private readonly Action _onMainMenu;
         private PlayUiCanvasComponent _uiComponent;
         private BoatCharacterComponent _characterComponent;
@@ -62,6 +64,16 @@ namespace Raspberry_Lib.Scenes
         {
             _uiComponent.OnPlayEnd();
             _characterComponent.OnPlayEnd();
+        }
+
+        private void OnPlayAgain()
+        {
+#if VERBOSE
+            Verbose.ClearCollidersToRender();
+            Verbose.ClearMetrics();
+#endif
+            _onPlayAgain();
+
         }
 
         private void OnMainMenu()

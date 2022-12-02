@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
@@ -29,15 +30,15 @@ namespace Raspberry_Lib.Components
             public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
             public static readonly RenderSetting CellPadding = new(20);
             public static readonly RenderSetting FontScaleStatsPopup = new(5);
-
-
+            
             public static readonly RenderSetting MinButtonWidth = new(300);
             public static readonly RenderSetting MinButtonHeight = new(80);
 
         }
 
-        public PlayUiCanvasComponent(System.Action iOnMainMenu)
-        {
+        public PlayUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu)
+        { 
+            _onPlayAgain = iOnPlayAgain;
             _onMainMenu = iOnMainMenu;
 
             _upPressed = false;
@@ -80,7 +81,8 @@ namespace Raspberry_Lib.Components
 
         protected UICanvas Canvas;
 
-        private readonly System.Action _onMainMenu;
+        private readonly Action _onPlayAgain;
+        private readonly Action _onMainMenu;
 
         private Image _upIndicator;
         private Image _downIndicator;
@@ -192,12 +194,25 @@ namespace Raspberry_Lib.Components
             _statsPopupTable.Add(_distanceLabel);
             _statsPopupTable.Row().SetPadTop(Settings.CellPadding.Value);
 
-            var playButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
-            playButton.OnClicked += OnMainMenu;
+            var buttonTable = new Table();
+
+            var playButton = new TextButton("Play Again", Skin.CreateDefaultSkin());
+            playButton.OnClicked += OnPlayAgain;
             playButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
-            _statsPopupTable.Add(playButton).
+            buttonTable.Add(playButton).
                 SetMinHeight(Settings.MinButtonHeight.Value).
-                SetMinWidth(Settings.MinButtonWidth.Value);
+                SetMinWidth(Settings.MinButtonWidth.Value).
+                Pad(Settings.CellPadding.Value);
+
+            var menuButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
+            menuButton.OnClicked += OnMainMenu;
+            menuButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
+            buttonTable.Add(menuButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value).
+                Pad(Settings.CellPadding.Value);
+
+            _statsPopupTable.Add(buttonTable);
 
             _statsPopupTable.SetIsVisible(false);
 
@@ -311,6 +326,11 @@ namespace Raspberry_Lib.Components
             texture.SetData(textureData);
 
             return texture;
+        }
+
+        private void OnPlayAgain(Button iButton)
+        {
+            _onPlayAgain();
         }
 
         private void OnMainMenu(Button iButton)
