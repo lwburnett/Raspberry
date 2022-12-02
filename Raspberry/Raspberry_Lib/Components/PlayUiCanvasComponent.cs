@@ -23,12 +23,17 @@ namespace Raspberry_Lib.Components
             public const float RowTransition2 = .9f;
             public const float RowTransition3 = 1.25f;
 
-            public static readonly RenderSetting PostPlayStatsPopupWidth = new(1000);
-            public static readonly RenderSetting PostPlayStatsPopupHeight = new(750);
+            public static readonly RenderSetting PostPlayStatsPopupWidth = new(900);
+            public static readonly RenderSetting PostPlayStatsPopupHeight = new(500);
 
             public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
-            public static readonly RenderSetting CellPadding = new(10);
+            public static readonly RenderSetting CellPadding = new(20);
             public static readonly RenderSetting FontScaleStatsPopup = new(5);
+
+
+            public static readonly RenderSetting MinButtonWidth = new(300);
+            public static readonly RenderSetting MinButtonHeight = new(80);
+
         }
 
         public PlayUiCanvasComponent(System.Action iOnMainMenu)
@@ -58,7 +63,7 @@ namespace Raspberry_Lib.Components
 
         public void OnPlayEnd()
         {
-            _distanceLabel.SetText($"You traveled {DistanceLabel.GetText()}");
+            _distanceLabel.SetText($"You traveled {DistanceLabel.GetText()}.");
             _statsPopupTable.SetIsVisible(true);
         }
 
@@ -190,7 +195,9 @@ namespace Raspberry_Lib.Components
             var playButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
             playButton.OnClicked += OnMainMenu;
             playButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
-            _statsPopupTable.Add(playButton);
+            _statsPopupTable.Add(playButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value);
 
             _statsPopupTable.SetIsVisible(false);
 
