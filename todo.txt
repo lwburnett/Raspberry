@@ -16,8 +16,8 @@ Should
 Could
 	o Art: Add in another unique rock sprite
 	- Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	o Feature: Settings screen
-	- Feature: Post play stats screen
+	- Feature: Settings screen
+	o Feature: Post play stats screen
 
 -------------------- Playtester Feedback --------------------
 
