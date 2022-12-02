@@ -2,6 +2,7 @@
 using Nez;
 using Nez.Textures;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -21,13 +22,24 @@ namespace Raspberry_Lib.Components
                 Color.Aqua,
                 Color.Salmon
             };
+
+            public const int ParticleTextureSize = 3;
+            public const int NumCollisionParticles = 8;
+
+            public const float AngleVarianceAsPercentageOfDTheta = .25f;
+
+            public static readonly RenderSetting BlastParticleVelocity = new(400);
+            public const float BlastDurationSeconds = .5f;
+            public const float HoldDurationSeconds = .5f;
+            public static readonly RenderSetting ChaseParticleVelocity = new(800);
+            public static readonly RenderSetting DistanceToPlayerTolerance = new(5);
         }
 
         public EnergyAnimationComponent(int iColorIndex)
         {
             RenderLayer = 4;
 
-            _sprites = new List<Sprite>();
+            _energySprites = new List<Sprite>();
             _spriteEffect = SpriteEffects.None;
 
             _indexTracker = 0f;
@@ -35,13 +47,27 @@ namespace Raspberry_Lib.Components
 
             var colorIndexToUse = Math.Abs(iColorIndex + 1);
             _colorToUse = Settings.Colors[colorIndexToUse];
+
+            var textureData = new Color[Settings.ParticleTextureSize * Settings.ParticleTextureSize];
+            for (var ii = 0; ii < Settings.ParticleTextureSize * Settings.ParticleTextureSize; ii++)
+            {
+                textureData[ii] = Color.White;
+            }
+            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.ParticleTextureSize, Settings.ParticleTextureSize);
+            texture.SetData(textureData);
+            _particleSprite = new Sprite(texture);
+
+            _collisionParticles = new List<CollisionParticle>();
+            _hasCollidedWithPlayer = false;
+
+            _rng = new System.Random();
         }
 
         public override void OnAddedToEntity()
         {
             var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.ObjectsTileset, true);
 
-            _sprites.AddRange(new[]
+            _energySprites.AddRange(new[]
             {
                 new Sprite(textureAtlas, new Rectangle(144, 72, 36, 36)),
                 new Sprite(textureAtlas, new Rectangle(180, 72, 36, 36)),
@@ -51,79 +77,184 @@ namespace Raspberry_Lib.Components
 
             });
 
-            _amplitude = _sprites.Count - 1;
+            _amplitude = _energySprites.Count - 1;
+            _currentSprite = _energySprites[0];
 
-            _currentSprite = _sprites[0];
+            var angle = 0f;
+            const float dTheta = MathHelper.Pi / Settings.NumCollisionParticles;
+            const float thetaVariance = dTheta * Settings.AngleVarianceAsPercentageOfDTheta;
+            for (var ii = 0; ii < Settings.NumCollisionParticles; ii++)
+            {
+                var angleVariance = (angle - thetaVariance) + ((float)_rng.NextDouble() * 2 * thetaVariance);
+                var trueAngle = angle + angleVariance;
+                var velocityDirection = new Vector2((float)Math.Cos(trueAngle), (float)Math.Sin(trueAngle));
+                var velocity = Settings.BlastParticleVelocity.Value * velocityDirection;
+
+                _collisionParticles.Add(new CollisionParticle(_particleSprite, Vector2.Zero, velocity));
+
+                angle += dTheta;
+            }
+
+            _playerEntity = Entity.Scene.FindEntity("character");
+
+            System.Diagnostics.Debug.Assert(_playerEntity != null);
         }
 
         public void Update()
         {
-            var step = Settings.Frequency * Time.DeltaTime;
-
-            int index;
-            if (_isIndexIncreasing)
+            if (!_hasCollidedWithPlayer)
             {
-                var potentialIndex = _indexTracker + step;
+                var step = Settings.Frequency * Time.DeltaTime;
 
-                if (potentialIndex <= _amplitude)
+                int index;
+                if (_isIndexIncreasing)
                 {
-                    _indexTracker = potentialIndex;
-                    index = (int)Math.Round(Math.Abs(potentialIndex));
+                    var potentialIndex = _indexTracker + step;
+
+                    if (potentialIndex <= _amplitude)
+                    {
+                        _indexTracker = potentialIndex;
+                        index = (int)Math.Round(Math.Abs(potentialIndex));
+                    }
+                    else
+                    {
+                        _indexTracker = _amplitude;
+                        index = _amplitude;
+                        _isIndexIncreasing = false;
+                    }
                 }
                 else
                 {
-                    _indexTracker = _amplitude;
-                    index = _amplitude;
-                    _isIndexIncreasing = false;
-                }
-            }
-            else
-            {
-                var potentialIndex = _indexTracker - step;
+                    var potentialIndex = _indexTracker - step;
 
-                if (potentialIndex >= -_amplitude)
+                    if (potentialIndex >= -_amplitude)
+                    {
+                        _indexTracker = potentialIndex;
+                        index = (int)Math.Round(Math.Abs(potentialIndex));
+                    }
+                    else
+                    {
+                        _indexTracker = -_amplitude;
+                        index = _amplitude;
+                        _isIndexIncreasing = true;
+                    }
+                }
+
+                if (_indexTracker >= 0f && _isIndexIncreasing)
                 {
-                    _indexTracker = potentialIndex;
-                    index = (int)Math.Round(Math.Abs(potentialIndex));
+                    _spriteEffect = SpriteEffects.None;
+                }
+                else if (_indexTracker >= 0f && !_isIndexIncreasing)
+                {
+                    _spriteEffect = SpriteEffects.FlipHorizontally;
+                }
+                else if (_indexTracker < 0f && !_isIndexIncreasing)
+                {
+                    _spriteEffect = SpriteEffects.FlipVertically;
                 }
                 else
                 {
-                    _indexTracker = -_amplitude;
-                    index = _amplitude;
-                    _isIndexIncreasing = true;
+                    _spriteEffect = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
                 }
-            }
 
-            if (_indexTracker >= 0f && _isIndexIncreasing)
-            {
-                _spriteEffect = SpriteEffects.None;
-            }
-            else if (_indexTracker >= 0f && !_isIndexIncreasing)
-            {
-                _spriteEffect = SpriteEffects.FlipHorizontally;
-            }
-            else if (_indexTracker < 0f && !_isIndexIncreasing)
-            {
-                _spriteEffect = SpriteEffects.FlipVertically;
+                _currentSprite = _energySprites[index];
             }
             else
             {
-                _spriteEffect = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
-            }
+                var timeSinceCollision = Time.TotalTime - _collisionTime;
 
-            _currentSprite = _sprites[index];
+                if (timeSinceCollision <= Settings.BlastDurationSeconds)
+                {
+                    foreach (var collisionParticle in _collisionParticles)
+                    {
+                        collisionParticle.Velocity = collisionParticle.InitialVelocity;
+                    }
+                }
+                else if (timeSinceCollision <= Settings.BlastDurationSeconds + Settings.HoldDurationSeconds)
+                {
+                    foreach (var collisionParticle in _collisionParticles)
+                    {
+                        collisionParticle.Velocity = Vector2.Zero;
+                    }
+                }
+                else
+                {
+                    foreach (var collisionParticle in _collisionParticles)
+                    {
+                        if (!collisionParticle.IsChasingPlayer)
+                            continue;
+
+                        var diffVector = _playerEntity.Position - Entity.Position - LocalOffset - collisionParticle.PositionOffset;
+
+                        if (diffVector.Length() >= Settings.DistanceToPlayerTolerance.Value)
+                        {
+                            diffVector.Normalize();
+                            collisionParticle.Velocity = diffVector * Settings.ChaseParticleVelocity.Value;
+                        }
+                        else
+                        {
+                            collisionParticle.Velocity = Vector2.Zero;
+                            collisionParticle.IsChasingPlayer = false;
+                        }
+                    }
+                }
+
+                foreach (var collisionParticle in _collisionParticles)
+                {
+                    collisionParticle.PositionOffset += collisionParticle.Velocity * Time.DeltaTime;
+                }
+            }
         }
 
-        public override float Width => 600f;
-        public override float Height => 600f;
+        public override float Width => 60000f;
+        public override float Height => 60000f;
 
         public override void Render(Batcher iBatcher, Camera iCamera)
         {
-            iBatcher.Draw(_currentSprite, Entity.Transform.Position + LocalOffset, _colorToUse,
-                Entity.Transform.Rotation, _currentSprite.Origin, Entity.Transform.Scale, _spriteEffect, _layerDepth);
+            if (!_hasCollidedWithPlayer)
+            {
+                iBatcher.Draw(_currentSprite, Entity.Transform.Position + LocalOffset, _colorToUse,
+                    Entity.Transform.Rotation, _currentSprite.Origin, Entity.Transform.Scale, _spriteEffect,
+                    _layerDepth);
+            }
+            else
+            {
+                foreach (var collisionParticle in _collisionParticles.Where(cp => cp.IsChasingPlayer))
+                {
+                    iBatcher.Draw(collisionParticle.SpriteToUse, Entity.Transform.Position + LocalOffset + collisionParticle.PositionOffset, _colorToUse,
+                        Entity.Transform.Rotation, _currentSprite.Origin, Entity.Transform.Scale, SpriteEffects.None,
+                        _layerDepth);
+                }
+            }
         }
 
-        private readonly List<Sprite> _sprites;
+        public void OnPlayerHit()
+        {
+            _hasCollidedWithPlayer = true;
+            _collisionTime = Time.TotalTime;
+        }
+
+        private class CollisionParticle
+        {
+            public CollisionParticle(Sprite iSprite, Vector2 iPositionOffset, Vector2 iVelocity)
+            {
+                SpriteToUse = iSprite;
+                PositionOffset = iPositionOffset;
+                InitialVelocity = iVelocity;
+                Velocity = iVelocity;
+                IsChasingPlayer = true;
+            }
+
+            public Sprite SpriteToUse { get; }
+            public Vector2 PositionOffset { get; set; }
+            public Vector2 InitialVelocity { get; }
+            public Vector2 Velocity { get; set; }
+            public bool IsChasingPlayer { get; set; }
+        }
+
+        private Entity _playerEntity;
+
+        private readonly List<Sprite> _energySprites;
         private Sprite _currentSprite;
         private SpriteEffects _spriteEffect;
 
@@ -132,5 +263,13 @@ namespace Raspberry_Lib.Components
         private bool _isIndexIncreasing;
 
         private readonly Color _colorToUse;
+
+        private readonly Sprite _particleSprite;
+        private readonly List<CollisionParticle> _collisionParticles;
+
+        private bool _hasCollidedWithPlayer;
+        private readonly System.Random _rng;
+
+        private float _collisionTime;
     }
 }

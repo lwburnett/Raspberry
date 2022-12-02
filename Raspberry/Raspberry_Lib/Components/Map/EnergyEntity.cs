@@ -41,7 +41,7 @@ namespace Raspberry_Lib.Components
         public void OnPlayerHit()
         {
             Physics.RemoveCollider(_collider);
-            _animationComponent.Enabled = false;
+            _animationComponent.OnPlayerHit();
         }
 
         private EnergyAnimationComponent _animationComponent;

@@ -10,6 +10,7 @@ namespace Raspberry_Lib.Components
         {
             public static readonly RenderSetting StartingRadius = new(300);
             public static readonly RenderSetting EnergyHitIncrease = new(100);
+            public const float EnergyHitDelayDurationSeconds = .5f;
             public const float EnergyHitIncreaseOverTimeSeconds = 1f;
             public static readonly RenderSetting RadiusDecayPerSecondLower = new(7.5f);
             public static readonly RenderSetting RadiusDecayPerSecondUpper = new(15.0f);
@@ -79,8 +80,8 @@ namespace Raspberry_Lib.Components
             }
 
             var adjustedTime = Time.TotalTime - _timeSpentPaused;
-
-            if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitIncreaseOverTimeSeconds)
+            
+            if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds + Settings.EnergyHitIncreaseOverTimeSeconds)
             {
                 var radiusDecayPerSecond = MathHelper.Lerp(
                     Settings.RadiusDecayPerSecondLower.Value,
@@ -112,7 +113,7 @@ namespace Raspberry_Lib.Components
                 if (Radius < Settings.MinimumRadius.Value)
                     _onRadiusTooLow();
             }
-            else
+            else if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds)
             {
                 Radius += Settings.EnergyHitIncrease.Value * Time.DeltaTime / Settings.EnergyHitIncreaseOverTimeSeconds;
                 if (Radius > Settings.MaximumRadius.Value)
