@@ -16,7 +16,7 @@ Should
 Could
 	o Art: Add in another unique rock sprite
 	- Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Feature: Settings screen
+	o Feature: Settings screen
 	- Feature: Post play stats screen
 
 -------------------- Playtester Feedback --------------------
@@ -38,7 +38,6 @@ Features
 			- SFX toggle
 			- Screen shake toggle
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
-		- Post play screen with stats of that play session (might just be a popup over play session screen)
 	- Screen shake on collision
 	- Rapids section where the water speed temporarily gets way faster???
 		- Match up rapids section with drop in music?
@@ -74,7 +73,7 @@ Bugs
 	- Row wakes look wrong when facing backwards
 	- Android version crashes after making it a certain distance
 		Nobody else is experiencing this so I'll shelf it for now
-	- The third rock sprite has a few eroneous pixels on the edge
+	- The rock sprites has a few eroneous pixels on the edge
 
 Balance
 
@@ -91,6 +90,7 @@ Features
 	- Add Screens		
 		- How to play screen
 		- Credits
+		- Post play screen with stats of that play session
 	- Add keyboard support
 	- On keyboard & controller, have right mimic down and left mimic up
 	- Release version # display in corner of main menu
