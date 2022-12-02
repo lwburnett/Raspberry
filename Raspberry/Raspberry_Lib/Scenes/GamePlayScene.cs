@@ -33,11 +33,11 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent<ProceduralRenderer>();
             map.AddComponent<RiverParticleManager>();
 
-            InitializeUi();
+            _uiComponent = InitializeUi(OnMainMenu);
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
-            character.AddComponent(new BoatCharacterComponent(OnMainMenu));
+            _characterComponent = character.AddComponent(new BoatCharacterComponent(OnPlayEnd));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 
             SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic, .35f);
@@ -48,13 +48,21 @@ namespace Raspberry_Lib.Scenes
 #endif
         }
 
-        protected virtual void InitializeUi()
+        protected virtual PlayUiCanvasComponent InitializeUi(System.Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
-            uiEntity.AddComponent(new PlayUiCanvasComponent());
+            return uiEntity.AddComponent(new PlayUiCanvasComponent(iOnMainMenu));
         }
 
         private readonly Action _onMainMenu;
+        private PlayUiCanvasComponent _uiComponent;
+        private BoatCharacterComponent _characterComponent;
+
+        private void OnPlayEnd()
+        {
+            _uiComponent.OnPlayEnd();
+            _characterComponent.OnPlayEnd();
+        }
 
         private void OnMainMenu()
         {

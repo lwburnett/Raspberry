@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
 using Nez.UI;
@@ -21,10 +22,19 @@ namespace Raspberry_Lib.Components
             public const float RowTransition1 = .5f;
             public const float RowTransition2 = .9f;
             public const float RowTransition3 = 1.25f;
+
+            public static readonly RenderSetting PostPlayStatsPopupWidth = new(1000);
+            public static readonly RenderSetting PostPlayStatsPopupHeight = new(750);
+
+            public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
+            public static readonly RenderSetting CellPadding = new(10);
+            public static readonly RenderSetting FontScaleStatsPopup = new(5);
         }
 
-        public PlayUiCanvasComponent()
+        public PlayUiCanvasComponent(System.Action iOnMainMenu)
         {
+            _onMainMenu = iOnMainMenu;
+
             _upPressed = false;
             _downPressed = false;
             _rowColor = RowColor.White;
@@ -46,6 +56,12 @@ namespace Raspberry_Lib.Components
             UpdateInternal();
         }
 
+        public void OnPlayEnd()
+        {
+            _distanceLabel.SetText($"You traveled {DistanceLabel.GetText()}");
+            _statsPopupTable.SetIsVisible(true);
+        }
+
         private enum RowColor
         {
             White,
@@ -58,6 +74,8 @@ namespace Raspberry_Lib.Components
         protected Label DistanceLabel;
 
         protected UICanvas Canvas;
+
+        private readonly System.Action _onMainMenu;
 
         private Image _upIndicator;
         private Image _downIndicator;
@@ -81,6 +99,9 @@ namespace Raspberry_Lib.Components
 
         protected CharacterInputController.InputDescription InputOverride;
         private float? _lastRowTimeOverride;
+
+        private Table _statsPopupTable;
+        private Label _distanceLabel;
 
         protected virtual void OnAddedToEntityInternal()
         {
@@ -137,6 +158,41 @@ namespace Raspberry_Lib.Components
                 Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
+
+            // Create stats popup table
+            var statsPopupTexture = CreatePostPlayStatsPopupTexture();
+            var spriteDrawable = new SpriteDrawable(statsPopupTexture);
+
+            _statsPopupTable = Canvas.Stage.AddElement(new Table());
+            _statsPopupTable.SetSize(Settings.PostPlayStatsPopupWidth.Value, Settings.PostPlayStatsPopupHeight.Value);
+            _statsPopupTable.SetBounds(
+                (Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
+                (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
+                Settings.PostPlayStatsPopupWidth.Value,
+                Settings.PostPlayStatsPopupHeight.Value);
+            _statsPopupTable.SetBackground(spriteDrawable);
+            var title = new Label("You are lost in the desert.").
+                SetFontScale(Settings.FontScaleStatsPopup.Value).
+                SetFontColor(Color.White).
+                SetAlignment(Align.TopLeft);
+
+            _statsPopupTable.Add(title);
+            _statsPopupTable.Row().SetPadTop(Settings.CellPadding.Value);
+
+            _distanceLabel = new Label(string.Empty).
+                SetFontScale(Settings.FontScaleStatsPopup.Value).
+                SetFontColor(Color.White).
+                SetAlignment(Align.TopLeft);
+
+            _statsPopupTable.Add(_distanceLabel);
+            _statsPopupTable.Row().SetPadTop(Settings.CellPadding.Value);
+
+            var playButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
+            playButton.OnClicked += OnMainMenu;
+            playButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
+            _statsPopupTable.Add(playButton);
+
+            _statsPopupTable.SetIsVisible(false);
 
             // This needs to match the render layer of the ScreenSpaceRenderer in SceneBase ctor
             Canvas.SetRenderLayer(-1);
@@ -232,6 +288,27 @@ namespace Raspberry_Lib.Components
             MovementComponent = Entity.Scene.FindEntity("character").GetComponent<CharacterMovementComponent>();
 
             System.Diagnostics.Debug.Assert(MovementComponent != null);
+        }
+
+        private Texture2D CreatePostPlayStatsPopupTexture()
+        {
+            var backgroundWidth = (int)Settings.PostPlayStatsPopupWidth.Value;
+            var backgroundHeight = (int)Settings.PostPlayStatsPopupHeight.Value;
+
+            var textureData = new Color[backgroundWidth * backgroundHeight];
+            for (var ii = 0; ii < backgroundWidth * backgroundHeight; ii++)
+            {
+                textureData[ii] = Settings.TextBoxBackgroundTextureColor;
+            }
+            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, backgroundWidth, backgroundHeight);
+            texture.SetData(textureData);
+
+            return texture;
+        }
+
+        private void OnMainMenu(Button iButton)
+        {
+            _onMainMenu();
         }
     }
 }

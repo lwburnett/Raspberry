@@ -111,7 +111,10 @@ namespace Raspberry_Lib.Components
                 }
 
                 if (Radius < Settings.MinimumRadius.Value)
+                {
+                    Radius = 0f;
                     _onRadiusTooLow();
+                }
             }
             else if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds)
             {
