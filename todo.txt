@@ -10,7 +10,7 @@ Must
 Should
 	o Feature: Update tutorial to inform player how passive and collision energy decay scale with distance
 	- Art: Recolor rocks
-	- Art: Iterate on energy art
+	o Art: Iterate on energy art
 	- Art: Iterate on generated tile art
 
 Could
@@ -48,7 +48,6 @@ Optimization
 Art
 	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- *Iterate on generated tile art
-	- *Iterate on energy art
 	- *Change rocks' color pallete to better match the brown pallete of the desert
 	- Sound effects
 		- Generic river
@@ -120,6 +119,7 @@ Art
 	- Put black border around player boat
 	- Move row indicator back to the right
 	- Add in another (3rd) unique rock sprite
+	- Iterate on energy art
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
