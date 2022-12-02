@@ -367,7 +367,7 @@ namespace Raspberry_Lib.Components
             if (_rowForceForCurrentRow.HasValue)
             {
                 var denominator = Settings.RowForceGood.Value * 2;
-                var multiplier = _rowForceForCurrentRow.Value / denominator;
+                var multiplier = (float)Math.Sqrt(_rowForceForCurrentRow.Value / denominator);
 
                 lerpAdjustment = (1f - lerpAmount) * multiplier;
             }
