@@ -23,7 +23,7 @@ namespace Raspberry_Lib.Components
                 Color.Salmon
             };
 
-            public const int ParticleTextureSize = 3;
+            public const int ParticleTextureSize = 6;
             public const int NumCollisionParticles = 8;
 
             public const float AngleVarianceAsPercentageOfDTheta = .25f;
@@ -48,13 +48,7 @@ namespace Raspberry_Lib.Components
             var colorIndexToUse = Math.Abs(iColorIndex + 1);
             _colorToUse = Settings.Colors[colorIndexToUse];
 
-            var textureData = new Color[Settings.ParticleTextureSize * Settings.ParticleTextureSize];
-            for (var ii = 0; ii < Settings.ParticleTextureSize * Settings.ParticleTextureSize; ii++)
-            {
-                textureData[ii] = Color.White;
-            }
-            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.ParticleTextureSize, Settings.ParticleTextureSize);
-            texture.SetData(textureData);
+            var texture = CreateParticleTexture();
             _particleSprite = new Sprite(texture);
 
             _collisionParticles = new List<CollisionParticle>();
@@ -271,5 +265,30 @@ namespace Raspberry_Lib.Components
         private readonly System.Random _rng;
 
         private float _collisionTime;
+
+        private Texture2D CreateParticleTexture()
+        {
+            var textureData = new Color[Settings.ParticleTextureSize * Settings.ParticleTextureSize];
+
+            for (var jj = 0; jj < Settings.ParticleTextureSize; jj++)
+            for(var ii = 0; ii < Settings.ParticleTextureSize; ii++)
+            {
+                var index = Settings.ParticleTextureSize * jj + ii;
+
+                if (jj == 0 || jj == Settings.ParticleTextureSize - 1 ||
+                    ii == 0 || ii == Settings.ParticleTextureSize - 1)
+                {
+                    textureData[index] = Color.Black;
+                }
+                else
+                {
+                    textureData[index] = Color.White;
+                }
+            }
+            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, Settings.ParticleTextureSize, Settings.ParticleTextureSize);
+            texture.SetData(textureData);
+
+            return texture;
+        }
     }
 }
