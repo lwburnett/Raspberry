@@ -12,7 +12,8 @@ namespace Raspberry_Lib.Content
             public const string CharacterSpriteSheet = @"Content/Characters/Character.png";
             public const string ProximityShader = @"Content/Shaders/ProximityShader.mgfxo";
             public const string TitleScreenMusic = @"Content/Audio/ocean-of-ice.ogg";
-            public const string PlayScreenMusic = @"Content/Audio/the-soul-crushing-monotony-of-isolation.ogg";
+            public const string PlayScreenMusic1 = @"Content/Audio/the-soul-crushing-monotony-of-isolation.ogg";
+            public const string PlayScreenMusic2 = @"Content/Audio/Hymn-To-The-Gods.ogg";
         }
 
         internal static class ColorPallets

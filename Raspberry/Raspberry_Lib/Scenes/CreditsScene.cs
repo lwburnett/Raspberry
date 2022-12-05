@@ -39,7 +39,8 @@ namespace Raspberry_Lib.Scenes
             public static readonly List<string> AssetCredits = new()
             {
                 "Ocean Of Ice by McFunkypants",
-                "The Soul-Crushing Monotony Of Isolation (Instrumental Mix) by Punch Deck"
+                "The Soul-Crushing Monotony Of Isolation (Instrumental Mix) by Punch Deck",
+                "Hymn To The Gods by Alexander Nakarada"
             };
 
             public static readonly RenderSetting CreditScrollPerSecond = new(20f);
