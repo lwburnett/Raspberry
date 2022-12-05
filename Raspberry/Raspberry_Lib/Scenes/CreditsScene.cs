@@ -31,7 +31,9 @@ namespace Raspberry_Lib.Scenes
                 "Nolan Perry-Arnold",
                 "Greg Burnett",
                 "Donny Sison",
-                "Stephen Davick"
+                "Stephen Davick",
+                "Nick Nooney",
+
             };
 
             public static readonly List<string> AssetCredits = new()
