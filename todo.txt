@@ -1,10 +1,32 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
+	- Feature: Daily challenge map based on today's date
+	- Feature: Add Screens
+		- Main Menu
+		- Settings screen? (Might not actually need this)
+			- Music toggle
+			- SFX toggle
+			- Screen shake toggle
+			- Toggle vibration
+		- Stats screen? (With things like # of attempts, best run, average run, etc.)
+		- Pause menu in play screen
+			- Resume button
+			- Settings button
+			- Restart Button
+			- Quit button
+	- Balance: Remove rocks too close to an energy instead of trying to move the energy to the side
 
 Should
+	- Feature: Vibration on row and/or collision
+	- Feature: Screen shake on collision
+	- Balance: Increase turn speed when turning while rowing
 
 Could
+	- Feature: Rapids section where the water speed temporarily gets way faster???
+	- Art: Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
+	- Bug: Pause boat rocking animation on death
+	- Bug: In the tutorial, highlight both the rock and energy before letting the player play again
 
 -------------------- Playtester Feedback --------------------
 
@@ -15,25 +37,28 @@ Could
 
 ------------------------ Outstanding ------------------------
 Features
-	- Daily challenge map based on today's date
-	- Settings to turn off music & sound fx
-	- Add Screens
-		- Main Menu
-		- Settings screen? (Might not actually need this)
-			- Music toggle
-			- SFX toggle
-			- Screen shake toggle
-		- Stats screen? (With things like # of attempts, best run, average run, etc.)
-	- Screen shake on collision
-	- Rapids section where the water speed temporarily gets way faster???
-		- Match up rapids section with drop in music?
+	- *Daily challenge map based on today's date
+	- *Add Screens
+		- *Main Menu
+		- *Settings screen? (Might not actually need this)
+			- *Music toggle
+			- *SFX toggle
+			- *Screen shake toggle
+			- *Toggle vibration
+		- *Stats screen? (With things like # of attempts, best run, average run, etc.)
+		- *Pause menu in play screen
+			- Resume button
+			- Settings button
+			- Restart Button
+			- Quit button
+	- *Screen shake on collision
+	- *Vibration on row and/or collision
+	- *Rapids section where the water speed temporarily gets way faster???
 
 Optimization
 
 Art
 	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Iterate on generated tile art
-	- Change rocks' color pallete to better match the brown pallete of the desert
 	- Sound effects
 		- Generic river
 		- Rowing
@@ -46,20 +71,43 @@ Art
 		- Song for the tutorial mode
 	- New font
 	- Art of buttons & tutorial dialogue
-	- Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
+	- *Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
+	- Color-independant icon for rowing
+
+Bugs
+	- Row wakes look wrong when facing backwards
+	- The rock sprites has a few eroneous pixels on the edge
+	- *Pause boat rocking animation on death
+	- *In the tutorial, highlight both the rock and energy before letting the player play again
+	- Increase pressable size of turning buttons
+	- Remove pressable area of row button on left half of screen
+
+Balance
+	- *Remove rocks too close to an energy instead of trying to move the energy to the side
+	- *Increase turn speed when turning while rowing
+
+-------------------------- Shelved --------------------------
+Features
+
+Optimization
+
+Art
+	- Iterate on generated tile art
+	- Change rocks' color pallete to better match the brown pallete of the desert
 	- Death animation
 	- Add in another (4th) unique rock sprite
 
 Bugs
 	- Rocks sometimes placed badly at transitions
+		Haven't seen this in a long time. Might be fixed?
 	- You can kind of make out the boundaries of the shoreline tiles
+		Nobody has really commented on it
 	- Branches slightly bump the player and mess with their momentum
+		I don't think this is an issue anymore for some reason
 	- Boat rocking is simply based on (PlayerVelocity - RiverVelocity) and it looks wrong sometimes
-		especially when facing backwards
-	- Row wakes look wrong when facing backwards
+		Ehh it looks good enough maybe?
 	- Android version crashes after making it a certain distance
-		Nobody else is experiencing this so I'll shelf it for now
-	- The rock sprites has a few eroneous pixels on the edge
+		Very few other people has experienced this
 
 Balance
 
