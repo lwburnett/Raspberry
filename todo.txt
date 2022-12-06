@@ -1,33 +1,19 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	o Feature: While turning, add some lateral force to the boat that scales with speed relative to water
-	o Feature: Increase rotational force if turning while rowing
-	o Balance: Make energy spawns more frequent at the beginning and less frequent at the end
-	o Feature: Increase collision radius of energy
-	o Balance: Increase impact radius decay and passive radius decay with distance
 
 Should
-	o Feature: Update tutorial to inform player how passive and collision energy decay scale with distance
-	- Art: Recolor rocks
-	o Art: Iterate on energy art
-	- Art: Iterate on generated tile art
 
 Could
-	o Art: Add in another unique rock sprite
-	- Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Feature: Settings screen
-	o Feature: Post play stats screen
 
 -------------------- Playtester Feedback --------------------
 
-- Movement still feels like asteroids (nolan)
-	- After turning, convert some speed from old vector to new vector. Amount converted should scale with speed relative to water
-- Movement is too fast (nick)
+- Needs a restart button (Nolan)
+- RNG of energy spawns can place it too close to rocks, making it feel like the game is luck-based instead of skill-based (Nolan)
+- Collisions are too punishing. Perhaps remove the energy loss on collisions (Nolan)
 
 
 ------------------------ Outstanding ------------------------
-
 Features
 	- Daily challenge map based on today's date
 	- Settings to turn off music & sound fx
@@ -45,9 +31,9 @@ Features
 Optimization
 
 Art
-	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- *Iterate on generated tile art
-	- *Change rocks' color pallete to better match the brown pallete of the desert
+	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	- Iterate on generated tile art
+	- Change rocks' color pallete to better match the brown pallete of the desert
 	- Sound effects
 		- Generic river
 		- Rowing
