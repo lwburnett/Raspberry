@@ -1,7 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Nez;
+using Nez.Sprites;
+using Nez.Textures;
 using Nez.UI;
+using Raspberry_Lib.Components;
 using Raspberry_Lib.Content;
 
 namespace Raspberry_Lib.Scenes
@@ -37,13 +40,15 @@ namespace Raspberry_Lib.Scenes
 
             var canvas = CreateEntity("UiCanvas").AddComponent(new UICanvas());
             canvas.IsFullScreen = true;
+            
+            var backgroundEntity = CreateEntity("background", Screen.Center);
+            var texture = Content.LoadTexture(ContentData.AssetPaths.TitleScreenBackground);
+            var backgroundSprite = new Sprite(texture);
+            backgroundEntity.AddComponent(new SpriteRenderer(backgroundSprite) { RenderLayer = 1 });
+            backgroundEntity.SetScale(GetBackgroundScale(texture.Bounds));
 
-            var background = new Image(Content.LoadTexture(ContentData.AssetPaths.TitleScreenBackground));
-            background.SetScaling(Scaling.Stretch);
-            background.SetWidth(canvas.Width);
-            background.SetHeight(canvas.Height);
-            canvas.Stage.AddElement(background);
-
+            var particleEntity = CreateEntity("particle", Screen.Center);
+            particleEntity.AddComponent(new SandParticleRenderer(Screen.Size){ RenderLayer = 0 });
 
             var table = canvas.Stage.AddElement(new Table());
             table.SetPosition(Settings.TablePositionX.Value, Settings.TablePositionY.Value);
@@ -83,6 +88,8 @@ namespace Raspberry_Lib.Scenes
                     Screen.Width - Settings.VersionInsetX.Value, 
                     Screen.Height - Settings.VersionInsetY.Value);
 
+            canvas.SetRenderLayer(-1);
+
             SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic, .6f);
         }
 
@@ -90,6 +97,14 @@ namespace Raspberry_Lib.Scenes
         private readonly Action _onTutorial;
         private readonly Action _onCredits;
         private readonly Action _onExit;
+
+        private Vector2 GetBackgroundScale(Rectangle iTextureBounds)
+        {
+            var scaleX = Screen.Size.X / iTextureBounds.Width;
+            var scaleY = Screen.Size.Y / iTextureBounds.Height;
+
+            return new Vector2(scaleX, scaleY);
+        }
 
         private void OnPlayClicked(Button iButton)
         {
