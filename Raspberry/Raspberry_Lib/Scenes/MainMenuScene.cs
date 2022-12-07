@@ -133,8 +133,6 @@ namespace Raspberry_Lib.Scenes
 
         public override void Update()
         {
-            base.Update();
-
             if (!_menuTable.IsVisible())
             {
                 if (Input.Touch.IsConnected)
@@ -152,6 +150,8 @@ namespace Raspberry_Lib.Scenes
                     }
                 }
             }
+
+            base.Update();
         }
 
         private Table _menuTable;
