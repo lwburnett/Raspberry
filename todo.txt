@@ -24,7 +24,7 @@ Should
 
 Could
 	- Feature: Rapids section where the water speed temporarily gets way faster???
-	- Art: Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
+	o Art: Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 	- Bug: Pause boat rocking animation on death
 	- Bug: In the tutorial, highlight both the rock and energy before letting the player play again
 
@@ -71,7 +71,6 @@ Art
 		- Song for the tutorial mode
 	- New font
 	- Art of buttons & tutorial dialogue
-	- *Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 	- Color-independant icon for rowing
 
 Bugs
@@ -154,6 +153,7 @@ Art
 	- Move row indicator back to the right
 	- Add in another (3rd) unique rock sprite
 	- Iterate on energy art
+	- *Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
