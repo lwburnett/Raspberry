@@ -14,20 +14,37 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
         }
 
-        public GamePlayScene(Action iOnPlayAgain, Action iOnMainMenu)
+
+        public GamePlayScene(Action<int?> iOnPlayAgain, Action iOnMainMenu, int? iSeed = null)
         {
             _onMainMenu = iOnMainMenu;
             _onPlayAgain = iOnPlayAgain;
             ClearColor = ContentData.ColorPallets.Desert.Color2;
+            _seed = iSeed;
+
+            PostConstructionInitialize();
         }
 
-        public override void Initialize()
+        protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
+        {
+            var uiEntity = CreateEntity("ui");
+            return uiEntity.AddComponent(new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu));
+        }
+
+        private readonly Action<int?> _onPlayAgain;
+        private readonly Action _onMainMenu;
+        private PlayUiCanvasComponent _uiComponent;
+        private BoatCharacterComponent _characterComponent;
+        private readonly int? _seed;
+
+        // Initialization needs to be after construction so that _seed is initialized
+        private void PostConstructionInitialize()
         {
             base.Initialize();
 
             var characterStartingPos = new Vector2(Settings.CharacterStartPositionX.Value, Settings.CharacterStartPositionY.Value);
 
-            var proceduralGenerator = new ProceduralGeneratorComponent();
+            var proceduralGenerator = new ProceduralGeneratorComponent(_seed);
             var map = CreateEntity("map");
             map.Transform.SetLocalScale(Settings.MapScale.Value);
             map.AddComponent(proceduralGenerator);
@@ -56,17 +73,6 @@ namespace Raspberry_Lib.Scenes
 #endif
         }
 
-        protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
-        {
-            var uiEntity = CreateEntity("ui");
-            return uiEntity.AddComponent(new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu));
-        }
-
-        private readonly Action _onPlayAgain;
-        private readonly Action _onMainMenu;
-        private PlayUiCanvasComponent _uiComponent;
-        private BoatCharacterComponent _characterComponent;
-
         private void OnPlayEnd()
         {
             _uiComponent.OnPlayEnd();
@@ -79,7 +85,7 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearCollidersToRender();
             Verbose.ClearMetrics();
 #endif
-            _onPlayAgain();
+            _onPlayAgain(_seed);
 
         }
 

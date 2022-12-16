@@ -35,7 +35,7 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting MinButtonWidth = new(300);
         }
 
-        public MainMenuScene(Action iOnStart, Action iOnTutorial, Action iOnCredits)
+        public MainMenuScene(Action<int?> iOnStart, Action iOnTutorial, Action iOnCredits)
         {
             _onStart = iOnStart;
             _onTutorial = iOnTutorial;
@@ -156,7 +156,7 @@ namespace Raspberry_Lib.Scenes
 
         private Table _menuTable;
         private VirtualButton _inputButton;
-        private readonly Action _onStart;
+        private readonly Action<int?> _onStart;
         private readonly Action _onTutorial;
         private readonly Action _onCredits;
 
@@ -170,7 +170,7 @@ namespace Raspberry_Lib.Scenes
 
         private void OnPlayClicked(Button iButton)
         {
-            _onStart();
+            _onStart(SeedUtils.GetDistanceChallengeSeedForToday());
         }
 
         private void OnTutorialClicked(Button iButton)

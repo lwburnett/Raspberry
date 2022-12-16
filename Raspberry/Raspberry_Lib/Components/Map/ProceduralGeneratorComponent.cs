@@ -41,11 +41,10 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting MinDistanceBetweenObstacles = new(150);
         }
 
-        public ProceduralGeneratorComponent()
+        public ProceduralGeneratorComponent(int? iSeed)
         {
             PlayerScoreRating = 1f;
-            //_rng = new System.Random(105);
-            _rng = new System.Random();
+            _rng = iSeed.HasValue ? new System.Random(iSeed.Value) : new System.Random();
         }
 
         public override void OnAddedToEntity()

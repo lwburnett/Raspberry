@@ -5,7 +5,7 @@ namespace Raspberry_Lib.Scenes
 {
     internal class TutorialScene : GamePlayScene
     {
-        public TutorialScene(Action iOnPlayAgain, Action iOnMainMenu) : base(iOnPlayAgain, iOnMainMenu)
+        public TutorialScene(Action<int?> iOnPlayAgain, Action iOnMainMenu) : base(iOnPlayAgain, iOnMainMenu)
         {
         }
 
