@@ -139,14 +139,14 @@ namespace Raspberry_Lib.Scenes
                 {
                     if (Input.Touch.CurrentTouches.Any())
                     {
-                        _menuTable.SetIsVisible(true);
+                        ShowMenu();
                     }
                 }
                 else
                 {
                     if (_inputButton.IsPressed)
                     {
-                        _menuTable.SetIsVisible(true);
+                        ShowMenu();
                     }
                 }
             }
@@ -202,6 +202,23 @@ namespace Raspberry_Lib.Scenes
             texture.SetData(textureData);
 
             return texture;
+        }
+
+        private void ShowMenu()
+        {
+            _menuTable.SetIsVisible(true);
+            // _menuTable.SetColor(new Color(0, 0, 0, 0));
+            // var tween = _menuTable.Tween("color", Color.White, .5f);
+            // tween.Start();
+            //
+            // var buttons = _menuTable.GetChildren().OfType<TextButton>();
+            // foreach (var button in buttons)
+            // {
+            //     var labelStyle = button.GetLabel().GetStyle();
+            //     labelStyle.FontColor = new Color(0, 0, 0, 0);
+            //     var labelTween = labelStyle.Tween("FontColor", Color.White, .5f);
+            //     labelTween.Start();
+            // }
         }
     }
 }
