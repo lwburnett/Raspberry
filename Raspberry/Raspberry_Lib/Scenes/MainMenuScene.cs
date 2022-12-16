@@ -33,6 +33,8 @@ namespace Raspberry_Lib.Scenes
             public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
 
             public static readonly RenderSetting MinButtonWidth = new(300);
+
+            public const float MinimumSecondBetweenButtonClicks = .5f;
         }
 
         public MainMenuScene(Action<int?> iOnStart, Action iOnTutorial, Action iOnCredits)
@@ -40,6 +42,7 @@ namespace Raspberry_Lib.Scenes
             _onStart = iOnStart;
             _onTutorial = iOnTutorial;
             _onCredits = iOnCredits;
+            _secondsSinceButtonClickAction = 0;
         }
 
         public override void Initialize()
@@ -65,17 +68,172 @@ namespace Raspberry_Lib.Scenes
                 SetFontColor(Color.Black).
                 SetPosition(Screen.Center.X - titleLabel.PreferredWidth / 2, Settings.TitlePositionY.Value);
 
-            var menuWidth = Settings.MenuWidth.Value;
-            var menuHeight = Settings.MenuHeight.Value;
+            var tableDimensions = new Vector2(Settings.MenuWidth.Value, Settings.MenuHeight.Value);
 
-            var table = canvas.Stage.AddElement(new Table());
+            _menuTable = CreateMenuTable(canvas, tableDimensions);
+            _playTable = CreatePlayTable(canvas, tableDimensions);
+
+            SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic, .6f);
+
+            if (!Input.Touch.IsConnected)
+            {
+                _inputButton = new VirtualButton(
+                    new VirtualButton.GamePadButton(0, Buttons.A),
+                    new VirtualButton.MouseLeftButton(),
+                    new VirtualButton.KeyboardKey(Keys.Space));
+            }
+        }
+
+        public override void Update()
+        {
+            _secondsSinceButtonClickAction += Time.DeltaTime;
+
+            if (!_menuTable.IsVisible() && !_playTable.IsVisible())
+            {
+                if (Input.Touch.IsConnected)
+                {
+                    if (Input.Touch.CurrentTouches.Any())
+                    {
+                        ShowMenu();
+                    }
+                }
+                else
+                {
+                    if (_inputButton.IsPressed)
+                    {
+                        ShowMenu();
+                    }
+                }
+            }
+
+            base.Update();
+        }
+
+        private Table _menuTable;
+        private Table _playTable;
+        private VirtualButton _inputButton;
+        private readonly Action<int?> _onStart;
+        private readonly Action _onTutorial;
+        private readonly Action _onCredits;
+        private float _secondsSinceButtonClickAction;
+
+        private Vector2 GetBackgroundScale(Rectangle iTextureBounds)
+        {
+            var scaleX = Screen.Size.X / iTextureBounds.Width;
+            var scaleY = Screen.Size.Y / iTextureBounds.Height;
+
+            return new Vector2(scaleX, scaleY);
+        }
+
+        private void OnPlayClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _menuTable.SetIsVisible(false);
+            _playTable.SetIsVisible(true);
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnTutorialClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _onTutorial();
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnCreditsClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _onCredits();
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnMenuBackClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _menuTable.SetIsVisible(false);
+            _playTable.SetIsVisible(false);
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnDistanceChallengeClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _onStart(SeedUtils.GetDistanceChallengeSeedForToday());
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnTimeChallengeClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _onStart(SeedUtils.GetTimeChallengeSeedForToday());
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnEndlessClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _onStart(null);
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private void OnPlayBackClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _menuTable.SetIsVisible(true);
+            _playTable.SetIsVisible(false);
+
+            _secondsSinceButtonClickAction = 0;
+        }
+
+        private Texture2D CreateMenuTexture()
+        {
+            var backgroundWidth = (int)Settings.MenuWidth.Value;
+            var backgroundHeight = (int)Settings.MenuHeight.Value;
+
+            var textureData = new Color[backgroundWidth * backgroundHeight];
+            for (var ii = 0; ii < backgroundWidth * backgroundHeight; ii++)
+            {
+                textureData[ii] = Settings.TextBoxBackgroundTextureColor;
+            }
+            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, backgroundWidth, backgroundHeight);
+            texture.SetData(textureData);
+
+            return texture;
+        }
+
+        private Table CreateMenuTable(UICanvas iUiCanvas, Vector2 iDimensions)
+        {
+            var table = iUiCanvas.Stage.AddElement(new Table());
             table.SetBounds(
-                Screen.Center.X - menuWidth / 2, 
-                Screen.Center.Y - menuHeight / 2,
-                menuWidth,
-                menuHeight);
+                Screen.Center.X - iDimensions.X / 2,
+                Screen.Center.Y - iDimensions.Y / 2,
+                iDimensions.X,
+                iDimensions.Y);
             table.SetBackground(new SpriteDrawable(CreateMenuTexture()));
-            
+
             var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
             playButton.OnClicked += OnPlayClicked;
             playButton.GetLabel().SetFontScale(Settings.FontScale.Value);
@@ -101,112 +259,93 @@ namespace Raspberry_Lib.Scenes
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
             var backButton = new TextButton("Back", Skin.CreateDefaultSkin());
-            backButton.OnClicked += OnBackClicked;
+            backButton.OnClicked += OnMenuBackClicked;
             backButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             table.Add(backButton).
                 SetMinHeight(Settings.MinButtonHeight.Value).
                 SetMinWidth(Settings.MinButtonWidth.Value);
 
-            canvas.Stage.
+            iUiCanvas.Stage.
                 AddElement(new Label(Settings.Version)).
                 SetFontScale(Settings.VersionFontScale.Value).
                 SetFontColor(Color.Black).
                 SetPosition(
-                    Screen.Width - Settings.VersionInsetX.Value, 
+                    Screen.Width - Settings.VersionInsetX.Value,
                     Screen.Height - Settings.VersionInsetY.Value);
 
-            canvas.SetRenderLayer(-1);
+            iUiCanvas.SetRenderLayer(-1);
 
             table.SetIsVisible(false);
-            _menuTable = table;
 
-            SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic, .6f);
-
-            if (!Input.Touch.IsConnected)
-            {
-                _inputButton = new VirtualButton(
-                    new VirtualButton.GamePadButton(0, Buttons.A),
-                    new VirtualButton.MouseLeftButton(),
-                    new VirtualButton.KeyboardKey(Keys.Space));
-            }
+            return table;
         }
 
-        public override void Update()
+        private Table CreatePlayTable(UICanvas iUiCanvas, Vector2 iDimensions)
         {
-            if (!_menuTable.IsVisible())
-            {
-                if (Input.Touch.IsConnected)
-                {
-                    if (Input.Touch.CurrentTouches.Any())
-                    {
-                        ShowMenu();
-                    }
-                }
-                else
-                {
-                    if (_inputButton.IsPressed)
-                    {
-                        ShowMenu();
-                    }
-                }
-            }
+            var table = iUiCanvas.Stage.AddElement(new Table());
+            table.SetBounds(
+                Screen.Center.X - iDimensions.X / 2,
+                Screen.Center.Y - iDimensions.Y / 2,
+                iDimensions.X,
+                iDimensions.Y);
+            table.SetBackground(new SpriteDrawable(CreateMenuTexture()));
 
-            base.Update();
-        }
+            var distButton = new TextButton("Dist Challenge", Skin.CreateDefaultSkin());
+            distButton.OnClicked += OnDistanceChallengeClicked;
+            distButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(distButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
-        private Table _menuTable;
-        private VirtualButton _inputButton;
-        private readonly Action<int?> _onStart;
-        private readonly Action _onTutorial;
-        private readonly Action _onCredits;
+            var timeButton = new TextButton("Time Challenge", Skin.CreateDefaultSkin());
+            timeButton.OnClicked += OnTimeChallengeClicked;
+            timeButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(timeButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
-        private Vector2 GetBackgroundScale(Rectangle iTextureBounds)
-        {
-            var scaleX = Screen.Size.X / iTextureBounds.Width;
-            var scaleY = Screen.Size.Y / iTextureBounds.Height;
+            var endlessButton = new TextButton("Endless", Skin.CreateDefaultSkin());
+            endlessButton.OnClicked += OnEndlessClicked;
+            endlessButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(endlessButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value);
+            table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
-            return new Vector2(scaleX, scaleY);
-        }
+            var backButton = new TextButton("Back", Skin.CreateDefaultSkin());
+            backButton.OnClicked += OnPlayBackClicked;
+            backButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            table.Add(backButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value);
 
-        private void OnPlayClicked(Button iButton)
-        {
-            _onStart(SeedUtils.GetDistanceChallengeSeedForToday());
-        }
+            iUiCanvas.Stage.
+                AddElement(new Label(Settings.Version)).
+                SetFontScale(Settings.VersionFontScale.Value).
+                SetFontColor(Color.Black).
+                SetPosition(
+                    Screen.Width - Settings.VersionInsetX.Value,
+                    Screen.Height - Settings.VersionInsetY.Value);
 
-        private void OnTutorialClicked(Button iButton)
-        {
-            _onTutorial();
-        }
+            iUiCanvas.SetRenderLayer(-1);
 
-        private void OnCreditsClicked(Button iButton)
-        {
-            _onCredits();
-        }
+            table.SetIsVisible(false);
 
-        private void OnBackClicked(Button iButton)
-        {
-            _menuTable.SetIsVisible(false);
-        }
-
-        private Texture2D CreateMenuTexture()
-        {
-            var backgroundWidth = (int)Settings.MenuWidth.Value;
-            var backgroundHeight = (int)Settings.MenuHeight.Value;
-
-            var textureData = new Color[backgroundWidth * backgroundHeight];
-            for (var ii = 0; ii < backgroundWidth * backgroundHeight; ii++)
-            {
-                textureData[ii] = Settings.TextBoxBackgroundTextureColor;
-            }
-            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, backgroundWidth, backgroundHeight);
-            texture.SetData(textureData);
-
-            return texture;
+            return table;
         }
 
         private void ShowMenu()
         {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
             _menuTable.SetIsVisible(true);
+            _playTable.SetIsVisible(false);
+
+            _secondsSinceButtonClickAction = 0;
+
             // _menuTable.SetColor(new Color(0, 0, 0, 0));
             // var tween = _menuTable.Tween("color", Color.White, .5f);
             // tween.Start();
