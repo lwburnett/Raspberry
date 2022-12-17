@@ -1,7 +1,7 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	- Feature: Daily challenge map based on today's date
+	o Feature: Daily challenge map based on today's date
 	- Feature: Add Screens
 		o Main Menu
 		- Settings screen? (Might not actually need this)
@@ -37,7 +37,6 @@ Could
 
 ------------------------ Outstanding ------------------------
 Features
-	- *Daily challenge map based on today's date
 	- *Add Screens
 		- *Settings screen? (Might not actually need this)
 			- *Music toggle
@@ -113,6 +112,7 @@ Balance
 ------------------------- Completed -------------------------
 
 Features
+	- *Daily challenge map based on today's date
 	- *Add Screens
 		- *Main Menu
 	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
