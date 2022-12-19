@@ -2,6 +2,7 @@
 using Raspberry_Lib.Components;
 using Raspberry_Lib.Content;
 using System;
+using Random = System.Random;
 
 namespace Raspberry_Lib.Scenes
 {
@@ -28,7 +29,8 @@ namespace Raspberry_Lib.Scenes
         protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
-            return uiEntity.AddComponent(new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu));
+            return uiEntity.AddComponent(
+                new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu, OnPause, OnResume));
         }
 
         private readonly Action<int?> _onPlayAgain;
@@ -76,7 +78,7 @@ namespace Raspberry_Lib.Scenes
         private void OnPlayEnd()
         {
             _uiComponent.OnPlayEnd();
-            _characterComponent.OnPlayEnd();
+            _characterComponent.TogglePause(true);
         }
 
         private void OnPlayAgain()
@@ -97,6 +99,16 @@ namespace Raspberry_Lib.Scenes
 #endif
 
             _onMainMenu();
+        }
+
+        protected void OnPause()
+        {
+            _characterComponent.TogglePause(true);
+        }
+
+        protected void OnResume()
+        {
+            _characterComponent.TogglePause(false);
         }
     }
 }

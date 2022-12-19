@@ -12,7 +12,7 @@ namespace Raspberry_Lib.Scenes
         protected sealed override PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
-            return uiEntity.AddComponent(new TutorialUiCanvasComponent(iOnPlayAgain, iOnMainMenu));
+            return uiEntity.AddComponent(new TutorialUiCanvasComponent(iOnPlayAgain, iOnMainMenu, OnPause, OnResume));
         }
     }
 }

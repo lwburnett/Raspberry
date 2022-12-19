@@ -36,10 +36,12 @@ namespace Raspberry_Lib.Components
 
         }
 
-        public PlayUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu)
+        public PlayUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu, Action iOnPause, Action iOnResume)
         { 
             _onPlayAgain = iOnPlayAgain;
             _onMainMenu = iOnMainMenu;
+            _onPause = iOnPause;
+            _onResume = iOnResume;
 
             _upPressed = false;
             _downPressed = false;
@@ -83,6 +85,8 @@ namespace Raspberry_Lib.Components
 
         private readonly Action _onPlayAgain;
         private readonly Action _onMainMenu;
+        private readonly Action _onPause;
+        private readonly Action _onResume;
 
         private Image _upIndicator;
         private Image _downIndicator;
@@ -108,6 +112,7 @@ namespace Raspberry_Lib.Components
         private float? _lastRowTimeOverride;
 
         private Table _statsPopupTable;
+        private Table _pauseTable;
         private Label _distanceLabel;
 
         protected virtual void OnAddedToEntityInternal()
@@ -166,12 +171,20 @@ namespace Raspberry_Lib.Components
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
 
+            var pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", Skin.CreateDefaultSkin()));
+            pauseButton.OnClicked += OnPause;
+            pauseButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value / 2);
+            pauseButton.SetBounds(
+                Screen.Width - Settings.Margin.Value - Settings.DistanceLabelWidth.Value / 4, 
+                Settings.Margin.Value / 2f,
+                Settings.DistanceLabelWidth.Value / 2,
+                Settings.DistanceLabelHeight.Value / 2);
+
             // Create stats popup table
             var statsPopupTexture = CreatePostPlayStatsPopupTexture();
             var spriteDrawable = new SpriteDrawable(statsPopupTexture);
 
             _statsPopupTable = Canvas.Stage.AddElement(new Table());
-            _statsPopupTable.SetSize(Settings.PostPlayStatsPopupWidth.Value, Settings.PostPlayStatsPopupHeight.Value);
             _statsPopupTable.SetBounds(
                 (Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
                 (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
@@ -215,6 +228,48 @@ namespace Raspberry_Lib.Components
             _statsPopupTable.Add(buttonTable);
 
             _statsPopupTable.SetIsVisible(false);
+
+            // Create pause menu
+            _pauseTable = Canvas.Stage.AddElement(new Table());
+            _pauseTable.SetBounds(
+                (Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
+                (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
+                Settings.PostPlayStatsPopupWidth.Value,
+                Settings.PostPlayStatsPopupHeight.Value);
+
+            _pauseTable.SetBackground(spriteDrawable);
+
+            var pauseTitle = new Label("Pause").
+                SetFontScale(Settings.FontScaleStatsPopup.Value).
+                SetFontColor(Color.White).
+                SetAlignment(Align.TopLeft);
+            _pauseTable.Add(pauseTitle);
+            _pauseTable.Row().SetPadTop(Settings.CellPadding.Value);
+
+            var resumeButton = new TextButton("Resume", Skin.CreateDefaultSkin());
+            resumeButton.OnClicked += OnResume;
+            resumeButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
+            _pauseTable.Add(resumeButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value).
+                Pad(Settings.CellPadding.Value);
+            _pauseTable.Row().SetPadTop(Settings.CellPadding.Value);
+
+            var restartButton = new TextButton("Restart", Skin.CreateDefaultSkin());
+            restartButton.OnClicked += OnPlayAgain;
+            restartButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
+            _pauseTable.Add(restartButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value).
+                Pad(Settings.CellPadding.Value);
+            _pauseTable.Row().SetPadTop(Settings.CellPadding.Value);
+
+            _pauseTable.Add(menuButton).
+                SetMinHeight(Settings.MinButtonHeight.Value).
+                SetMinWidth(Settings.MinButtonWidth.Value).
+                Pad(Settings.CellPadding.Value);
+
+            _pauseTable.SetIsVisible(false);
 
             // This needs to match the render layer of the ScreenSpaceRenderer in SceneBase ctor
             Canvas.SetRenderLayer(-1);
@@ -336,6 +391,18 @@ namespace Raspberry_Lib.Components
         private void OnMainMenu(Button iButton)
         {
             _onMainMenu();
+        }
+
+        private void OnPause(Button iButton)
+        {
+            _onPause();
+            _pauseTable.SetIsVisible(true);
+        }
+
+        private void OnResume(Button iButton)
+        {
+            _onResume();
+            _pauseTable.SetIsVisible(false);
         }
     }
 }

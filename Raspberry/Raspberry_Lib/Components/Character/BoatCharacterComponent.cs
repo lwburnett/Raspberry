@@ -22,11 +22,11 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(new OarPairComponent());
         }
 
-        public void OnPlayEnd()
+        public void TogglePause(bool iIsPaused)
         {
-            _movementComponent.IsPaused = true;
-            _playerProximityComponent.IsPaused = true;
-            _inputController.IsPaused = true;
+            _movementComponent.IsPaused = iIsPaused;
+            _playerProximityComponent.IsPaused = iIsPaused;
+            _inputController.IsPaused = iIsPaused;
         }
 
         private CharacterMovementComponent _movementComponent;

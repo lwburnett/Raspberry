@@ -74,7 +74,7 @@ namespace Raspberry_Lib
 
         private void OnTutorial()
         {
-            Scene = new TutorialScene(OnPlay, OnMainMenu);
+            Scene = new TutorialScene(_ => OnTutorial(), OnMainMenu);
         }
 
         private void OnCredits()
