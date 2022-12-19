@@ -10,7 +10,7 @@ Must
 			- Screen shake toggle
 			- Toggle vibration
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
-		- Pause menu in play screen
+		o Pause menu in play screen
 			- Resume button
 			- Settings button
 			- Restart Button
@@ -44,11 +44,6 @@ Features
 			- *Screen shake toggle
 			- *Toggle vibration
 		- *Stats screen? (With things like # of attempts, best run, average run, etc.)
-		- *Pause menu in play screen
-			- Resume button
-			- Settings button
-			- Restart Button
-			- Quit button
 	- *Screen shake on collision
 	- *Vibration on row and/or collision
 	- *Rapids section where the water speed temporarily gets way faster???
@@ -125,6 +120,11 @@ Features
 		- How to play screen
 		- Credits
 		- Post play screen with stats of that play session
+		- *Pause menu in play screen
+			- Resume button
+			- Settings button
+			- Restart Button
+			- Quit button
 	- Add keyboard support
 	- On keyboard & controller, have right mimic down and left mimic up
 	- Release version # display in corner of main menu
