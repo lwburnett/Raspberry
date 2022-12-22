@@ -63,6 +63,7 @@ namespace Raspberry_Lib.Components
         {
             _statsMenu.SetDistanceTraveled(DistanceLabel.GetText());
             _statsMenu.SetIsVisible(true);
+            _pauseButton.SetIsVisible(false);
         }
 
         private enum RowColor
@@ -108,6 +109,7 @@ namespace Raspberry_Lib.Components
 
         private PlayScreenStatsMenu _statsMenu;
         private Element _pauseMenu;
+        private TextButton _pauseButton;
 
         protected virtual void OnAddedToEntityInternal()
         {
@@ -165,10 +167,10 @@ namespace Raspberry_Lib.Components
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
 
-            var pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", Skin.CreateDefaultSkin()));
-            pauseButton.OnClicked += OnPause;
-            pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value / 2);
-            pauseButton.SetBounds(
+            _pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", Skin.CreateDefaultSkin()));
+            _pauseButton.OnClicked += OnPause;
+            _pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value / 2);
+            _pauseButton.SetBounds(
                 Screen.Width - Settings.Margin.Value - Settings.DistanceLabelWidth.Value / 4, 
                 Settings.Margin.Value / 2f,
                 Settings.DistanceLabelWidth.Value / 2,
