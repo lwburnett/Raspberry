@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
 using Nez.UI;
+using Raspberry_Lib.Components.UI;
 
 namespace Raspberry_Lib.Components
 {
@@ -26,13 +26,8 @@ namespace Raspberry_Lib.Components
 
             public static readonly RenderSetting PostPlayStatsPopupWidth = new(900);
             public static readonly RenderSetting PostPlayStatsPopupHeight = new(500);
-
-            public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
-            public static readonly RenderSetting CellPadding = new(20);
-            public static readonly RenderSetting FontScaleStatsPopup = new(5);
             
-            public static readonly RenderSetting MinButtonWidth = new(300);
-            public static readonly RenderSetting MinButtonHeight = new(80);
+            public static readonly RenderSetting PauseButtonFontScale = new(2.5f);
 
         }
 
@@ -66,8 +61,8 @@ namespace Raspberry_Lib.Components
 
         public void OnPlayEnd()
         {
-            _distanceLabel.SetText($"You traveled {DistanceLabel.GetText()}.");
-            _statsPopupTable.SetIsVisible(true);
+            _statsMenu.SetDistanceTraveled(DistanceLabel.GetText());
+            _statsMenu.SetIsVisible(true);
         }
 
         private enum RowColor
@@ -111,9 +106,8 @@ namespace Raspberry_Lib.Components
         protected CharacterInputController.InputDescription InputOverride;
         private float? _lastRowTimeOverride;
 
-        private Table _statsPopupTable;
-        private Table _pauseTable;
-        private Label _distanceLabel;
+        private PlayScreenStatsMenu _statsMenu;
+        private Element _pauseMenu;
 
         protected virtual void OnAddedToEntityInternal()
         {
@@ -173,103 +167,28 @@ namespace Raspberry_Lib.Components
 
             var pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", Skin.CreateDefaultSkin()));
             pauseButton.OnClicked += OnPause;
-            pauseButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value / 2);
+            pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value / 2);
             pauseButton.SetBounds(
                 Screen.Width - Settings.Margin.Value - Settings.DistanceLabelWidth.Value / 4, 
                 Settings.Margin.Value / 2f,
                 Settings.DistanceLabelWidth.Value / 2,
                 Settings.DistanceLabelHeight.Value / 2);
 
-            // Create stats popup table
-            var statsPopupTexture = CreatePostPlayStatsPopupTexture();
-            var spriteDrawable = new SpriteDrawable(statsPopupTexture);
-
-            _statsPopupTable = Canvas.Stage.AddElement(new Table());
-            _statsPopupTable.SetBounds(
-                (Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
-                (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
-                Settings.PostPlayStatsPopupWidth.Value,
-                Settings.PostPlayStatsPopupHeight.Value);
-            _statsPopupTable.SetBackground(spriteDrawable);
-            var title = new Label("You are lost in the desert.").
-                SetFontScale(Settings.FontScaleStatsPopup.Value).
-                SetFontColor(Color.White).
-                SetAlignment(Align.TopLeft);
-
-            _statsPopupTable.Add(title);
-            _statsPopupTable.Row().SetPadTop(Settings.CellPadding.Value);
-
-            _distanceLabel = new Label(string.Empty).
-                SetFontScale(Settings.FontScaleStatsPopup.Value).
-                SetFontColor(Color.White).
-                SetAlignment(Align.TopLeft);
-
-            _statsPopupTable.Add(_distanceLabel);
-            _statsPopupTable.Row().SetPadTop(Settings.CellPadding.Value);
-
-            var buttonTable = new Table();
-
-            var playButton = new TextButton("Play Again", Skin.CreateDefaultSkin());
-            playButton.OnClicked += OnPlayAgain;
-            playButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
-            buttonTable.Add(playButton).
-                SetMinHeight(Settings.MinButtonHeight.Value).
-                SetMinWidth(Settings.MinButtonWidth.Value).
-                Pad(Settings.CellPadding.Value);
-
-            var menuButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
-            menuButton.OnClicked += OnMainMenu;
-            menuButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
-            buttonTable.Add(menuButton).
-                SetMinHeight(Settings.MinButtonHeight.Value).
-                SetMinWidth(Settings.MinButtonWidth.Value).
-                Pad(Settings.CellPadding.Value);
-
-            _statsPopupTable.Add(buttonTable);
-
-            _statsPopupTable.SetIsVisible(false);
-
-            // Create pause menu
-            _pauseTable = Canvas.Stage.AddElement(new Table());
-            _pauseTable.SetBounds(
-                (Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
+            // Pause and stats menus
+            var menuBounds = new RectangleF((Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
                 (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
                 Settings.PostPlayStatsPopupWidth.Value,
                 Settings.PostPlayStatsPopupHeight.Value);
 
-            _pauseTable.SetBackground(spriteDrawable);
+            var pauseMenu = new PlayScreenPauseMenu(menuBounds, OnResume, OnPlayAgain, OnMainMenu);
+            pauseMenu.Initialize();
+            _pauseMenu = Canvas.Stage.AddElement(pauseMenu);
+            _pauseMenu.SetIsVisible(false);
 
-            var pauseTitle = new Label("Pause").
-                SetFontScale(Settings.FontScaleStatsPopup.Value).
-                SetFontColor(Color.White).
-                SetAlignment(Align.TopLeft);
-            _pauseTable.Add(pauseTitle);
-            _pauseTable.Row().SetPadTop(Settings.CellPadding.Value);
-
-            var resumeButton = new TextButton("Resume", Skin.CreateDefaultSkin());
-            resumeButton.OnClicked += OnResume;
-            resumeButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
-            _pauseTable.Add(resumeButton).
-                SetMinHeight(Settings.MinButtonHeight.Value).
-                SetMinWidth(Settings.MinButtonWidth.Value).
-                Pad(Settings.CellPadding.Value);
-            _pauseTable.Row().SetPadTop(Settings.CellPadding.Value);
-
-            var restartButton = new TextButton("Restart", Skin.CreateDefaultSkin());
-            restartButton.OnClicked += OnPlayAgain;
-            restartButton.GetLabel().SetFontScale(Settings.FontScaleStatsPopup.Value);
-            _pauseTable.Add(restartButton).
-                SetMinHeight(Settings.MinButtonHeight.Value).
-                SetMinWidth(Settings.MinButtonWidth.Value).
-                Pad(Settings.CellPadding.Value);
-            _pauseTable.Row().SetPadTop(Settings.CellPadding.Value);
-
-            _pauseTable.Add(menuButton).
-                SetMinHeight(Settings.MinButtonHeight.Value).
-                SetMinWidth(Settings.MinButtonWidth.Value).
-                Pad(Settings.CellPadding.Value);
-
-            _pauseTable.SetIsVisible(false);
+            var statsMenu = new PlayScreenStatsMenu(menuBounds, OnPlayAgain, OnMainMenu);
+            statsMenu.Initialize();
+            _statsMenu = Canvas.Stage.AddElement(statsMenu);
+            _statsMenu.SetIsVisible(false);
 
             // This needs to match the render layer of the ScreenSpaceRenderer in SceneBase ctor
             Canvas.SetRenderLayer(-1);
@@ -367,22 +286,6 @@ namespace Raspberry_Lib.Components
             System.Diagnostics.Debug.Assert(MovementComponent != null);
         }
 
-        private Texture2D CreatePostPlayStatsPopupTexture()
-        {
-            var backgroundWidth = (int)Settings.PostPlayStatsPopupWidth.Value;
-            var backgroundHeight = (int)Settings.PostPlayStatsPopupHeight.Value;
-
-            var textureData = new Color[backgroundWidth * backgroundHeight];
-            for (var ii = 0; ii < backgroundWidth * backgroundHeight; ii++)
-            {
-                textureData[ii] = Settings.TextBoxBackgroundTextureColor;
-            }
-            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, backgroundWidth, backgroundHeight);
-            texture.SetData(textureData);
-
-            return texture;
-        }
-
         private void OnPlayAgain(Button iButton)
         {
             _onPlayAgain();
@@ -396,13 +299,13 @@ namespace Raspberry_Lib.Components
         private void OnPause(Button iButton)
         {
             _onPause();
-            _pauseTable.SetIsVisible(true);
+            _pauseMenu.SetIsVisible(true);
         }
 
         private void OnResume(Button iButton)
         {
             _onResume();
-            _pauseTable.SetIsVisible(false);
+            _pauseMenu.SetIsVisible(false);
         }
     }
 }
