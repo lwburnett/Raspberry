@@ -37,6 +37,7 @@ namespace Raspberry_Lib
             var elements = InitializeTableElements();
 
             LayoutTable(elements, _background);
+            _menu.SetTouchable(Touchable.Enabled);
             AddElement(_menu);
 
             if (_onBack != null)
@@ -52,6 +53,8 @@ namespace Raspberry_Lib
 
                 AddElement(_backButton);
             }
+
+            SetTouchable(Touchable.Enabled);
         }
 
         public override void Draw(Batcher batcher, float parentAlpha)

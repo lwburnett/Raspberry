@@ -60,6 +60,7 @@ namespace Raspberry_Lib.Components.UI
             AddCheckboxSettings(table, new[] { "Vibrate", "Screen Shake" });
             AddCheckboxSettings(table, new[] { "Music", "Sound Effects" });
 
+            table.SetTouchable(Touchable.Enabled);
             elements.Add(table);
 
             return elements;
@@ -75,14 +76,14 @@ namespace Raspberry_Lib.Components.UI
                 checkbox.GetLabel().
                     SetFontScale(MySettings.SettingFontScale.Value).
                     SetFontColor(Color.White);
-                
+                checkbox.SetTouchable(Touchable.Enabled);
                 checkbox.Pad(Settings.LabelTopPadding.Value);
 
                 subTable.Add(checkbox).SetAlign(Align.Left);
 
                 subTable.Row();
             }
-
+            subTable.SetTouchable(Touchable.Enabled);
             iTable.Add(subTable);
         }
     }
