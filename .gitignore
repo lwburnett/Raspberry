@@ -19,6 +19,7 @@ mono_crash.*
 
 # Build results
 [Dd]ebug/
+!/Raspberry/Nez/Debug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
