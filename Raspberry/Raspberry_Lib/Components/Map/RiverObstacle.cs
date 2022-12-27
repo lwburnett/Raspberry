@@ -1,17 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Raspberry_Lib.Components;
-
-internal class RiverObstacle
+namespace Raspberry_Lib.Components
 {
-    public RiverObstacle(Vector2 iPosition, int iRockIndex, float iRotationRadians)
+    internal class RiverObstacle
     {
-        Position = iPosition;
-        RockIndex = iRockIndex;
-        RotationRadians = iRotationRadians;
-    }
+        public RiverObstacle(Vector2 iPosition, int iRockIndex, float iRotationRadians)
+        {
+            Position = iPosition;
+            RockIndex = iRockIndex;
+            RotationRadians = iRotationRadians;
+        }
 
-    public Vector2 Position { get; }
-    public int RockIndex { get; }
-    public float RotationRadians { get; }
+        public Vector2 Position { get; }
+        public int RockIndex { get; }
+        public float RotationRadians { get; }
+    }
 }
