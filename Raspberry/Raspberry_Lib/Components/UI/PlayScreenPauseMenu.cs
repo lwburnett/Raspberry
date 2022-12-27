@@ -32,6 +32,7 @@ namespace Raspberry_Lib.Components.UI
                 SetFontScale(Settings.FontScale.Value).
                 SetFontColor(Color.White).
                 SetAlignment(Align.TopLeft);
+            pauseTitle.SetAlignment(Align.Center);
             elements.Add(pauseTitle);
 
             var resumeButton = new TextButton("Resume", Skin.CreateDefaultSkin());

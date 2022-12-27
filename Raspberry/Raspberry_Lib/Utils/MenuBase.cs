@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
@@ -16,13 +17,19 @@ namespace Raspberry_Lib
             public static readonly RenderSetting FontScale = new(5);
             public static readonly RenderSetting MinButtonWidth = new(300);
             public static readonly RenderSetting MinButtonHeight = new(80);
+
+
+            public static readonly RenderSetting BackButtonXOffset = new(80);
+            public static readonly RenderSetting BackButtonYOffset = new(80);
         }
 
-        protected MenuBase(RectangleF iBounds)
+        protected MenuBase(RectangleF iBounds, Action<Button> iOnBack = null)
         {
             _menu = new Table();
             _menu.SetBounds(iBounds.X, iBounds.Y, iBounds.Width, iBounds.Height);
             _background = CreateBackgroundTexture(iBounds.Size);
+
+            _onBack = iOnBack;
         }
 
         public void Initialize()
@@ -31,16 +38,33 @@ namespace Raspberry_Lib
 
             LayoutTable(elements, _background);
             AddElement(_menu);
+
+            if (_onBack != null)
+            {
+                _backButton = new TextButton("Back", Skin.CreateDefaultSkin());
+                _backButton.OnClicked += _onBack;
+                _backButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+                _backButton.SetBounds(
+                    _menu.GetX() + Settings.BackButtonXOffset.Value,
+                    _menu.GetY() + Settings.BackButtonYOffset.Value,
+                    Settings.MinButtonWidth.Value / 2,
+                    Settings.MinButtonHeight.Value);
+
+                AddElement(_backButton);
+            }
         }
 
         public override void Draw(Batcher batcher, float parentAlpha)
         {
             base.Draw(batcher, parentAlpha);
             _menu.Draw(batcher, parentAlpha);
+            _backButton?.Draw(batcher, parentAlpha);
         }
 
         private readonly Table _menu;
+        private TextButton _backButton;
         private readonly Texture2D _background;
+        private readonly Action<Button> _onBack;
 
         protected abstract IEnumerable<Element> InitializeTableElements();
 

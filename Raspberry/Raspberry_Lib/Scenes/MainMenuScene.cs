@@ -72,8 +72,8 @@ namespace Raspberry_Lib.Scenes
             var mainMenu = new TitleScreenMainMenu(
                 menuBounds, 
                 OnPlayClicked, 
-                OnTutorialClicked, 
                 OnCreditsClicked, 
+                OnSettingsClicked,
                 OnMenuBackClicked);
             mainMenu.Initialize();
             mainMenu.SetIsVisible(false);
@@ -83,12 +83,21 @@ namespace Raspberry_Lib.Scenes
                 OnDistanceChallengeClicked,
                 OnTimeChallengeClicked,
                 OnEndlessClicked,
+                OnTutorialClicked,
                 OnPlayBackClicked);
             playMenu.Initialize();
             playMenu.SetIsVisible(false);
-            
+
+            var settingsMenu = new SettingsMenu(
+                menuBounds,
+                OnPlayBackClicked);
+            settingsMenu.Initialize();
+            settingsMenu.SetIsVisible(false);
+
             _mainMenu = canvas.Stage.AddElement(mainMenu);
             _playMenu = canvas.Stage.AddElement(playMenu);
+            _settingsMenu = canvas.Stage.AddElement(settingsMenu);
+
 
             canvas.Stage.
                 AddElement(new Label(Settings.Version)).
@@ -115,7 +124,7 @@ namespace Raspberry_Lib.Scenes
         {
             _secondsSinceButtonClickAction += Time.DeltaTime;
 
-            if (!_mainMenu.IsVisible() && !_playMenu.IsVisible())
+            if (!_mainMenu.IsVisible() && !_playMenu.IsVisible() && !_settingsMenu.IsVisible())
             {
                 if (Input.Touch.IsConnected)
                 {
@@ -138,6 +147,7 @@ namespace Raspberry_Lib.Scenes
 
         private MenuBase _mainMenu;
         private MenuBase _playMenu;
+        private MenuBase _settingsMenu;
         private VirtualButton _inputButton;
         private readonly Action<int?> _onStart;
         private readonly Action _onTutorial;
@@ -159,6 +169,7 @@ namespace Raspberry_Lib.Scenes
 
             _mainMenu.SetIsVisible(false);
             _playMenu.SetIsVisible(true);
+            _settingsMenu.SetIsVisible(false);
 
             _secondsSinceButtonClickAction = 0;
         }
@@ -182,6 +193,18 @@ namespace Raspberry_Lib.Scenes
 
             _secondsSinceButtonClickAction = 0;
         }
+        
+        private void OnSettingsClicked(Button iButton)
+        {
+            if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
+                return;
+
+            _mainMenu.SetIsVisible(false);
+            _playMenu.SetIsVisible(false);
+            _settingsMenu.SetIsVisible(true);
+
+            _secondsSinceButtonClickAction = 0;
+        }
 
         private void OnMenuBackClicked(Button iButton)
         {
@@ -190,6 +213,7 @@ namespace Raspberry_Lib.Scenes
 
             _mainMenu.SetIsVisible(false);
             _playMenu.SetIsVisible(false);
+            _settingsMenu.SetIsVisible(false);
 
             _secondsSinceButtonClickAction = 0;
         }
@@ -231,6 +255,7 @@ namespace Raspberry_Lib.Scenes
 
             _mainMenu.SetIsVisible(true);
             _playMenu.SetIsVisible(false);
+            _settingsMenu.SetIsVisible(false);
 
             _secondsSinceButtonClickAction = 0;
         }
@@ -241,6 +266,7 @@ namespace Raspberry_Lib.Scenes
 
             _mainMenu.SetIsVisible(true);
             _playMenu.SetIsVisible(false);
+            _settingsMenu.SetIsVisible(false);
 
             _secondsSinceButtonClickAction = 0;
 

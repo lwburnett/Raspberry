@@ -7,56 +7,56 @@ namespace Raspberry_Lib.Components.UI
 {
     internal class TitleScreenPlayMenu : MenuBase
     {
-
         public TitleScreenPlayMenu(
             RectangleF iBounds,
             Action<Button> iOnDistanceChallenge,
             Action<Button> iOnTimeChallenge,
             Action<Button> iOnEndless,
-            Action<Button> iOnBack) : base(iBounds)
+            Action<Button> iOnTutorial,
+            Action<Button> iOnBack) : base(iBounds, iOnBack)
         {
-            _iOnDistanceChallenge = iOnDistanceChallenge;
-            _iOnTimeChallenge = iOnTimeChallenge;
-            _iOnEndless = iOnEndless;
-            _iOnBack = iOnBack;
+            _onDistanceChallenge = iOnDistanceChallenge;
+            _onTimeChallenge = iOnTimeChallenge;
+            _onEndless = iOnEndless;
+            _onTutorial = iOnTutorial;
         }
 
-        private readonly Action<Button> _iOnDistanceChallenge;
-        private readonly Action<Button> _iOnTimeChallenge;
-        private readonly Action<Button> _iOnEndless;
-        private readonly Action<Button> _iOnBack;
+        private readonly Action<Button> _onDistanceChallenge;
+        private readonly Action<Button> _onTimeChallenge;
+        private readonly Action<Button> _onEndless;
+        private readonly Action<Button> _onTutorial;
 
         protected override IEnumerable<Element> InitializeTableElements()
         {
             var elements = new List<Element>();
 
             var distButton = new TextButton("Dist Challenge", Skin.CreateDefaultSkin());
-            distButton.OnClicked += _iOnDistanceChallenge;
+            distButton.OnClicked += _onDistanceChallenge;
             distButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             distButton.SetWidth(Settings.MinButtonWidth.Value);
             distButton.SetHeight(Settings.MinButtonHeight.Value);
             elements.Add(distButton);
 
             var timeButton = new TextButton("Time Challenge", Skin.CreateDefaultSkin());
-            timeButton.OnClicked += _iOnTimeChallenge;
+            timeButton.OnClicked += _onTimeChallenge;
             timeButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             timeButton.SetWidth(Settings.MinButtonWidth.Value);
             timeButton.SetHeight(Settings.MinButtonHeight.Value);
             elements.Add(timeButton);
 
             var endlessButton = new TextButton("Endless", Skin.CreateDefaultSkin());
-            endlessButton.OnClicked += _iOnEndless;
+            endlessButton.OnClicked += _onEndless;
             endlessButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             endlessButton.SetWidth(Settings.MinButtonWidth.Value);
             endlessButton.SetHeight(Settings.MinButtonHeight.Value);
             elements.Add(endlessButton);
 
-            var backButton = new TextButton("Back", Skin.CreateDefaultSkin());
-            backButton.OnClicked += _iOnBack;
-            backButton.GetLabel().SetFontScale(Settings.FontScale.Value);
-            backButton.SetWidth(Settings.MinButtonWidth.Value);
-            backButton.SetHeight(Settings.MinButtonHeight.Value);
-            elements.Add(backButton);
+            var tutorialButton = new TextButton("Tutorial", Skin.CreateDefaultSkin());
+            tutorialButton.OnClicked += _onTutorial;
+            tutorialButton.GetLabel().SetFontScale(Settings.FontScale.Value);
+            tutorialButton.SetWidth(Settings.MinButtonWidth.Value);
+            tutorialButton.SetHeight(Settings.MinButtonHeight.Value);
+            elements.Add(tutorialButton);
 
             return elements;
         }
