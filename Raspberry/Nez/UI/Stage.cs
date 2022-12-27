@@ -226,7 +226,7 @@ namespace Nez.UI
 				if (Entity != null && !IsFullScreen)
 					inputPos = Input.ScaledPosition(inputPos);
 				
-				UpdateInputPoint(inputPos, inputPressed, false, inputReleased, false, inputMoved, ref lastOver);
+				UpdateInputPoint(inputPos, inputPressed, inputPressed, inputReleased, inputReleased, inputMoved, ref lastOver);
 
 				if (inputReleased)
 					_touchOverElement.Remove(touch.Id);
