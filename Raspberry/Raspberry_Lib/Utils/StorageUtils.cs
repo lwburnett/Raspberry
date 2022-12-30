@@ -23,126 +23,61 @@ namespace Raspberry_Lib
         {
             FileManager.RegisterBaseDirectory(Nez.Storage.GetStorageRoot());
             sDataFileReadWriteLock = new object();
-            sDataPropertyReadWriteLock = new object();
             sSettingsFileReadWriteLock = new object();
-            sSettingsPropertyReadWriteLock = new object();
-
-            sGameSettings = new GameSettings();
-            sSettingsSet = false;
-            sGameData = new GameData();
-            sDataSet = false;
         }
 
         private static readonly object sDataFileReadWriteLock;
-        private static readonly object sDataPropertyReadWriteLock;
         private static readonly object sSettingsFileReadWriteLock;
-        private static readonly object sSettingsPropertyReadWriteLock;
 
-        private static GameSettings sGameSettings;
-        private static bool sSettingsSet;
-        private static GameData sGameData;
-        private static bool sDataSet;
-
-        public static void ReadSettingsFromDiskAsync()
+        public static Task<GameSettings> ReadSettingsFromDiskAsync()
         {
-            if (!sSettingsSet)
-                System.Diagnostics.Debug.Fail("Already read settings from disk.");
-
-            Task.Run(DoReadSettings);
+            return Task.Run(DoReadSettings);
         }
 
-        public static void WriteSettingsToDiskAsync()
+        public static Task WriteSettingsToDiskAsync(GameSettings iGameSettings)
         {
-            if (!sSettingsSet)
-                System.Diagnostics.Debug.Fail("Writing default settings to disk.");
-
-            Task.Run(DoWriteSettings);
+            return Task.Run(() => DoWriteSettings(iGameSettings));
         }
 
-        public static void ReadDataFromDiskAsync()
+        public static Task<GameData> ReadDataFromDiskAsync()
         {
-            if (!sDataSet)
-                System.Diagnostics.Debug.Fail("Already read data from disk.");
-
-            Task.Run(DoReadData);
+            return Task.Run(DoReadData);
         }
 
-        public static void WriteDataToDiskAsync()
+        public static Task WriteDataToDiskAsync(GameData iGameData)
         {
-            if (!sDataSet)
-                System.Diagnostics.Debug.Fail("Writing default data to disk.");
-
-            Task.Run(DoWriteData);
+            return Task.Run(() => DoWriteData(iGameData));
         }
 
-        public static GameSettings GameSettings
+        private static GameSettings DoReadSettings()
         {
-            get
-            {
-                lock (sSettingsPropertyReadWriteLock)
-                {
-                    return sGameSettings;
-                }
-            }
-            private set
-            {
-                lock (sSettingsPropertyReadWriteLock)
-                {
-                    sGameSettings = value;
-                    sSettingsSet = true;
-                }
-            }
-        }
-
-        public static GameData GameData
-        {
-            get
-            {
-                lock (sDataPropertyReadWriteLock)
-                {
-                    return sGameData;
-                }
-            }
-            private set
-            {
-                lock (sDataPropertyReadWriteLock)
-                {
-                    sGameData = value;
-                    sDataSet = true;
-                }
-            }
-        }
-
-        private static void DoReadSettings()
-        {
-            HandleRead(
+            return HandleRead(
                 Settings.SettingsFileName, 
                 sSettingsFileReadWriteLock,
-                gs => GameSettings = gs,
                 () => new GameSettings(),
                 "Game Setting",
                 "Game Settings");
         }
 
-        private static void DoReadData()
+        private static GameData DoReadData()
         {
-            HandleRead(
+            return HandleRead(
                 Settings.DataFileName,
                 sDataFileReadWriteLock,
-                gs => GameData = gs,
                 () => new GameData(),
                 "Game Data",
                 "Game Data");
         }
 
-        private static void HandleRead<T>(
+        private static T HandleRead<T>(
             string iFileName, 
             object iLock,
-            Action<T> iPropertySetter, 
             Func<T> iDefaultConstruction, 
             string iSingularDescriptor,
             string iPluralDescriptor)
         {
+            var objectToReturn = iDefaultConstruction();
+
             if (TryReadFile(iFileName, iLock, out var lines))
             {
                 var parseIsSuccessful = true;
@@ -152,7 +87,7 @@ namespace Raspberry_Lib
                 var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
                 var readableProperties = properties.Where(property => property.CanRead).ToList();
-
+                
                 if (realLines.Count == readableProperties.Count)
                 {
                     var typeList = new List<Type>();
@@ -177,6 +112,10 @@ namespace Raspberry_Lib
                                 break;
                             }
                         }
+                        else if (thisLine == "null")
+                        {
+                            valueList.Add(null);
+                        }
                         else
                         {
                             parseIsSuccessful = false;
@@ -191,7 +130,7 @@ namespace Raspberry_Lib
                         if (constructor != null)
                         {
                             var obj = (T)constructor.Invoke(valueList.ToArray());
-                            iPropertySetter(obj);
+                            objectToReturn = obj;
                         }
                         else
                         {
@@ -209,21 +148,24 @@ namespace Raspberry_Lib
                 if (!parseIsSuccessful)
                 {
                     var obj = iDefaultConstruction();
-                    iPropertySetter(obj);
+                    objectToReturn = obj;
                 }
             }
             else
             {
                 // Deciding not to debug.fail here because the file might not exist the first time
                 var obj = iDefaultConstruction();
-                iPropertySetter(obj);
+                objectToReturn = obj;
             }
+
+            return objectToReturn;
         }
 
         private static bool TryReadFile(string iName, object iLock,  out List<string> oLines)
         {
             try
             {
+                bool wasSuccess;
                 var lines = new List<string>();
                 lock (iLock)
                 {
@@ -236,11 +178,16 @@ namespace Raspberry_Lib
                             while ((line = reader.ReadLine()) != null)
                                 lines.Add(line);
                         }
+                        wasSuccess = true;
+                    }
+                    else
+                    {
+                        wasSuccess = false;
                     }
                 }
 
                 oLines = lines;
-                return true;
+                return wasSuccess;
             }
             catch (Exception ex)
             {
@@ -250,35 +197,89 @@ namespace Raspberry_Lib
             }
         }
 
-        private static void DoWriteSettings()
+        private static void DoWriteSettings(GameSettings iGameSettings)
         {
-
+            HandleWrite(
+                Settings.SettingsFileName,
+                sSettingsFileReadWriteLock,
+                iGameSettings,
+                "Game Setting");
         }
 
-        private static void DoWriteData()
+        private static void DoWriteData(GameData iGameData)
         {
-
+            HandleWrite(
+                Settings.DataFileName,
+                sDataFileReadWriteLock,
+                iGameData,
+                "Game Data");
         }
 
         private static void HandleWrite<T>(
-            string iFileName, 
-            object iLock, 
+            string iFileName,
+            object iLock,
             T iObject,
-            string iSingularDescriptor,
-            string iPluralDescriptor)
+            string iSingularDescriptor)
         {
-            lock (iLock)
-            {
-                var successfullyOpenedStream = FileManager.TryOpenStreamWriteSafe(iFileName, out var stream);
+            var tmpFileName = $"{Guid.NewGuid()}.txt";
 
-                if (successfullyOpenedStream)
+            var successfullyOpenedTmpStream = FileManager.TryOpenStreamWriteSafe(tmpFileName, out var stream);
+
+            var successfulTmpFileWrite = successfullyOpenedTmpStream;
+
+            if (successfullyOpenedTmpStream)
+            {
+                using (stream)
+                using (var writer = new StreamWriter(stream, Encoding.ASCII))
                 {
-                    using (stream)
+                    var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                    var readableProperties = properties.Where(property => property.CanRead).ToList();
+
+                    var typeList = readableProperties.Select(p => p.PropertyType).ToList();
+                    var valueList = readableProperties.Select(p => p.GetValue(iObject)).ToList();
+                    for (var ii = 0; ii < valueList.Count; ii++)
                     {
+                        var thisType = typeList[ii];
+                        var thisValue = valueList[ii];
+
+                        if (thisType.IsValueType)
+                            writer.WriteLine(thisValue);
+                        else if (thisValue == null)
+                        {
+                            writer.WriteLine("null");
+                        }
+                        else
+                        {
+                            successfulTmpFileWrite = false;
+                            System.Diagnostics.Debug.Fail($"Unsupported {iSingularDescriptor} type {thisType}.");
+                            break;
+                        }
                     }
                 }
-                else
+            }
+            else
+            {
+                System.Diagnostics.Debug.Fail("Failed to open temp file.");
+            }
+
+            if (successfulTmpFileWrite)
+            {
+                bool successfulRename;
+
+                lock (iLock)
                 {
+                    successfulRename = FileManager.TryRenameFile(tmpFileName, iFileName, true);
+                }
+
+                if (!successfulRename)
+                {
+                    System.Diagnostics.Debug.Fail("Failed to rename temp file.");
+
+                    var successfulTmpDelete = FileManager.TryDeleteFile(tmpFileName);
+
+                    if (!successfulTmpDelete)
+                        System.Diagnostics.Debug.Fail($"Failed to delete temp file {tmpFileName}.");
                 }
             }
         }
@@ -314,6 +315,72 @@ namespace Raspberry_Lib
                 oStream = stream;
 
                 return stream != null;
+            }
+
+            public static bool TryRenameFile(string iSourceFile, string iDestFile, bool iOverwrite)
+            {
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(sBaseDirectory))
+                    {
+                        var sourcePath = Path.Combine(sBaseDirectory, iSourceFile);
+
+                        if (File.Exists(sourcePath))
+                        {
+                            var destinationPath = Path.Combine(sBaseDirectory, iDestFile);
+
+                            if (File.Exists(destinationPath))
+                            {
+                                if (iOverwrite)
+                                {
+                                    File.Delete(destinationPath);
+                                    File.Move(sourcePath, destinationPath);
+                                }
+                                else
+                                {
+                                    System.Diagnostics.Debug.Fail($"Will not delete destination file {iDestFile}.");
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                File.Move(sourcePath, destinationPath);
+                            }
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.Fail($"Source file does not exist {sourcePath}.");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.Fail($"Failed to rename file from {iSourceFile} to {iDestFile}.");
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Fail(ex.Message);
+                    return false;
+                }
+
+                return true;
+            }
+
+            public static bool TryDeleteFile(string iFileName)
+            {
+                try
+                {
+                    var path = Path.Combine(sBaseDirectory, iFileName);
+                    File.Delete(path);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Fail(ex.Message);
+                    return false;
+                }
             }
 
             private static string sBaseDirectory;

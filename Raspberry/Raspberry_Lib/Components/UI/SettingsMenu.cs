@@ -16,7 +16,7 @@ namespace Raspberry_Lib.Components.UI
             public static readonly RenderSetting SettingFontScale = new(5);
         }
 
-        public SettingsMenu(RectangleF iBounds, Action<Button> iOnBack) : base(iBounds, iOnBack)
+        public SettingsMenu(RectangleF iBounds, Action<Button> iOnBack) : base(iBounds, b => OnBack(b, iOnBack))
         {
             _bounds = iBounds;
         }
@@ -56,25 +56,63 @@ namespace Raspberry_Lib.Components.UI
             table.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
             // Settings
-
-            AddCheckboxSettings(table, new[] { "Vibrate", "Screen Shake" });
-            AddCheckboxSettings(table, new[] { "Music", "Sound Effects" });
+            var gameSettings = SettingsManager.GetGameSettings();
+            AddCheckboxSettings(table, new[]
+            {
+                new SettingConfig("Vibrate", gameSettings.Vibrate,
+                    iVal =>
+                    {
+                        SettingsManager.SetGameSettings(new GameSettings(iVal, gameSettings.ScreenShake, gameSettings.Music, gameSettings.Sfx));
+                    }),
+                new SettingConfig("Screen Shake", gameSettings.ScreenShake,
+                    iVal =>
+                    {
+                        SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, iVal, gameSettings.Music, gameSettings.Sfx));
+                    })
+            });
+            AddCheckboxSettings(table, new[]
+            {
+                new SettingConfig("Music", gameSettings.Music, iVal =>
+                {
+                    SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake, iVal, gameSettings.Sfx));
+                }),
+                new SettingConfig("Sounds Effects", gameSettings.Sfx, iVal =>
+                {
+                    SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake, gameSettings.Music, iVal));
+                })
+            });
 
             elements.Add(table);
 
             return elements;
         }
 
-        private void AddCheckboxSettings(Table iTable, IEnumerable<string> iNames)
+        private class SettingConfig
+        {
+            public SettingConfig(string iName, bool iInitialValue, Action<bool> iOnChange)
+            {
+                Name = iName;
+                InitialValue = iInitialValue;
+                Change = iOnChange;
+            }
+
+            public string Name { get; }
+            public bool InitialValue { get; }
+            public Action<bool> Change { get; }
+        }
+
+        private void AddCheckboxSettings(Table iTable, IEnumerable<SettingConfig> iSettings)
         {
             var subTable = new Table();
 
-            foreach (var name in iNames)
+            foreach (var setting in iSettings)
             {
-                var checkbox = new CheckBox(name, Skin.CreateDefaultSkin());
+                var checkbox = new CheckBox(setting.Name, Skin.CreateDefaultSkin());
                 checkbox.GetLabel().
                     SetFontScale(MySettings.SettingFontScale.Value).
                     SetFontColor(Color.White);
+                checkbox.IsChecked = setting.InitialValue;
+                checkbox.OnClicked += _ => setting.Change(checkbox.IsChecked);
                 
                 checkbox.Pad(Settings.LabelTopPadding.Value);
 
@@ -84,6 +122,13 @@ namespace Raspberry_Lib.Components.UI
             }
 
             iTable.Add(subTable);
+        }
+
+        private static void OnBack(Button iButton, Action<Button> iParentOnBack)
+        {
+            SettingsManager.SaveSettings();
+
+            iParentOnBack(iButton);
         }
     }
 }

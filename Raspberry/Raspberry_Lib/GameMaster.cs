@@ -58,6 +58,8 @@ namespace Raspberry_Lib
                 Screen.SetSize((int)(renderScaleFactor * Settings.TargetScreenSize.X * .95f), (int)(renderScaleFactor * Settings.TargetScreenSize.Y * .95f));
             }
 
+            SettingsManager.Initialize();
+
             Batcher.UseFnaHalfPixelMatrix = true;
             Scene = new MainMenuScene(OnPlay, OnTutorial, OnCredits);
         }
