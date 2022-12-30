@@ -59,6 +59,7 @@ namespace Raspberry_Lib
             }
 
             SettingsManager.Initialize();
+            DataManager.Initialize();
 
             Batcher.UseFnaHalfPixelMatrix = true;
             Scene = new MainMenuScene(OnPlay, OnTutorial, OnCredits);

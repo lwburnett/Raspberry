@@ -25,7 +25,7 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting VersionInsetY = new(50);
             public static readonly RenderSetting VersionFontScale = new(3);
 
-            public static readonly RenderSetting MenuWidth = new(900);
+            public static readonly RenderSetting MenuWidth = new(1050);
             public static readonly RenderSetting MenuHeight = new(500);
 
             public const float MinimumSecondBetweenButtonClicks = .5f;
