@@ -103,7 +103,8 @@ namespace Raspberry_Lib.Components.UI
                 data.DistChallengeRecord.HasValue && 
                 data.DistChallengeRecordDateTime.Value.Date == DateTime.Today.Date)
             {
-                distRecordString = $"{data.DistChallengeRecord.Value / MySettings.DistanceToMetersFactor.Value} meters";
+                var rawVal = (int)Mathf.Round(data.DistChallengeRecord.Value / MySettings.DistanceToMetersFactor.Value);
+                distRecordString = $"{rawVal}";
             }
             else
             {
@@ -121,7 +122,7 @@ namespace Raspberry_Lib.Components.UI
                 data.TimeChallengeRecord.HasValue &&
                 data.TimeChallengeRecordDateTime.Value.Date == DateTime.Today.Date)
             {
-                timeRecordString = $"{data.TimeChallengeRecord.Value.TotalMinutes} minutes";
+                timeRecordString = $"{data.TimeChallengeRecord.Value:mm':'ss}";
             }
             else
             {
@@ -137,7 +138,8 @@ namespace Raspberry_Lib.Components.UI
             string endlessRecordString;
             if (data.EndlessChallengeRecord.HasValue)
             {
-                endlessRecordString = $"{data.EndlessChallengeRecord.Value / MySettings.DistanceToMetersFactor.Value} meters";
+                var rawVal = (int)Mathf.Round(data.EndlessChallengeRecord.Value / MySettings.DistanceToMetersFactor.Value);
+                endlessRecordString = $"{rawVal:D}";
             }
             else
             {
