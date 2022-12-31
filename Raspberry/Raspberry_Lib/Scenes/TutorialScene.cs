@@ -5,7 +5,7 @@ namespace Raspberry_Lib.Scenes
 {
     internal class TutorialScene : GamePlayScene
     {
-        public TutorialScene(Action iOnPlayAgain, Action iOnMainMenu) : base((_, _) => iOnPlayAgain(), iOnMainMenu, DataManager.OnNewEndlessData, null)
+        public TutorialScene(Action iOnPlayAgain, Action iOnMainMenu) : base(_ => iOnPlayAgain(), iOnMainMenu, Scenario.CreateEndlessChallengeScenario())
         {
         }
 

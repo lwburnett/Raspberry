@@ -58,7 +58,7 @@ namespace Raspberry_Lib.Components
         }
 
         public TutorialUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu, Action iOnPause, Action iOnResume) :
-            base(iOnPlayAgain, iOnMainMenu, iOnPause, iOnResume)
+            base(iOnPlayAgain, iOnMainMenu, iOnPause, iOnResume, Scenario.CreateEndlessChallengeScenario())
         {
             _currentState = 0;
             _timeSinceLastBlinkToggle = null;

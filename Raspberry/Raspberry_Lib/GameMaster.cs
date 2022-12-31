@@ -71,9 +71,9 @@ namespace Raspberry_Lib
             Scene = new MainMenuScene(OnPlay, OnTutorial, OnCredits);
         }
 
-        private void OnPlay(Action<float, float> iRegisterStatsOnPlayEnd, int? iSeed = null)
+        private void OnPlay(Scenario iScenario)
         {
-            Scene = new GamePlayScene(OnPlay, OnMainMenu, iRegisterStatsOnPlayEnd, iSeed);
+            Scene = new GamePlayScene(OnPlay, OnMainMenu, iScenario);
         }
 
         private void OnTutorial()

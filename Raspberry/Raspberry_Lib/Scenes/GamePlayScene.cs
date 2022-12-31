@@ -3,7 +3,6 @@ using Raspberry_Lib.Components;
 using Raspberry_Lib.Content;
 using System;
 using Nez;
-using Random = System.Random;
 
 namespace Raspberry_Lib.Scenes
 {
@@ -17,15 +16,19 @@ namespace Raspberry_Lib.Scenes
         }
 
 
-        public GamePlayScene(Action<Action<float, float>, int?> iOnPlayAgain, Action iOnMainMenu, Action<float, float> iOnRegisterStatsOnRunEnd, int? iSeed)
+        public GamePlayScene(
+            Action<Scenario> iOnPlayAgain, 
+            Action iOnMainMenu,
+            Scenario iScenario)
         {
             _onMainMenu = iOnMainMenu;
             _onPlayAgain = iOnPlayAgain;
-            _onRegisterStatsOnRunEnd = iOnRegisterStatsOnRunEnd;
+            _scenario = iScenario;
+
             ClearColor = ContentData.ColorPallets.Desert.Color2;
-            _seed = iSeed;
-            _isPaused = false;
+            _isRunning = true;
             _runTime = 0f;
+            _lost = false;
 
             PostConstructionInitialize();
         }
@@ -34,25 +37,42 @@ namespace Raspberry_Lib.Scenes
         {
             base.Update();
 
-            if (!_isPaused)
+            if (_isRunning)
                 _runTime += Time.DeltaTime;
+
+            if (_movementComponent == null)
+            {
+                _movementComponent = _characterComponent.GetComponent<CharacterMovementComponent>();
+                _characterComponent.TogglePause(true);
+            }
+
+            if (_scenario.HaveLost(_movementComponent.TotalDistanceTraveled, _runTime, !_lost))
+            {
+                OnPlayEnd(false);
+            }
+            else if (_scenario.HaveEnded(_movementComponent.TotalDistanceTraveled, _runTime, !_lost))
+            {
+                OnPlayEnd(true);
+            }
         }
 
         protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
             return uiEntity.AddComponent(
-                new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu, OnPause, OnResume));
+                new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu, OnPause, OnResume, _scenario));
         }
 
-        private readonly Action<Action<float, float>, int?> _onPlayAgain;
+        private readonly Action<Scenario> _onPlayAgain;
         private readonly Action _onMainMenu;
-        private readonly Action<float, float> _onRegisterStatsOnRunEnd;
+        private readonly Scenario _scenario;
+
         private PlayUiCanvasComponent _uiComponent;
         private BoatCharacterComponent _characterComponent;
-        private readonly int? _seed;
-        private bool _isPaused;
+        private bool _isRunning;
         private float _runTime;
+        private bool _lost;
+        private CharacterMovementComponent _movementComponent;
 
         // Initialization needs to be after construction so that _seed is initialized
         private void PostConstructionInitialize()
@@ -61,7 +81,7 @@ namespace Raspberry_Lib.Scenes
 
             var characterStartingPos = new Vector2(Settings.CharacterStartPositionX.Value, Settings.CharacterStartPositionY.Value);
 
-            var proceduralGenerator = new ProceduralGeneratorComponent(_seed);
+            var proceduralGenerator = new ProceduralGeneratorComponent(_scenario.Seed);
             var map = CreateEntity("map");
             map.Transform.SetLocalScale(Settings.MapScale.Value);
             map.AddComponent(proceduralGenerator);
@@ -72,10 +92,10 @@ namespace Raspberry_Lib.Scenes
 
             var character = CreateEntity("character", characterStartingPos);
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
-            _characterComponent = character.AddComponent(new BoatCharacterComponent(OnPlayEnd));
+            _characterComponent = character.AddComponent(new BoatCharacterComponent(OnLose));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
 
-            if (new Random().Next() % 2 == 0)
+            if (new System.Random().Next() % 2 == 0)
             {
                 SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic1, .35f);
             }
@@ -90,13 +110,21 @@ namespace Raspberry_Lib.Scenes
 #endif
         }
 
-        private void OnPlayEnd()
+        private void OnLose()
         {
-            _uiComponent.OnPlayEnd();
+            _lost = true;
+        }
+
+        private void OnPlayEnd(bool iUploadStats)
+        {
+            _isRunning = false;
+            _uiComponent.OnPlayEnd(!iUploadStats, _runTime);
             _characterComponent.TogglePause(true);
-            
-            var movementComponent = _characterComponent.GetComponent<CharacterMovementComponent>();
-            _onRegisterStatsOnRunEnd(movementComponent.TotalDistanceTraveled, _runTime);
+
+            if (iUploadStats)
+            {
+                _scenario.RegisterStats(_movementComponent.TotalDistanceTraveled, _runTime);
+            }
         }
 
         private void OnPlayAgain()
@@ -105,7 +133,7 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearCollidersToRender();
             Verbose.ClearMetrics();
 #endif
-            _onPlayAgain(_onRegisterStatsOnRunEnd, _seed);
+            _onPlayAgain(_scenario);
 
         }
 
@@ -122,13 +150,13 @@ namespace Raspberry_Lib.Scenes
         protected void OnPause()
         {
             _characterComponent.TogglePause(true);
-            _isPaused = true;
+            _isRunning = false;
         }
 
         protected void OnResume()
         {
             _characterComponent.TogglePause(false);
-            _isPaused = false;
+            _isRunning = true;
         }
     }
 }

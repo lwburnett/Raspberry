@@ -14,6 +14,7 @@ namespace Raspberry_Lib
             public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
             public static readonly RenderSetting LabelTopPadding = new(20);
 
+            public static readonly RenderSetting TitleFontScale = new(6);
             public static readonly RenderSetting FontScale = new(5);
             public static readonly RenderSetting MinButtonWidth = new(300);
             public static readonly RenderSetting MinButtonHeight = new(80);

@@ -11,7 +11,6 @@ namespace Raspberry_Lib.Components
     {
         private static class Settings
         {
-            public static readonly RenderSetting DistanceToMetersFactor = new(40);
             public static readonly RenderSetting Margin = new(100);
             public const int FontScale = 6;
             public static readonly RenderSetting DistanceLabelWidth = new(200);
@@ -31,12 +30,18 @@ namespace Raspberry_Lib.Components
 
         }
 
-        public PlayUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu, Action iOnPause, Action iOnResume)
+        public PlayUiCanvasComponent(
+            Action iOnPlayAgain, 
+            Action iOnMainMenu, 
+            Action iOnPause, 
+            Action iOnResume, 
+            Scenario iScenario)
         { 
             _onPlayAgain = iOnPlayAgain;
             _onMainMenu = iOnMainMenu;
             _onPause = iOnPause;
             _onResume = iOnResume;
+            _scenario = iScenario;
 
             _upPressed = false;
             _downPressed = false;
@@ -52,6 +57,7 @@ namespace Raspberry_Lib.Components
         public void OnBeginPlay()
         {
             BeginPlayInternal();
+            _introMenu.SetIsVisible(true);
         }
 
         public void Update()
@@ -59,11 +65,12 @@ namespace Raspberry_Lib.Components
             UpdateInternal();
         }
 
-        public void OnPlayEnd()
+        public void OnPlayEnd(bool iLost, float iRunTime)
         {
-            _statsMenu.SetDistanceTraveled(DistanceLabel.GetText());
+            _statsMenu.SetData(iLost, DistanceLabel.GetText(), iRunTime);
             _statsMenu.SetIsVisible(true);
             _pauseButton.SetIsVisible(false);
+            _introMenu.SetIsVisible(false);
         }
 
         private enum RowColor
@@ -83,6 +90,7 @@ namespace Raspberry_Lib.Components
         private readonly Action _onMainMenu;
         private readonly Action _onPause;
         private readonly Action _onResume;
+        private readonly Scenario _scenario;
 
         private Image _upIndicator;
         private Image _downIndicator;
@@ -109,6 +117,7 @@ namespace Raspberry_Lib.Components
 
         private PlayScreenStatsMenu _statsMenu;
         private Element _pauseMenu;
+        private PlayScreenIntroMenu _introMenu;
         private TextButton _pauseButton;
 
         protected virtual void OnAddedToEntityInternal()
@@ -176,18 +185,34 @@ namespace Raspberry_Lib.Components
                 Settings.DistanceLabelWidth.Value / 2,
                 Settings.DistanceLabelHeight.Value / 2);
 
-            // Pause and stats menus
+            // Intro, pause, and end menus
             var menuBounds = new RectangleF((Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
                 (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
                 Settings.PostPlayStatsPopupWidth.Value,
                 Settings.PostPlayStatsPopupHeight.Value);
+
+            var introMenu = new PlayScreenIntroMenu(
+                menuBounds, 
+                _scenario.Title,
+                _scenario.IntroLines,
+                OnResume, 
+                OnMainMenu);
+            introMenu.Initialize();
+            _introMenu = Canvas.Stage.AddElement(introMenu);
+            _introMenu.SetIsVisible(false);
 
             var pauseMenu = new PlayScreenPauseMenu(menuBounds, OnResume, OnPlayAgain, OnMainMenu);
             pauseMenu.Initialize();
             _pauseMenu = Canvas.Stage.AddElement(pauseMenu);
             _pauseMenu.SetIsVisible(false);
 
-            var statsMenu = new PlayScreenStatsMenu(menuBounds, OnPlayAgain, OnMainMenu);
+            var statsMenu = new PlayScreenStatsMenu(
+                menuBounds, 
+                _scenario.Title,
+                _scenario.LoseLines,
+                _scenario.EndLines,
+                OnPlayAgain, 
+                OnMainMenu);
             statsMenu.Initialize();
             _statsMenu = Canvas.Stage.AddElement(statsMenu);
             _statsMenu.SetIsVisible(false);
@@ -202,7 +227,7 @@ namespace Raspberry_Lib.Components
                 return;
 
             // Handle Distance Display
-            var distanceTraveled = (int)Mathf.Round(MovementComponent.TotalDistanceTraveled / Settings.DistanceToMetersFactor.Value);
+            var distanceTraveled = (int)Mathf.Round(MovementComponent.TotalDistanceTraveled);
             DistanceLabel.SetText($"{distanceTraveled} m");
 
             // Handle Turning Indicators
@@ -308,6 +333,7 @@ namespace Raspberry_Lib.Components
         {
             _onResume();
             _pauseMenu.SetIsVisible(false);
+            _introMenu.SetIsVisible(false);
         }
     }
 }

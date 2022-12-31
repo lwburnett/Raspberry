@@ -31,7 +31,7 @@ namespace Raspberry_Lib.Scenes
             public const float MinimumSecondBetweenButtonClicks = .5f;
         }
 
-        public MainMenuScene(Action<Action<float, float>, int?> iOnStart, Action iOnTutorial, Action iOnCredits)
+        public MainMenuScene(Action<Scenario> iOnStart, Action iOnTutorial, Action iOnCredits)
         {
             _onStart = iOnStart;
             _onTutorial = iOnTutorial;
@@ -149,7 +149,7 @@ namespace Raspberry_Lib.Scenes
         private MenuBase _playMenu;
         private MenuBase _settingsMenu;
         private VirtualButton _inputButton;
-        private readonly Action<Action<float, float>, int?> _onStart;
+        private readonly Action<Scenario> _onStart;
         private readonly Action _onTutorial;
         private readonly Action _onCredits;
         private float _secondsSinceButtonClickAction;
@@ -223,7 +223,7 @@ namespace Raspberry_Lib.Scenes
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
-            _onStart(DataManager.OnNewDistanceChallengeData, SeedUtils.GetDistanceChallengeSeedForToday());
+            _onStart(Scenario.CreateDistanceChallengeScenario());
 
             _secondsSinceButtonClickAction = 0;
         }
@@ -233,7 +233,7 @@ namespace Raspberry_Lib.Scenes
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
-            _onStart(DataManager.OnNewTimeChallengeData, SeedUtils.GetTimeChallengeSeedForToday());
+            _onStart(Scenario.CreateTimeChallengeScenario());
 
             _secondsSinceButtonClickAction = 0;
         }
@@ -243,7 +243,7 @@ namespace Raspberry_Lib.Scenes
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
-            _onStart(DataManager.OnNewEndlessData, null);
+            _onStart(Scenario.CreateEndlessChallengeScenario());
 
             _secondsSinceButtonClickAction = 0;
         }

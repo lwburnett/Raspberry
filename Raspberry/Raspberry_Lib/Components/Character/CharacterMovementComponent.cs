@@ -37,6 +37,8 @@ namespace Raspberry_Lib.Components
             public const float AngularFrictionForce = .2f;
 
             public static readonly RenderSetting BoatForceDueToTurning = new(30f);
+
+            public static readonly RenderSetting DistanceTraveledDivisor = new(40f);
         }
 
         public CharacterMovementComponent()
@@ -49,7 +51,7 @@ namespace Raspberry_Lib.Components
             _subPixelV2 = new SubpixelVector2();
             SecondsSinceLastRow = Settings.RowTransition3;
             _globalMaxPositionXAchievedSoFar = null;
-            TotalDistanceTraveled = 0;
+            _totalDistanceTraveled = 0;
 
 #if VERBOSE
             _turningDragForce = 0f;
@@ -261,7 +263,7 @@ namespace Raspberry_Lib.Components
 
                     var arcLength = (float)Math.Sqrt(1 + lastIterationFlowScalar * lastIterationFlowScalar) * diffX;
 
-                    TotalDistanceTraveled += arcLength;
+                    _totalDistanceTraveled += arcLength;
 
                     _globalMaxPositionXAchievedSoFar = Entity.Position.X;
                 }
@@ -297,7 +299,12 @@ namespace Raspberry_Lib.Components
             _currentVelocity = potentialFinalVelocity * finalVelocityMag;
         }
 
-        public float TotalDistanceTraveled { get; private set; }
+        public float TotalDistanceTraveled
+        {
+            get => _totalDistanceTraveled / Settings.DistanceTraveledDivisor.Value;
+        }
+        private float _totalDistanceTraveled;
+
         public Vector2 CurrentVelocity => _currentVelocity;
         public CharacterInputController.InputDescription CurrentInput { get; private set; }
         public float SecondsSinceLastRow { get; private set; }
