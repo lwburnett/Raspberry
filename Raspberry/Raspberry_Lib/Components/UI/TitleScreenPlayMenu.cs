@@ -7,6 +7,11 @@ namespace Raspberry_Lib.Components.UI
 {
     internal class TitleScreenPlayMenu : MenuBase
     {
+        private static class MySettings
+        {
+            public static readonly RenderSetting DistanceToMetersFactor = new(40);
+        }
+
         public TitleScreenPlayMenu(
             RectangleF iBounds,
             Action<Button> iOnDistanceChallenge,
@@ -98,7 +103,7 @@ namespace Raspberry_Lib.Components.UI
                 data.DistChallengeRecord.HasValue && 
                 data.DistChallengeRecordDateTime.Value.Date == DateTime.Today.Date)
             {
-                distRecordString = data.DistChallengeRecord.Value.ToString();
+                distRecordString = $"{data.DistChallengeRecord.Value / MySettings.DistanceToMetersFactor.Value} meters";
             }
             else
             {
@@ -116,7 +121,7 @@ namespace Raspberry_Lib.Components.UI
                 data.TimeChallengeRecord.HasValue &&
                 data.TimeChallengeRecordDateTime.Value.Date == DateTime.Today.Date)
             {
-                timeRecordString = data.TimeChallengeRecord.Value.ToString();
+                timeRecordString = $"{data.TimeChallengeRecord.Value.TotalMinutes} minutes";
             }
             else
             {
@@ -132,7 +137,7 @@ namespace Raspberry_Lib.Components.UI
             string endlessRecordString;
             if (data.EndlessChallengeRecord.HasValue)
             {
-                endlessRecordString = data.EndlessChallengeRecord.Value.ToString();
+                endlessRecordString = $"{data.EndlessChallengeRecord.Value / MySettings.DistanceToMetersFactor.Value} meters";
             }
             else
             {

@@ -97,7 +97,7 @@ namespace Raspberry_Lib
                     {
                         var thisLine = realLines[ii];
                         var thisProperty = readableProperties[ii];
-
+                        
                         if (thisProperty.PropertyType == typeof(bool))
                         {
                             typeList.Add(typeof(bool));
@@ -112,9 +112,59 @@ namespace Raspberry_Lib
                                 break;
                             }
                         }
-                        else if (thisLine == "null")
+                        else if (thisProperty.PropertyType == typeof(DateTime?))
                         {
-                            valueList.Add(null);
+                            typeList.Add(typeof(DateTime?));
+                            if (thisLine == "null")
+                            {
+                                valueList.Add(null);
+                            }
+                            else if (DateTime.TryParse(thisLine, out var val))
+                            {
+                                valueList.Add(val);
+                            }
+                            else
+                            {
+                                parseIsSuccessful = false;
+                                System.Diagnostics.Debug.Fail($"Failed to parse DateTime {iSingularDescriptor}.");
+
+                            }
+                        }
+                        else if (thisProperty.PropertyType == typeof(TimeSpan?))
+                        {
+                            typeList.Add(typeof(TimeSpan?));
+                            if (thisLine == "null")
+                            {
+                                valueList.Add(null);
+                            }
+                            else if (TimeSpan.TryParse(thisLine, out var val))
+                            {
+                                valueList.Add(val);
+                            }
+                            else
+                            {
+                                parseIsSuccessful = false;
+                                System.Diagnostics.Debug.Fail($"Failed to parse TimeSpan {iSingularDescriptor}.");
+
+                            }
+                        }
+                        else if (thisProperty.PropertyType == typeof(float?))
+                        {
+                            typeList.Add(typeof(float?));
+                            if (thisLine == "null")
+                            {
+                                valueList.Add(null);
+                            }
+                            else if (float.TryParse(thisLine, out var val))
+                            {
+                                valueList.Add(val);
+                            }
+                            else
+                            {
+                                parseIsSuccessful = false;
+                                System.Diagnostics.Debug.Fail($"Failed to parse float {iSingularDescriptor}.");
+
+                            }
                         }
                         else
                         {
@@ -202,8 +252,7 @@ namespace Raspberry_Lib
             HandleWrite(
                 Settings.SettingsFileName,
                 sSettingsFileReadWriteLock,
-                iGameSettings,
-                "Game Setting");
+                iGameSettings);
         }
 
         private static void DoWriteData(GameData iGameData)
@@ -211,15 +260,13 @@ namespace Raspberry_Lib
             HandleWrite(
                 Settings.DataFileName,
                 sDataFileReadWriteLock,
-                iGameData,
-                "Game Data");
+                iGameData);
         }
 
         private static void HandleWrite<T>(
             string iFileName,
             object iLock,
-            T iObject,
-            string iSingularDescriptor)
+            T iObject)
         {
             var tmpFileName = $"{Guid.NewGuid()}.txt";
 
@@ -235,26 +282,14 @@ namespace Raspberry_Lib
                     var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
                     var readableProperties = properties.Where(property => property.CanRead).ToList();
-
-                    var typeList = readableProperties.Select(p => p.PropertyType).ToList();
+                    
                     var valueList = readableProperties.Select(p => p.GetValue(iObject)).ToList();
                     for (var ii = 0; ii < valueList.Count; ii++)
                     {
-                        var thisType = typeList[ii];
                         var thisValue = valueList[ii];
 
-                        if (thisType.IsValueType)
-                            writer.WriteLine(thisValue);
-                        else if (thisValue == null)
-                        {
-                            writer.WriteLine("null");
-                        }
-                        else
-                        {
-                            successfulTmpFileWrite = false;
-                            System.Diagnostics.Debug.Fail($"Unsupported {iSingularDescriptor} type {thisType}.");
-                            break;
-                        }
+                        var stringToPrint = thisValue?.ToString() ?? "null";
+                        writer.WriteLine(stringToPrint);
                     }
                 }
             }

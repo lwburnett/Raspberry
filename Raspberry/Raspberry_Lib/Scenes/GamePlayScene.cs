@@ -2,6 +2,7 @@
 using Raspberry_Lib.Components;
 using Raspberry_Lib.Content;
 using System;
+using Nez;
 using Random = System.Random;
 
 namespace Raspberry_Lib.Scenes
@@ -16,14 +17,25 @@ namespace Raspberry_Lib.Scenes
         }
 
 
-        public GamePlayScene(Action<int?> iOnPlayAgain, Action iOnMainMenu, int? iSeed = null)
+        public GamePlayScene(Action<Action<float, float>, int?> iOnPlayAgain, Action iOnMainMenu, Action<float, float> iOnRegisterStatsOnRunEnd, int? iSeed)
         {
             _onMainMenu = iOnMainMenu;
             _onPlayAgain = iOnPlayAgain;
+            _onRegisterStatsOnRunEnd = iOnRegisterStatsOnRunEnd;
             ClearColor = ContentData.ColorPallets.Desert.Color2;
             _seed = iSeed;
+            _isPaused = false;
+            _runTime = 0f;
 
             PostConstructionInitialize();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (!_isPaused)
+                _runTime += Time.DeltaTime;
         }
 
         protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
@@ -33,11 +45,14 @@ namespace Raspberry_Lib.Scenes
                 new PlayUiCanvasComponent(iOnPlayAgain, iOnMainMenu, OnPause, OnResume));
         }
 
-        private readonly Action<int?> _onPlayAgain;
+        private readonly Action<Action<float, float>, int?> _onPlayAgain;
         private readonly Action _onMainMenu;
+        private readonly Action<float, float> _onRegisterStatsOnRunEnd;
         private PlayUiCanvasComponent _uiComponent;
         private BoatCharacterComponent _characterComponent;
         private readonly int? _seed;
+        private bool _isPaused;
+        private float _runTime;
 
         // Initialization needs to be after construction so that _seed is initialized
         private void PostConstructionInitialize()
@@ -79,6 +94,9 @@ namespace Raspberry_Lib.Scenes
         {
             _uiComponent.OnPlayEnd();
             _characterComponent.TogglePause(true);
+            
+            var movementComponent = _characterComponent.GetComponent<CharacterMovementComponent>();
+            _onRegisterStatsOnRunEnd(movementComponent.TotalDistanceTraveled, _runTime);
         }
 
         private void OnPlayAgain()
@@ -87,7 +105,7 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearCollidersToRender();
             Verbose.ClearMetrics();
 #endif
-            _onPlayAgain(_seed);
+            _onPlayAgain(_onRegisterStatsOnRunEnd, _seed);
 
         }
 
@@ -104,11 +122,13 @@ namespace Raspberry_Lib.Scenes
         protected void OnPause()
         {
             _characterComponent.TogglePause(true);
+            _isPaused = true;
         }
 
         protected void OnResume()
         {
             _characterComponent.TogglePause(false);
+            _isPaused = false;
         }
     }
 }

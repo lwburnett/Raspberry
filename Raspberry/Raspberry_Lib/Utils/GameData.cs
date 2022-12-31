@@ -14,11 +14,11 @@ namespace Raspberry_Lib
         }
 
         public GameData(
-            DateTime iDistChallengeRecordDateTime, 
-            TimeSpan iDistChallengeRecord, 
-            DateTime iTimeChallengeRecordDateTime, 
-            TimeSpan iTimeChallengeRecord, 
-            TimeSpan iEndlessChallengeRecord)
+            DateTime? iDistChallengeRecordDateTime, 
+            float? iDistChallengeRecord, 
+            DateTime? iTimeChallengeRecordDateTime, 
+            TimeSpan? iTimeChallengeRecord, 
+            float? iEndlessChallengeRecord)
         {
             DistChallengeRecordDateTime = iDistChallengeRecordDateTime;
             DistChallengeRecord = iDistChallengeRecord;
@@ -28,9 +28,9 @@ namespace Raspberry_Lib
         }
 
         public DateTime? DistChallengeRecordDateTime { get; }
-        public TimeSpan? DistChallengeRecord { get; }
+        public float? DistChallengeRecord { get; }
         public DateTime? TimeChallengeRecordDateTime { get; }
         public TimeSpan? TimeChallengeRecord { get; }
-        public TimeSpan? EndlessChallengeRecord { get; }
+        public float? EndlessChallengeRecord { get; }
     }
 }

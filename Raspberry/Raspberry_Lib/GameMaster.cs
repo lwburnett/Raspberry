@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Nez;
 using Raspberry_Lib.Scenes;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -70,14 +71,14 @@ namespace Raspberry_Lib
             Scene = new MainMenuScene(OnPlay, OnTutorial, OnCredits);
         }
 
-        private void OnPlay(int? iSeed = null)
+        private void OnPlay(Action<float, float> iRegisterStatsOnPlayEnd, int? iSeed = null)
         {
-            Scene = new GamePlayScene(OnPlay, OnMainMenu, iSeed);
+            Scene = new GamePlayScene(OnPlay, OnMainMenu, iRegisterStatsOnPlayEnd, iSeed);
         }
 
         private void OnTutorial()
         {
-            Scene = new TutorialScene(_ => OnTutorial(), OnMainMenu);
+            Scene = new TutorialScene(OnTutorial, OnMainMenu);
         }
 
         private void OnCredits()
