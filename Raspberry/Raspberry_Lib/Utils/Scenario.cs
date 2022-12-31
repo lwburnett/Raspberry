@@ -80,7 +80,7 @@ namespace Raspberry_Lib
             return new Scenario(
                 SeedUtils.GetTimeChallengeSeedForToday(),
                 "Time Challenge",
-                new[] { "Make to 1000 meters", "as quickly as possible!" },
+                new[] { "Make to 750 meters", "as quickly as possible!" },
                 TimeModeIsLost,
                 new[] { string.Empty },
                 TimeModeIsEnded,
@@ -95,7 +95,7 @@ namespace Raspberry_Lib
 
         private static bool TimeModeIsEnded(float iDistance, float iTime, bool iStillHaveEnergy)
         {
-            return iDistance >= 1000f;
+            return iDistance >= 750f;
         }
 
         public static Scenario CreateEndlessChallengeScenario()
