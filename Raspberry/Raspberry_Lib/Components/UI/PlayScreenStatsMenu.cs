@@ -57,7 +57,7 @@ namespace Raspberry_Lib.Components.UI
             elements.Add(title);
 
             _descriptionLabel = new Label(string.Empty).
-                SetFontScale(Settings.TitleFontScale.Value).
+                SetFontScale(Settings.FontScale.Value).
                 SetFontColor(Color.White).
                 SetAlignment(Align.TopLeft);
             elements.Add(_descriptionLabel);
