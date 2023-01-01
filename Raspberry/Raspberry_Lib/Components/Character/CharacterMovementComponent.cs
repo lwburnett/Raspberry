@@ -12,7 +12,6 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting Acceleration = new(20);
             
             public const float RowTime = .5f;
-            public static readonly int RowTimeMilliseconds = (int)(RowTime * 1000);
             public static readonly RenderSetting RotationDragGrowthSlope = new(.125f);
 
             public static readonly RenderSetting DragCoefficient = new(.005f);
@@ -41,10 +40,11 @@ namespace Raspberry_Lib.Components
 
             public static readonly RenderSetting DistanceTraveledDivisor = new(40f);
 
-            public const byte RowVibrationBad = 50;
-            public const byte RowVibrationMedium = 100;
-            public const byte RowVibrationGood = 200;
-            public const byte RowVibrationNeutral = 150;
+            public const long RowVibrationDurationMilliseconds = 100;
+            public const byte RowVibrationBad = 1;
+            public const byte RowVibrationMedium = 10;
+            public const byte RowVibrationGood = 40;
+            public const byte RowVibrationNeutral = 20;
         }
 
         public CharacterMovementComponent()
@@ -157,22 +157,22 @@ namespace Raspberry_Lib.Components
                 {
                     if (SecondsSinceLastRow < Settings.RowTransition1)
                     {
-                        PlatformUtils.Vibrate(Settings.RowTimeMilliseconds, Settings.RowVibrationBad);
+                        PlatformUtils.Vibrate(Settings.RowVibrationDurationMilliseconds, Settings.RowVibrationBad);
                         _rowForceForCurrentRow = Settings.RowForceBad.Value;
                     }
                     else if (SecondsSinceLastRow < Settings.RowTransition2)
                     {
-                        PlatformUtils.Vibrate(Settings.RowTimeMilliseconds, Settings.RowVibrationMedium);
+                        PlatformUtils.Vibrate(Settings.RowVibrationDurationMilliseconds, Settings.RowVibrationMedium);
                         _rowForceForCurrentRow = Settings.RowForceMedium.Value;
                     }
                     else if (SecondsSinceLastRow < Settings.RowTransition3)
                     {
-                        PlatformUtils.Vibrate(Settings.RowTimeMilliseconds, Settings.RowVibrationGood);
+                        PlatformUtils.Vibrate(Settings.RowVibrationDurationMilliseconds, Settings.RowVibrationGood);
                         _rowForceForCurrentRow = Settings.RowForceGood.Value;
                     }
                     else
                     {
-                        PlatformUtils.Vibrate(Settings.RowTimeMilliseconds, Settings.RowVibrationNeutral);
+                        PlatformUtils.Vibrate(Settings.RowVibrationDurationMilliseconds, Settings.RowVibrationNeutral);
                         _rowForceForCurrentRow = Settings.RowForceNeutral.Value;
                     }
 
