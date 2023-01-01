@@ -68,12 +68,10 @@ namespace Raspberry_Lib.Components
 
                     if (touchPosRatioX <= .33f)
                     {
-                        if (touchPosRatioY >= .66f)
+                        if (touchPosRatioY >= .55f)
                             rotation = 1f;
-                        else if (touchPosRatioY <= .33f)
+                        else if (touchPosRatioY <= .45f)
                             rotation = -1f;
-                        else
-                            row = true;
                     }
                     else
                     {

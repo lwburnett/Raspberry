@@ -154,7 +154,7 @@ namespace Raspberry_Lib.Components
             _upIndicator = Canvas.Stage.AddElement(new Image(_upDefaultIcon));
             _upIndicator.SetBounds(
                 Settings.Margin.Value,
-                Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f,
+                Screen.Height * .20f - Settings.IndicatorSizeY.Value / 2f,
                 Settings.IndicatorSizeX.Value,
                 Settings.IndicatorSizeY.Value);
             _upIndicator.SetScaling(Scaling.Fill);
@@ -163,7 +163,7 @@ namespace Raspberry_Lib.Components
             _downIndicator = Canvas.Stage.AddElement(new Image(_downDefaultIcon));
             _downIndicator.SetBounds(
                 Settings.Margin.Value,
-                Screen.Height * .85f - Settings.IndicatorSizeY.Value / 2f,
+                Screen.Height * .80f - Settings.IndicatorSizeY.Value / 2f,
                 Settings.IndicatorSizeX.Value,
                 Settings.IndicatorSizeY.Value);
             _downIndicator.SetScaling(Scaling.Fill);
