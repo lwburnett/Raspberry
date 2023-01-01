@@ -94,6 +94,7 @@ namespace Raspberry_Lib.Scenes
             character.Transform.SetLocalScale(Settings.MapScale.Value * .85f);
             _characterComponent = character.AddComponent(new BoatCharacterComponent(OnLose));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
+            Camera.Entity.AddComponent(new RiverCameraShake());
 
             if (new System.Random().Next() % 2 == 0)
             {

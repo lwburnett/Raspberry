@@ -41,6 +41,7 @@ namespace Raspberry_Lib.Components
         public void OnBeginPlay()
         {
             _proceduralGenerator = Entity.Scene.FindEntity("map").GetComponent<ProceduralGeneratorComponent>();
+            _cameraShakeComponent = Entity.Scene.Camera.Entity.GetComponent<RiverCameraShake>();
         }
 
         public void Update()
@@ -102,6 +103,9 @@ namespace Raspberry_Lib.Components
                 incidentVector.Normalize();
                 var speedOfImpact = Vector2.Dot(_playerMovementComponent.CurrentVelocity, incidentVector) / incidentVector.Length();
                 _playerProximityComponent.OnObstacleHit(speedOfImpact);
+
+                var impactVelocity = speedOfImpact * -incidentVector;
+                _cameraShakeComponent.OnObstacleHit(impactVelocity);
             }
             else if (collisionResult.Collider.Entity is EnergyEntity energy)
             {
@@ -114,6 +118,7 @@ namespace Raspberry_Lib.Components
         private ProceduralGeneratorComponent _proceduralGenerator;
         private PlayerProximityComponent _playerProximityComponent;
         private CharacterMovementComponent _playerMovementComponent;
+        private RiverCameraShake _cameraShakeComponent;
 
         private void HandleShorelineCollision(Vector2 iShorelineSlope, float iMinYDistToMove)
         {
@@ -130,6 +135,9 @@ namespace Raspberry_Lib.Components
             
             var speedOfImpact = Vector2.Dot(_playerMovementComponent.CurrentVelocity, normal) / normal.Length();
             _playerProximityComponent.OnObstacleHit(speedOfImpact);
+
+            var impactVelocity = speedOfImpact * -normal;
+            _cameraShakeComponent.OnObstacleHit(impactVelocity);
         }
     }
 }
