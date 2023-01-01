@@ -2,28 +2,28 @@
 
 Must
 	o Feature: Daily challenge map based on today's date
-	- Feature: Add Screens
+	o Feature: Add Screens
 		o Main Menu
-		- Settings screen
+		o Settings screen
 			o Music toggle
-			- SFX toggle
-			- Screen shake toggle
+			o SFX toggle
+			o Screen shake toggle
 			o Toggle vibration
+		x Stats screen? (With things like # of attempts, best run, average run, etc.)
 		o Pause menu in play screen
-			- Resume button
-			- Settings button
-			- Restart Button
-			- Quit button
-	- Balance: Remove rocks too close to an energy instead of trying to move the energy to the side
+			o Resume button
+			o Restart Button
+			o Quit button
+	x Balance: Remove rocks too close to an energy instead of trying to move the energy to the side
 
 Should
-	- Feature: Vibration on row and/or collision
-	- Feature: Screen shake on collision
-	- Balance: Increase turn speed when turning while rowing
+	o Feature: Vibration on row and/or collision
+	o Feature: Screen shake on collision
+	x Balance: Increase turn speed when turning while rowing
 	o Balance: Make row indicator hit box larger
 
 Could
-	- Feature: Rapids section where the water speed temporarily gets way faster???
+	x Feature: Rapids section where the water speed temporarily gets way faster???
 	o Art: Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 	- Bug: Pause boat rocking animation on death
 	- Bug: In the tutorial, highlight both the rock and energy before letting the player play again
@@ -37,13 +37,6 @@ Could
 
 ------------------------ Outstanding ------------------------
 Features
-	- *Add Screens
-		- *Settings screen? (Might not actually need this)
-			- *SFX toggle
-			- *Screen shake toggle
-	- *Screen shake on collision
-	- *Vibration on row and/or collision
-	- *Rapids section where the water speed temporarily gets way faster???
 
 Optimization
 
@@ -72,13 +65,12 @@ Bugs
 	- Remove pressable area of row button on left half of screen
 
 Balance
-	- *Remove rocks too close to an energy instead of trying to move the energy to the side
-	- *Increase turn speed when turning while rowing
 
 -------------------------- Shelved --------------------------
 Features
 	- Add Screens		
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
+	- Rapids section where the water speed temporarily gets way faster???
 
 Optimization
 
@@ -101,7 +93,8 @@ Bugs
 		Very few other people has experienced this
 
 Balance
-
+	- Remove rocks too close to an energy instead of trying to move the energy to the side
+	- Increase turn speed when turning while rowing
 
 ------------------------- Completed -------------------------
 
@@ -112,6 +105,10 @@ Features
 		- *Settings screen? (Might not actually need this)
 			- *Music toggle
 			- *Vibration
+			- *SFX toggle
+			- *Screen shake toggle
+	- *Screen shake on collision
+	- *Vibration on row and/or collision
 	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- "Active Reload" for rowing
 	- Player proximity enhancements
@@ -124,7 +121,6 @@ Features
 		- Post play screen with stats of that play session
 		- *Pause menu in play screen
 			- Resume button
-			- Settings button
 			- Restart Button
 			- Quit button
 	- Add keyboard support
