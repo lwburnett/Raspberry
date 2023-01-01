@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components.UI
 {
     internal class TitleScreenPlayMenu : MenuBase
     {
         public TitleScreenPlayMenu(
+            SceneBase iOwner,
             RectangleF iBounds,
             Action<Button> iOnDistanceChallenge,
             Action<Button> iOnTimeChallenge,
             Action<Button> iOnEndless,
             Action<Button> iOnTutorial,
-            Action<Button> iOnBack) : base(iBounds, iOnBack)
+            Action<Button> iOnBack) : 
+            base(iOwner, iBounds, iOnBack)
         {
             _onDistanceChallenge = iOnDistanceChallenge;
             _onTimeChallenge = iOnTimeChallenge;

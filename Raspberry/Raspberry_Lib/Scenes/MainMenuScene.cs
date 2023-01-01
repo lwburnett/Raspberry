@@ -70,6 +70,7 @@ namespace Raspberry_Lib.Scenes
                 tableDimensions.Y);
 
             var mainMenu = new TitleScreenMainMenu(
+                this,
                 menuBounds, 
                 OnPlayClicked, 
                 OnCreditsClicked, 
@@ -79,6 +80,7 @@ namespace Raspberry_Lib.Scenes
             mainMenu.SetIsVisible(false);
 
             var playMenu = new TitleScreenPlayMenu(
+                this,
                 menuBounds, 
                 OnDistanceChallengeClicked,
                 OnTimeChallengeClicked,
@@ -89,6 +91,7 @@ namespace Raspberry_Lib.Scenes
             playMenu.SetIsVisible(false);
 
             var settingsMenu = new SettingsMenu(
+                this,
                 menuBounds,
                 OnPlayBackClicked);
             settingsMenu.Initialize();

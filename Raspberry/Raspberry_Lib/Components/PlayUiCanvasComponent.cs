@@ -5,6 +5,7 @@ using Nez;
 using Nez.Textures;
 using Nez.UI;
 using Raspberry_Lib.Components.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components
 {
@@ -195,6 +196,7 @@ namespace Raspberry_Lib.Components
             if (_scenario.IntroLines.Any())
             {
                 var introMenu = new PlayScreenIntroMenu(
+                    (SceneBase)Entity.Scene,
                     menuBounds,
                     _scenario.Title,
                     _scenario.IntroLines,
@@ -205,12 +207,18 @@ namespace Raspberry_Lib.Components
                 _introMenu.SetIsVisible(false);
             }
 
-            var pauseMenu = new PlayScreenPauseMenu(menuBounds, OnResume, OnPlayAgain, OnMainMenu);
+            var pauseMenu = new PlayScreenPauseMenu(
+                (SceneBase)Entity.Scene,
+                menuBounds, 
+                OnResume, 
+                OnPlayAgain, 
+                OnMainMenu);
             pauseMenu.Initialize();
             _pauseMenu = Canvas.Stage.AddElement(pauseMenu);
             SetPauseMenuVisibility(false);
 
             var statsMenu = new PlayScreenStatsMenu(
+                (SceneBase)Entity.Scene,
                 menuBounds,
                 _scenario.Title,
                 _scenario.LoseLines,

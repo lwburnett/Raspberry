@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components.UI
 {
@@ -16,7 +17,11 @@ namespace Raspberry_Lib.Components.UI
             public static readonly RenderSetting SettingFontScale = new(5);
         }
 
-        public SettingsMenu(RectangleF iBounds, Action<Button> iOnBack) : base(iBounds, b => OnBack(b, iOnBack))
+        public SettingsMenu(
+            SceneBase iOwner, 
+            RectangleF iBounds, 
+            Action<Button> iOnBack) : 
+            base(iOwner, iBounds, b => OnBack(b, iOnBack))
         {
             _bounds = iBounds;
         }
@@ -79,6 +84,15 @@ namespace Raspberry_Lib.Components.UI
                     {
                         SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake,
                             iVal, gameSettings.Sfx));
+
+                        if (iVal)
+                        {
+                            Owner.PlayBackgroundSong();
+                        }
+                        else
+                        {
+                            Owner.StopBackgroundSong();
+                        }
                     }),
                 new SettingConfig("Sounds Effects", gameSettings.Sfx,
                     iVal =>

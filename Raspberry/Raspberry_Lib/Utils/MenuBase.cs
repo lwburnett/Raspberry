@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib
 {
@@ -24,8 +25,9 @@ namespace Raspberry_Lib
             public static readonly RenderSetting BackButtonYOffset = new(20);
         }
 
-        protected MenuBase(RectangleF iBounds, Action<Button> iOnBack = null)
+        protected MenuBase(SceneBase iOwner, RectangleF iBounds, Action<Button> iOnBack = null)
         {
+            Owner = iOwner;
             _menu = new Table();
             _menu.SetBounds(iBounds.X, iBounds.Y, iBounds.Width, iBounds.Height);
             _background = CreateBackgroundTexture(iBounds.Size);
@@ -66,6 +68,8 @@ namespace Raspberry_Lib
         private TextButton _backButton;
         private readonly Texture2D _background;
         private readonly Action<Button> _onBack;
+
+        protected SceneBase Owner;
 
         protected abstract IEnumerable<Element> InitializeTableElements();
 

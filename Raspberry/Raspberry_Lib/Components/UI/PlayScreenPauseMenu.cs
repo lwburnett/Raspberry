@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components.UI
 {
@@ -10,10 +11,12 @@ namespace Raspberry_Lib.Components.UI
     {
 
         public PlayScreenPauseMenu(
+            SceneBase iOwner,
             RectangleF iBounds,
             Action<Button> iOnResume,
             Action<Button> iOnRestart,
-            Action<Button> iOnMainMenu) : base(iBounds)
+            Action<Button> iOnMainMenu) : 
+            base(iOwner, iBounds)
         {
             _onResume = iOnResume;
             _onRestart = iOnRestart;

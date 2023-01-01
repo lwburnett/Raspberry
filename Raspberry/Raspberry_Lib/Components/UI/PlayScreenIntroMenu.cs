@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components.UI
 {
@@ -14,12 +15,13 @@ namespace Raspberry_Lib.Components.UI
         }
 
         public PlayScreenIntroMenu(
+            SceneBase iOwner, 
             RectangleF iBounds, 
             string iTitle,
             IEnumerable<string> iLines,
             Action<Button> iOnBegin, 
             Action<Button> iOnMainMenu) : 
-            base(iBounds)
+            base(iOwner, iBounds)
         {
             _title = iTitle;
             _lines = iLines;

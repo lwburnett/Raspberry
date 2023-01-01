@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components.UI
 {
@@ -14,12 +15,14 @@ namespace Raspberry_Lib.Components.UI
         }
 
         public PlayScreenStatsMenu(
+            SceneBase iOwner,
             RectangleF iBounds,
             string iTitle,
             IEnumerable<string> iLoseLines,
             IEnumerable<string> iEndLines,
             Action<Button> iOnPlayAgain,
-            Action<Button> iOnMainMenu) : base(iBounds)
+            Action<Button> iOnMainMenu) : 
+            base(iOwner, iBounds)
         {
             _title = iTitle;
             _loseLines = iLoseLines;

@@ -52,7 +52,17 @@ namespace Raspberry_Lib.Scenes
 
         public override void OnStart()
         {
-            if (_backgroundSong != null)
+            PlayBackgroundSong();
+        }
+
+        public override void End()
+        {
+            StopBackgroundSong();
+        }
+
+        public void PlayBackgroundSong()
+        {
+            if (_backgroundSong != null && SettingsManager.GetGameSettings().Music)
             {
                 MediaPlayer.Play(_backgroundSong);
                 MediaPlayer.IsRepeating = true;
@@ -60,7 +70,7 @@ namespace Raspberry_Lib.Scenes
             }
         }
 
-        public override void End()
+        public void StopBackgroundSong()
         {
             MediaPlayer.Stop();
         }

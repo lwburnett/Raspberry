@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using Nez;
 using Nez.UI;
+using Raspberry_Lib.Scenes;
 
 namespace Raspberry_Lib.Components.UI
 {
     internal class TitleScreenMainMenu : MenuBase
     {
         public TitleScreenMainMenu(
+            SceneBase iOwner,
             RectangleF iBounds, 
             Action<Button> iOnPlay, 
             Action<Button> iOnCredits, 
             Action<Button> iOnSettings, 
-            Action<Button> iOnBack) : base(iBounds, iOnBack)
+            Action<Button> iOnBack) : 
+            base(iOwner, iBounds, iOnBack)
         {
             _onPlay = iOnPlay;
             _onCredits = iOnCredits;
