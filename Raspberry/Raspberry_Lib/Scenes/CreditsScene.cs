@@ -134,6 +134,7 @@ namespace Raspberry_Lib.Scenes
 
         private void OnBack(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
             _onBack();
         }
 

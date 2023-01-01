@@ -130,6 +130,7 @@ namespace Raspberry_Lib.Scenes
                 {
                     if (Input.Touch.CurrentTouches.Any())
                     {
+                        PlatformUtils.VibrateForUiNavigation();
                         ShowMenu();
                     }
                 }
@@ -164,6 +165,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnPlayClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -176,6 +179,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnTutorialClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -186,6 +191,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnCreditsClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -196,6 +203,8 @@ namespace Raspberry_Lib.Scenes
         
         private void OnSettingsClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -208,6 +217,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnMenuBackClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -220,6 +231,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnDistanceChallengeClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -230,6 +243,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnTimeChallengeClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -240,6 +255,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnEndlessClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 
@@ -250,6 +267,8 @@ namespace Raspberry_Lib.Scenes
 
         private void OnPlayBackClicked(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
+
             if (_secondsSinceButtonClickAction < Settings.MinimumSecondBetweenButtonClicks)
                 return;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Nez.AI.GOAP;
 
 namespace Raspberry_Lib
 {
@@ -61,7 +60,7 @@ namespace Raspberry_Lib
         /// <summary>
         /// Common helper function to vibrate for a touch input
         /// </summary>
-        public static void VibrateForTouchInput() => Vibrate(200, 128);
+        public static void VibrateForUiNavigation() => Vibrate(50, 60);
 
         private static bool sIsVibrateCallbackSet;
         private static Action<long, byte?> sVibrateCallback;

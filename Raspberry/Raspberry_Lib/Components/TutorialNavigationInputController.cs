@@ -55,6 +55,7 @@ namespace Raspberry_Lib.Components
             {
                 if (Input.Touch.CurrentTouches.Any())
                 {
+                    PlatformUtils.VibrateForUiNavigation();
                     _lastNavigationTime = adjustedTime;
                     _onNavigation();
                 }

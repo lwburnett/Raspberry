@@ -315,22 +315,26 @@ namespace Raspberry_Lib.Components
 
         private void OnPlayAgain(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
             _onPlayAgain();
         }
 
         private void OnMainMenu(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
             _onMainMenu();
         }
 
         private void OnPause(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
             _onPause();
             _pauseMenu.SetIsVisible(true);
         }
 
         private void OnResume(Button iButton)
         {
+            PlatformUtils.VibrateForUiNavigation();
             _onResume();
             _pauseMenu.SetIsVisible(false);
             _introMenu.SetIsVisible(false);
