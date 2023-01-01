@@ -1,8 +1,6 @@
-﻿using Nez;
-
-namespace Raspberry_Lib
+﻿namespace Raspberry_Lib
 {
-    internal struct GameSettings
+    public readonly struct GameSettings
     {
         public GameSettings()
         {

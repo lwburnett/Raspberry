@@ -17,10 +17,12 @@ namespace Raspberry_Android
         ScreenOrientation = ScreenOrientation.SensorLandscape,
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize
     )]
+    // ReSharper disable once UnusedMember.Global
     public class MainActivity : AndroidGameActivity
     {
         private GameMaster _game;
         private View _view;
+        private Vibrator _vibrator;
 
         protected override void OnCreate(Bundle iBundle)
         {
@@ -33,8 +35,20 @@ namespace Raspberry_Android
             _game = new GameMaster(true, true);
             _view = _game.Service.GetService(typeof(View)) as View;
 
+            _vibrator = (Vibrator)GetSystemService(VibratorService);
+            PlatformUtils.SetVibrateCallback(Vibrate);
+
             SetContentView(_view);
             _game.Run();
+        }
+
+        private void Vibrate(long iMilliseconds, byte? iAmplitude = null)
+        {
+            if (!SettingsManager.GetGameSettings().Vibrate)
+                return;
+
+            var amplitude = iAmplitude ?? VibrationEffect.DefaultAmplitude;
+            _vibrator.Vibrate(VibrationEffect.CreateOneShot(iMilliseconds, amplitude));
         }
     }
 }

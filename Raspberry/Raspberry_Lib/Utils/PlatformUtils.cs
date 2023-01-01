@@ -1,4 +1,7 @@
-﻿namespace Raspberry_Lib
+﻿using System;
+using Nez.AI.GOAP;
+
+namespace Raspberry_Lib
 {
     public static class PlatformUtils
     {
@@ -30,5 +33,37 @@
 
         private static bool sIsRenderScaleSet;
         private static float sRenderScale = 1;
+
+        /// <summary>
+        /// Set the platform-specific callback to be used when requesting a vibration effect
+        /// </summary>
+        /// <param name="iVibrateAction">The callback</param>
+        public static void SetVibrateCallback(Action<long, byte?> iVibrateAction)
+        {
+            System.Diagnostics.Debug.Assert(!sIsVibrateCallbackSet);
+
+            sVibrateCallback = iVibrateAction;
+            sIsVibrateCallbackSet = true;
+        }
+
+        /// <summary>
+        /// Vibrates the device
+        /// </summary>
+        /// <param name="iDurationMilliseconds">Duration of the vibration in milliseconds</param>
+        /// <param name="iAmplitude">Intensity of the vibration. Null is device default. 1 is least intense. 255 is most intense</param>
+        public static void Vibrate(long iDurationMilliseconds, byte? iAmplitude)
+        {
+            System.Diagnostics.Debug.Assert(sIsVibrateCallbackSet);
+
+            sVibrateCallback?.Invoke(iDurationMilliseconds, iAmplitude);
+        }
+
+        /// <summary>
+        /// Common helper function to vibrate for a touch input
+        /// </summary>
+        public static void VibrateForTouchInput() => Vibrate(200, 128);
+
+        private static bool sIsVibrateCallbackSet;
+        private static Action<long, byte?> sVibrateCallback;
     }
 }

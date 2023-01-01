@@ -62,24 +62,30 @@ namespace Raspberry_Lib.Components.UI
                 new SettingConfig("Vibrate", gameSettings.Vibrate,
                     iVal =>
                     {
-                        SettingsManager.SetGameSettings(new GameSettings(iVal, gameSettings.ScreenShake, gameSettings.Music, gameSettings.Sfx));
+                        SettingsManager.SetGameSettings(new GameSettings(iVal, gameSettings.ScreenShake,
+                            gameSettings.Music, gameSettings.Sfx));
                     }),
                 new SettingConfig("Screen Shake", gameSettings.ScreenShake,
                     iVal =>
                     {
-                        SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, iVal, gameSettings.Music, gameSettings.Sfx));
+                        SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, iVal, gameSettings.Music,
+                            gameSettings.Sfx));
                     })
             });
             AddCheckboxSettings(table, new[]
             {
-                new SettingConfig("Music", gameSettings.Music, iVal =>
-                {
-                    SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake, iVal, gameSettings.Sfx));
-                }),
-                new SettingConfig("Sounds Effects", gameSettings.Sfx, iVal =>
-                {
-                    SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake, gameSettings.Music, iVal));
-                })
+                new SettingConfig("Music", gameSettings.Music,
+                    iVal =>
+                    {
+                        SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake,
+                            iVal, gameSettings.Sfx));
+                    }),
+                new SettingConfig("Sounds Effects", gameSettings.Sfx,
+                    iVal =>
+                    {
+                        SettingsManager.SetGameSettings(new GameSettings(gameSettings.Vibrate, gameSettings.ScreenShake,
+                            gameSettings.Music, iVal));
+                    })
             });
 
             elements.Add(table);

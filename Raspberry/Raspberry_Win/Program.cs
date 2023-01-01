@@ -9,6 +9,7 @@ namespace Raspberry_Win
         static void Main()
         {
             using var game = new GameMaster(false, false);
+            PlatformUtils.SetVibrateCallback((_, _) => { });
             game.Run();
         }
     }

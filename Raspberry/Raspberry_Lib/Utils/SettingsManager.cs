@@ -2,7 +2,7 @@
 
 namespace Raspberry_Lib
 {
-    internal static class SettingsManager
+    public static class SettingsManager
     {
         static SettingsManager()
         {
