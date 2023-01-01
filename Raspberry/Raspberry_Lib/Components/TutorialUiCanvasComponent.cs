@@ -58,12 +58,14 @@ namespace Raspberry_Lib.Components
         }
 
         public TutorialUiCanvasComponent(Action iOnPlayAgain, Action iOnMainMenu, Action iOnPause, Action iOnResume) :
-            base(iOnPlayAgain, iOnMainMenu, iOnPause, iOnResume, Scenario.CreateEndlessChallengeScenario())
+            base(iOnPlayAgain, iOnMainMenu, iOnPause, iOnResume, Scenario.CreateTutorialScenario())
         {
             _currentState = 0;
             _timeSinceLastBlinkToggle = null;
             _blinkToggle = false;
             _energyDisplaySizeMultiplier = 1f;
+
+            _isPaused = false;
         }
 
         private State _currentState;
@@ -84,6 +86,8 @@ namespace Raspberry_Lib.Components
         private Image _obstacleAlert;
         private Vector2 _firstRockLocation;
         private Vector2 _firstEnergyLocation;
+
+        private bool _isPaused;
 
         protected sealed override void OnAddedToEntityInternal()
         {
@@ -283,6 +287,26 @@ namespace Raspberry_Lib.Components
             }
         }
 
+        protected sealed override void OnPause(Button iButton)
+        {
+            base.OnPause(iButton);
+
+            _isPaused = true;
+            _navigationInputController.IsPaused = true;
+            _textBox.SetIsVisible(false);
+        }
+
+        protected sealed override void OnResume(Button iButton)
+        {
+            // Funny enough we don't want to call the base because that will unpause the character lmao
+            //base.OnResume(iButton);
+
+            _isPaused = false;
+            _navigationInputController.IsPaused = false;
+            _textBox.SetIsVisible(true);
+            SetPauseMenuVisibility(false);
+        }
+
         private Texture2D CreateTextBoxBackground()
         {
             var width = (int)Math.Round(Settings.BackgroundTextureWidth.Value);
@@ -342,6 +366,9 @@ namespace Raspberry_Lib.Components
 
         private void OnNavigation()
         {
+            if (_isPaused)
+                return;
+
             OnNavigationChanged(_currentState, _currentState + 1);
             _currentState++;
         }

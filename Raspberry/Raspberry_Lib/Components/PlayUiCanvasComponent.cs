@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 using Nez.Textures;
@@ -25,18 +26,18 @@ namespace Raspberry_Lib.Components
 
             public static readonly RenderSetting PostPlayStatsPopupWidth = new(900);
             public static readonly RenderSetting PostPlayStatsPopupHeight = new(500);
-            
+
             public static readonly RenderSetting PauseButtonFontScale = new(2.5f);
 
         }
 
         public PlayUiCanvasComponent(
-            Action iOnPlayAgain, 
-            Action iOnMainMenu, 
-            Action iOnPause, 
-            Action iOnResume, 
+            Action iOnPlayAgain,
+            Action iOnMainMenu,
+            Action iOnPause,
+            Action iOnResume,
             Scenario iScenario)
-        { 
+        {
             _onPlayAgain = iOnPlayAgain;
             _onMainMenu = iOnMainMenu;
             _onPause = iOnPause;
@@ -57,7 +58,7 @@ namespace Raspberry_Lib.Components
         public void OnBeginPlay()
         {
             BeginPlayInternal();
-            _introMenu.SetIsVisible(true);
+            _introMenu?.SetIsVisible(true);
         }
 
         public void Update()
@@ -70,7 +71,7 @@ namespace Raspberry_Lib.Components
             _statsMenu.SetData(iLost, DistanceLabel.GetText(), iRunTime);
             _statsMenu.SetIsVisible(true);
             _pauseButton.SetIsVisible(false);
-            _introMenu.SetIsVisible(false);
+            _introMenu?.SetIsVisible(false);
         }
 
         private enum RowColor
@@ -125,7 +126,7 @@ namespace Raspberry_Lib.Components
             Canvas = Entity.AddComponent(new UICanvas());
             DistanceLabel = Canvas.Stage.AddElement(new Label("0 m"));
             DistanceLabel.SetBounds(
-                (Screen.Width - Settings.DistanceLabelWidth.Value) / 2f, 
+                (Screen.Width - Settings.DistanceLabelWidth.Value) / 2f,
                 Settings.Margin.Value / 2f,
                 Settings.DistanceLabelWidth.Value,
                 Settings.DistanceLabelHeight.Value);
@@ -151,27 +152,27 @@ namespace Raspberry_Lib.Components
 
             _upIndicator = Canvas.Stage.AddElement(new Image(_upDefaultIcon));
             _upIndicator.SetBounds(
-                Settings.Margin.Value, 
+                Settings.Margin.Value,
                 Screen.Height * .15f - Settings.IndicatorSizeY.Value / 2f,
-                Settings.IndicatorSizeX.Value, 
+                Settings.IndicatorSizeX.Value,
                 Settings.IndicatorSizeY.Value);
             _upIndicator.SetScaling(Scaling.Fill);
             _upIndicator.SetColor(drawColor);
 
             _downIndicator = Canvas.Stage.AddElement(new Image(_downDefaultIcon));
             _downIndicator.SetBounds(
-                Settings.Margin.Value, 
+                Settings.Margin.Value,
                 Screen.Height * .85f - Settings.IndicatorSizeY.Value / 2f,
-                Settings.IndicatorSizeX.Value, 
+                Settings.IndicatorSizeX.Value,
                 Settings.IndicatorSizeY.Value);
             _downIndicator.SetScaling(Scaling.Fill);
             _downIndicator.SetColor(drawColor);
 
             _rowIndicator = Canvas.Stage.AddElement(new Image(spriteList[0]));
             _rowIndicator.SetBounds(
-                Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value, 
-                Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f, 
-                Settings.IndicatorSizeX.Value, 
+                Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value,
+                Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f,
+                Settings.IndicatorSizeX.Value,
                 Settings.IndicatorSizeY.Value);
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
@@ -180,7 +181,7 @@ namespace Raspberry_Lib.Components
             _pauseButton.OnClicked += OnPause;
             _pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value / 2);
             _pauseButton.SetBounds(
-                Screen.Width - Settings.Margin.Value - Settings.DistanceLabelWidth.Value / 4, 
+                Screen.Width - Settings.Margin.Value - Settings.DistanceLabelWidth.Value / 4,
                 Settings.Margin.Value / 2f,
                 Settings.DistanceLabelWidth.Value / 2,
                 Settings.DistanceLabelHeight.Value / 2);
@@ -191,27 +192,30 @@ namespace Raspberry_Lib.Components
                 Settings.PostPlayStatsPopupWidth.Value,
                 Settings.PostPlayStatsPopupHeight.Value);
 
-            var introMenu = new PlayScreenIntroMenu(
-                menuBounds, 
-                _scenario.Title,
-                _scenario.IntroLines,
-                OnResume, 
-                OnMainMenu);
-            introMenu.Initialize();
-            _introMenu = Canvas.Stage.AddElement(introMenu);
-            _introMenu.SetIsVisible(false);
+            if (_scenario.IntroLines.Any())
+            {
+                var introMenu = new PlayScreenIntroMenu(
+                    menuBounds,
+                    _scenario.Title,
+                    _scenario.IntroLines,
+                    OnResume,
+                    OnMainMenu);
+                introMenu.Initialize();
+                _introMenu = Canvas.Stage.AddElement(introMenu);
+                _introMenu.SetIsVisible(false);
+            }
 
             var pauseMenu = new PlayScreenPauseMenu(menuBounds, OnResume, OnPlayAgain, OnMainMenu);
             pauseMenu.Initialize();
             _pauseMenu = Canvas.Stage.AddElement(pauseMenu);
-            _pauseMenu.SetIsVisible(false);
+            SetPauseMenuVisibility(false);
 
             var statsMenu = new PlayScreenStatsMenu(
-                menuBounds, 
+                menuBounds,
                 _scenario.Title,
                 _scenario.LoseLines,
                 _scenario.EndLines,
-                OnPlayAgain, 
+                OnPlayAgain,
                 OnMainMenu);
             statsMenu.Initialize();
             _statsMenu = Canvas.Stage.AddElement(statsMenu);
@@ -266,7 +270,7 @@ namespace Raspberry_Lib.Components
                     if (_lastRowTimeOverride != null)
                         _lastRowTimeOverride += Time.DeltaTime;
                     else
-                        _lastRowTimeOverride = Settings.RowTransition3; 
+                        _lastRowTimeOverride = Settings.RowTransition3;
                 }
 
                 secondsSinceLastRow = _lastRowTimeOverride.Value;
@@ -325,19 +329,24 @@ namespace Raspberry_Lib.Components
             _onMainMenu();
         }
 
-        private void OnPause(Button iButton)
+        protected virtual void OnPause(Button iButton)
         {
             PlatformUtils.VibrateForUiNavigation();
             _onPause();
-            _pauseMenu.SetIsVisible(true);
+            SetPauseMenuVisibility(true);
         }
 
-        private void OnResume(Button iButton)
+        protected virtual void OnResume(Button iButton)
         {
             PlatformUtils.VibrateForUiNavigation();
             _onResume();
-            _pauseMenu.SetIsVisible(false);
-            _introMenu.SetIsVisible(false);
+            SetPauseMenuVisibility(false);
+            _introMenu?.SetIsVisible(false);
+        }
+
+        protected void SetPauseMenuVisibility(bool iVisibility)
+        {
+            _pauseMenu.SetIsVisible(iVisibility);
         }
     }
 }

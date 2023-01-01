@@ -111,6 +111,19 @@ namespace Raspberry_Lib
                 DataManager.OnNewEndlessData);
         }
 
+        public static Scenario CreateTutorialScenario()
+        {
+            return new Scenario(
+                null,
+                "Tutorial",
+                new string[]{},
+                EndlessModeIsLost,
+                new[] { string.Empty },
+                EndlessModeIsEnded,
+                new[] { "You traversed through the desert." },
+                DataManager.OnNewEndlessData);
+        }
+
         private static bool EndlessModeIsLost(float iDistance, float iTime, bool iStillHaveEnergy)
         {
             return false;
