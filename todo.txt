@@ -4,12 +4,11 @@ Must
 	o Feature: Daily challenge map based on today's date
 	- Feature: Add Screens
 		o Main Menu
-		- Settings screen? (Might not actually need this)
-			- Music toggle
+		- Settings screen
+			o Music toggle
 			- SFX toggle
 			- Screen shake toggle
-			- Toggle vibration
-		- Stats screen? (With things like # of attempts, best run, average run, etc.)
+			o Toggle vibration
 		o Pause menu in play screen
 			- Resume button
 			- Settings button
@@ -21,6 +20,7 @@ Should
 	- Feature: Vibration on row and/or collision
 	- Feature: Screen shake on collision
 	- Balance: Increase turn speed when turning while rowing
+	o Balance: Make row indicator hit box larger
 
 Could
 	- Feature: Rapids section where the water speed temporarily gets way faster???
@@ -39,11 +39,8 @@ Could
 Features
 	- *Add Screens
 		- *Settings screen? (Might not actually need this)
-			- *Music toggle
 			- *SFX toggle
 			- *Screen shake toggle
-			- *Toggle vibration
-		- *Stats screen? (With things like # of attempts, best run, average run, etc.)
 	- *Screen shake on collision
 	- *Vibration on row and/or collision
 	- *Rapids section where the water speed temporarily gets way faster???
@@ -80,6 +77,8 @@ Balance
 
 -------------------------- Shelved --------------------------
 Features
+	- Add Screens		
+		- Stats screen? (With things like # of attempts, best run, average run, etc.)
 
 Optimization
 
@@ -110,6 +109,9 @@ Features
 	- *Daily challenge map based on today's date
 	- *Add Screens
 		- *Main Menu
+		- *Settings screen? (Might not actually need this)
+			- *Music toggle
+			- *Vibration
 	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- "Active Reload" for rowing
 	- Player proximity enhancements
@@ -182,3 +184,4 @@ Balance
 	- Increase collision radius of energy
 	- Make energy spawns less frequent when later in a run than earlier
 	- Increase impact radius decay and passive radius decay with distance
+	- Make row indicator hit box larger
