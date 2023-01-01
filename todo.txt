@@ -20,7 +20,8 @@ Should
 	o Feature: Vibration on row and/or collision
 	o Feature: Screen shake on collision
 	x Balance: Increase turn speed when turning while rowing
-	o Balance: Make row indicator hit box larger
+	o Bug: Increase pressable size of turning buttons
+	o Bug: Remove pressable area of row button on left half of screen
 
 Could
 	x Feature: Rapids section where the water speed temporarily gets way faster???
@@ -37,6 +38,8 @@ Could
 
 ------------------------ Outstanding ------------------------
 Features
+	- Hook up SFX setting to actual SFX
+	- Countdown for when new challenge maps are coming
 
 Optimization
 
@@ -61,8 +64,6 @@ Bugs
 	- The rock sprites has a few eroneous pixels on the edge
 	- *Pause boat rocking animation on death
 	- *In the tutorial, highlight both the rock and energy before letting the player play again
-	- Increase pressable size of turning buttons
-	- Remove pressable area of row button on left half of screen
 
 Balance
 
@@ -70,15 +71,21 @@ Balance
 Features
 	- Add Screens		
 		- Stats screen? (With things like # of attempts, best run, average run, etc.)
+			Still maybe if there is interest
 	- Rapids section where the water speed temporarily gets way faster???
+		I don't hate this but idk how to indicate it is upcoming when outside the player radius
 
 Optimization
 
 Art
 	- Iterate on generated tile art
+		Sounds hard
 	- Change rocks' color pallete to better match the brown pallete of the desert
+		Sounds time consuming
 	- Death animation
+		If I want to see something crashing a burning I can just look at my life
 	- Add in another (4th) unique rock sprite
+		Nobody will notice except me
 
 Bugs
 	- Rocks sometimes placed badly at transitions
@@ -94,21 +101,16 @@ Bugs
 
 Balance
 	- Remove rocks too close to an energy instead of trying to move the energy to the side
+		I kinda like the chaos it can cause in the challenge modes
 	- Increase turn speed when turning while rowing
+		I actually like the incentive to go fast
 
 ------------------------- Completed -------------------------
 
 Features
-	- *Daily challenge map based on today's date
-	- *Add Screens
-		- *Main Menu
-		- *Settings screen? (Might not actually need this)
-			- *Music toggle
-			- *Vibration
-			- *SFX toggle
-			- *Screen shake toggle
-	- *Screen shake on collision
-	- *Vibration on row and/or collision
+	- Daily challenge map based on today's date
+	- Screen shake on collision
+	- Vibration on row and/or collision
 	- Rocks and shoreline bump the player and slow them down rather than an immediate loss
 	- "Active Reload" for rowing
 	- Player proximity enhancements
@@ -119,10 +121,16 @@ Features
 		- How to play screen
 		- Credits
 		- Post play screen with stats of that play session
-		- *Pause menu in play screen
+		- Pause menu in play screen
 			- Resume button
 			- Restart Button
 			- Quit button
+		- Main Menu
+		- Settings screen? (Might not actually need this)
+			- Music toggle
+			- Vibration
+			- SFX toggle
+			- Screen shake toggle
 	- Add keyboard support
 	- On keyboard & controller, have right mimic down and left mimic up
 	- Release version # display in corner of main menu
@@ -170,6 +178,8 @@ Bugs
 	- Turn wake particles move too fast
 	- Wake particles are too small compared to row wake and turn wake particles
 	- Balance volume of music between main menu and play screen so that they are the same volume
+	- Increase pressable size of turning buttons
+	- Remove pressable area of row button on left half of screen
 
 Balance
 	- First half of rounds are kinda easy
@@ -180,4 +190,3 @@ Balance
 	- Increase collision radius of energy
 	- Make energy spawns less frequent when later in a run than earlier
 	- Increase impact radius decay and passive radius decay with distance
-	- Make row indicator hit box larger
