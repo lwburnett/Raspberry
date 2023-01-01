@@ -9,12 +9,13 @@ namespace Raspberry_Lib.Components
             _collisionComponent = new CharacterCollisionComponent();
             _playerProximityComponent = new PlayerProximityComponent(iOnMainMenu);
             _inputController = new CharacterInputController(OnPlayerInput);
+            _animationComponent = new CharacterAnimationComponent();
         }
 
         public override void OnAddedToEntity()
         {
             _movementComponent = Entity.AddComponent(new CharacterMovementComponent());
-            Entity.AddComponent<CharacterAnimationComponent>();
+            Entity.AddComponent(_animationComponent);
             Entity.AddComponent(_inputController);
             Entity.AddComponent(_collisionComponent);
             Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true){RenderLayer = 5});
@@ -27,12 +28,14 @@ namespace Raspberry_Lib.Components
             _movementComponent.IsPaused = iIsPaused;
             _playerProximityComponent.IsPaused = iIsPaused;
             _inputController.IsPaused = iIsPaused;
+            _animationComponent.IsPaused = iIsPaused;
         }
 
         private CharacterMovementComponent _movementComponent;
         private readonly CharacterCollisionComponent _collisionComponent;
         private readonly PlayerProximityComponent _playerProximityComponent;
         private readonly CharacterInputController _inputController;
+        private readonly CharacterAnimationComponent _animationComponent;
 
         private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {
