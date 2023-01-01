@@ -10,6 +10,9 @@ namespace Raspberry_Lib.Components
             _playerProximityComponent = new PlayerProximityComponent(iOnMainMenu);
             _inputController = new CharacterInputController(OnPlayerInput);
             _animationComponent = new CharacterAnimationComponent();
+            _wakeEmitter = new WakeParticleEmitter(() => 
+                    _movementComponent.CurrentVelocity, () => true, true) { RenderLayer = 5 };
+            _oarComponent = new OarPairComponent();
         }
 
         public override void OnAddedToEntity()
@@ -18,9 +21,9 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(_animationComponent);
             Entity.AddComponent(_inputController);
             Entity.AddComponent(_collisionComponent);
-            Entity.AddComponent(new WakeParticleEmitter(() => _movementComponent.CurrentVelocity, () => true, true){RenderLayer = 5});
+            Entity.AddComponent(_wakeEmitter);
             Entity.AddComponent(_playerProximityComponent);
-            Entity.AddComponent(new OarPairComponent());
+            Entity.AddComponent(_oarComponent);
         }
 
         public void TogglePause(bool iIsPaused)
@@ -29,6 +32,8 @@ namespace Raspberry_Lib.Components
             _playerProximityComponent.IsPaused = iIsPaused;
             _inputController.IsPaused = iIsPaused;
             _animationComponent.IsPaused = iIsPaused;
+            _wakeEmitter.IsPaused = iIsPaused;
+            _oarComponent.IsPaused = iIsPaused;
         }
 
         private CharacterMovementComponent _movementComponent;
@@ -36,6 +41,8 @@ namespace Raspberry_Lib.Components
         private readonly PlayerProximityComponent _playerProximityComponent;
         private readonly CharacterInputController _inputController;
         private readonly CharacterAnimationComponent _animationComponent;
+        private readonly WakeParticleEmitter _wakeEmitter;
+        private readonly OarPairComponent _oarComponent;
 
         private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {
