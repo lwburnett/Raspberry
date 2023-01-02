@@ -7,7 +7,7 @@ using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterAnimationComponent : RenderableComponent, IUpdatable, IPausable
+    internal class CharacterAnimationComponent : PausableRenderableComponent
     {
         private static class Settings
         {
@@ -35,8 +35,6 @@ namespace Raspberry_Lib.Components
 
             _timeOfFreedom = 0f;
 
-            _timeSpentPaused = 0f;
-
             IsPaused = false;
         }
 
@@ -52,16 +50,8 @@ namespace Raspberry_Lib.Components
             _proceduralGenerator = Entity.Scene.FindEntity("map").GetComponent<ProceduralGeneratorComponent>();
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
-            if (IsPaused)
-            {
-                _timeSpentPaused += Time.DeltaTime;
-                return;
-            }
-
-            var adjustedTime = Time.TotalTime - _timeSpentPaused;
-
             var input = _movementComponent.CurrentInput;
 
             // Set turning values
@@ -69,7 +59,7 @@ namespace Raspberry_Lib.Components
             {
                 if (!_turnIsClockwise.HasValue || !_turnIsClockwise.Value)
                 {
-                    _turnStartTime = adjustedTime;
+                    _turnStartTime = iTotalPlayableTime;
                     _turnIsClockwise = true;
                 }
             }
@@ -77,7 +67,7 @@ namespace Raspberry_Lib.Components
             {
                 if (!_turnIsClockwise.HasValue || _turnIsClockwise.Value)
                 {
-                    _turnStartTime = adjustedTime;
+                    _turnStartTime = iTotalPlayableTime;
                     _turnIsClockwise = false;
                 }
             }
@@ -106,11 +96,11 @@ namespace Raspberry_Lib.Components
             {
                 _phase = CalculatePhase(torque);
                 _amplitude = CalculateAmplitude(torque, _phase);
-                _timeOfFreedom = adjustedTime;
+                _timeOfFreedom = iTotalPlayableTime;
             }
 
             // Apply torque to boat
-            var deltaT = adjustedTime - _timeOfFreedom;
+            var deltaT = iTotalPlayableTime - _timeOfFreedom;
 
             var oscillationValue = DampedOscillationFunction(deltaT, _amplitude, _phase);
             var clampedOscillation = MathHelper.Clamp(oscillationValue, -Settings.AmplitudeMax, Settings.AmplitudeMax);
@@ -137,9 +127,6 @@ namespace Raspberry_Lib.Components
             batcher.Draw(_currentSprite, Entity.Transform.Position + LocalOffset, Color,
                 Entity.Transform.Rotation, _currentSprite.Origin, Entity.Transform.Scale, _spriteEffect, _layerDepth);
         }
-        
-        public bool IsPaused { get; set; }
-        private float _timeSpentPaused;
 
         private List<Sprite> _sprites;
         private Sprite _currentSprite;
@@ -180,7 +167,7 @@ namespace Raspberry_Lib.Components
 
         private float CalculateAmplitude(float iTorque, float iPhase)
         {
-            var t0 = Time.TotalTime - _timeSpentPaused - _timeOfFreedom;
+            var t0 = Time.TotalTime - TimeSpentPaused - _timeOfFreedom;
 
             // ReSharper disable InconsistentNaming
             var f0t0 = DampedOscillationFunction(t0, _amplitude, _phase);
@@ -196,7 +183,7 @@ namespace Raspberry_Lib.Components
 
         private float CalculatePhase(float iTorque)
         {
-            var t0 = Time.TotalTime - _timeSpentPaused - _timeOfFreedom;
+            var t0 = Time.TotalTime - TimeSpentPaused - _timeOfFreedom;
 
             // ReSharper disable InconsistentNaming
             var f0t0 = DampedOscillationFunction(t0, _amplitude, _phase);

@@ -30,6 +30,8 @@ namespace Raspberry_Lib.Scenes
             _runTime = 0f;
             _lost = false;
 
+            _riverParticleManager = new RiverParticleManager();
+
             PostConstructionInitialize();
         }
 
@@ -73,6 +75,7 @@ namespace Raspberry_Lib.Scenes
         private float _runTime;
         private bool _lost;
         private CharacterMovementComponent _movementComponent;
+        private readonly RiverParticleManager _riverParticleManager;
 
         // Initialization needs to be after construction so that _seed is initialized
         private void PostConstructionInitialize()
@@ -86,7 +89,7 @@ namespace Raspberry_Lib.Scenes
             map.Transform.SetLocalScale(Settings.MapScale.Value);
             map.AddComponent(proceduralGenerator);
             map.AddComponent<ProceduralRenderer>();
-            map.AddComponent<RiverParticleManager>();
+            map.AddComponent(_riverParticleManager);
 
             _uiComponent = InitializeUi(OnPlayAgain, OnMainMenu);
 
@@ -151,13 +154,33 @@ namespace Raspberry_Lib.Scenes
         protected void OnPause()
         {
             _characterComponent.TogglePause(true);
+            _riverParticleManager.IsPaused = true;
+            ToggleWakeAndEnergyAnimationPause(true);
             _isRunning = false;
         }
 
         protected void OnResume()
         {
             _characterComponent.TogglePause(false);
+            ToggleWakeAndEnergyAnimationPause(false);
             _isRunning = true;
+        }
+
+        private void ToggleWakeAndEnergyAnimationPause(bool iPause)
+        {
+            var wakeEmitters =  Entities.FindComponentsOfType<WakeParticleEmitter>();
+
+            foreach (var wakeEmitter in wakeEmitters)
+            {
+                wakeEmitter.IsPaused = iPause;
+            }
+
+            var energyAnimationComponents = Entities.FindComponentsOfType<EnergyAnimationComponent>();
+
+            foreach (var energyAnimationComponent in energyAnimationComponents)
+            {
+                energyAnimationComponent.IsPaused = iPause;
+            }
         }
     }
 }

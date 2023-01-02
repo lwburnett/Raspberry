@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Raspberry_Lib.Components
 {
-    internal class OarPairComponent : RenderableComponent, IUpdatable, IPausable
+    internal class OarPairComponent : PausableRenderableComponent
     {
         private static class Settings
         {
@@ -90,9 +90,6 @@ namespace Raspberry_Lib.Components
             _freeParticles = new List<FreeParticle>();
             _rowGroups = new List<RowGroup>();
             _rng = new System.Random();
-
-            IsPaused = false;
-            _timeSpentPaused = 0f;
         }
 
         public override void OnAddedToEntity()
@@ -102,34 +99,26 @@ namespace Raspberry_Lib.Components
             _proceduralGenerator = Entity.Scene.FindEntity("map").GetComponent<ProceduralGeneratorComponent>();
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
-            if (IsPaused)
-            {
-                _timeSpentPaused += Time.DeltaTime;
-                return;
-            }
-
-            var adjustedTime = Time.TotalTime - _timeSpentPaused;
-
             // Update current list of free particles
             for (var ii = _freeParticles.Count - 1; ii >= 0; ii--)
             {
                 var thisParticle = _freeParticles[ii];
 
-                if (adjustedTime - thisParticle.SpawnTime > thisParticle.TimeToLive)
+                if (iTotalPlayableTime - thisParticle.SpawnTime > thisParticle.TimeToLive)
                 {
                     Pool<FreeParticle>.Free(thisParticle);
                     _freeParticles.RemoveAt(ii);
                     continue;
                 }
 
-                if (adjustedTime > thisParticle.SpawnTime + thisParticle.TimeToLive * Settings.OrthogonalEndPositionVariancePercentOfTtlStart)
+                if (iTotalPlayableTime > thisParticle.SpawnTime + thisParticle.TimeToLive * Settings.OrthogonalEndPositionVariancePercentOfTtlStart)
                     thisParticle.Velocity += thisParticle.DeltaVelocityPerFrame * Time.DeltaTime;
 
                 thisParticle.Position += thisParticle.Velocity * Time.DeltaTime;
 
-                var lerpValue = (adjustedTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
+                var lerpValue = (iTotalPlayableTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
                 thisParticle.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, lerpValue);
             }
 
@@ -143,7 +132,7 @@ namespace Raspberry_Lib.Components
             {
                 var thisRowGroup = _rowGroups[ii];
                 
-                if (thisRowGroup.FreedomTime.HasValue && adjustedTime - thisRowGroup.FreedomTime.Value > thisRowGroup.TimeToLive)
+                if (thisRowGroup.FreedomTime.HasValue && iTotalPlayableTime - thisRowGroup.FreedomTime.Value > thisRowGroup.TimeToLive)
                 {
                     foreach (var particle in _rowGroups[ii].Particles)
                     {
@@ -170,14 +159,14 @@ namespace Raspberry_Lib.Components
                 }
                 else
                 {
-                    thisRowGroup.FreedomTime ??= adjustedTime;
+                    thisRowGroup.FreedomTime ??= iTotalPlayableTime;
 
                     foreach (var particle in thisRowGroup.Particles)
                     {
                         particle.Position += thisRowGroup.PostRowVelocity * Time.DeltaTime;
                     }
 
-                    var alphaLerpValue = (adjustedTime - thisRowGroup.FreedomTime.Value) / thisRowGroup.TimeToLive;
+                    var alphaLerpValue = (iTotalPlayableTime - thisRowGroup.FreedomTime.Value) / thisRowGroup.TimeToLive;
                     thisRowGroup.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, alphaLerpValue);
                 }
             }
@@ -314,9 +303,6 @@ namespace Raspberry_Lib.Components
                 }
             }
         }
-        
-        public bool IsPaused { get; set; }
-        private float _timeSpentPaused;
 
         private readonly Sprite _sprite;
         private readonly List<FreeParticle> _freeParticles;
@@ -376,7 +362,7 @@ namespace Raspberry_Lib.Components
             particle.SpawnPosition = spawnPositionFinal;
 
             particle.Velocity = iVelocity;
-            particle.SpawnTime = Time.TotalTime - _timeSpentPaused;
+            particle.SpawnTime = Time.TotalTime - TimeSpentPaused;
             particle.TimeToLive = Settings.ParticleTtl;
 
             var timeToVarySquared = Settings.ParticleTtl * Settings.ParticleTtl *

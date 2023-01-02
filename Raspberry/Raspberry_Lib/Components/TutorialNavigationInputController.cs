@@ -4,7 +4,7 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class TutorialNavigationInputController : Component, IBeginPlay, IUpdatable, IPausable
+    internal class TutorialNavigationInputController : PausableComponent, IBeginPlay
     {
         private static class Settings
         {
@@ -16,8 +16,6 @@ namespace Raspberry_Lib.Components
             IsPaused = false;
             _onNavigation = iOnNavigationClick;
         }
-
-        public bool IsPaused { get; set; }
 
         public override void OnAddedToEntity()
         {
@@ -33,20 +31,12 @@ namespace Raspberry_Lib.Components
         public int BeginPlayOrder => 96;
         public void OnBeginPlay()
         {
-            _lastNavigationTime = Time.TotalTime;
-            _timeSpentPaused = 0;
+            _lastNavigationTime = Time.TotalTime - TimeSpentPaused;
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
-            if (IsPaused)
-            {
-                _timeSpentPaused += Time.DeltaTime;
-                return;
-            }
-
-            var adjustedTime = Time.TotalTime - _timeSpentPaused;
-            if (adjustedTime - _lastNavigationTime < Settings.TimeBetweenNavigationSeconds)
+            if (iTotalPlayableTime - _lastNavigationTime < Settings.TimeBetweenNavigationSeconds)
             {
                 return;
             }
@@ -56,7 +46,7 @@ namespace Raspberry_Lib.Components
                 if (Input.Touch.CurrentTouches.Any())
                 {
                     PlatformUtils.VibrateForUiNavigation();
-                    _lastNavigationTime = adjustedTime;
+                    _lastNavigationTime = iTotalPlayableTime;
                     _onNavigation();
                 }
             }
@@ -64,7 +54,7 @@ namespace Raspberry_Lib.Components
             {
                 if (_navigationInput.IsPressed)
                 {
-                    _lastNavigationTime = adjustedTime;
+                    _lastNavigationTime = iTotalPlayableTime;
                     _onNavigation();
                 }
             }
@@ -73,6 +63,5 @@ namespace Raspberry_Lib.Components
         private readonly System.Action _onNavigation;
         private VirtualButton _navigationInput;
         private float _lastNavigationTime;
-        private float _timeSpentPaused;
     }
 }

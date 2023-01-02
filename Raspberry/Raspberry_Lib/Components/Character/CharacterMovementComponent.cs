@@ -4,7 +4,7 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class CharacterMovementComponent : Component, IUpdatable, IBeginPlay, IPausable
+    internal class CharacterMovementComponent : PausableComponent, IBeginPlay
     {
         private static class Settings
         {
@@ -71,8 +71,6 @@ namespace Raspberry_Lib.Components
 #endif
         }
 
-        public bool IsPaused { get; set; }
-
         public int BeginPlayOrder => 98;
 
         public override void OnAddedToEntity()
@@ -89,13 +87,8 @@ namespace Raspberry_Lib.Components
             _collisionComponent = Entity.GetComponent<CharacterCollisionComponent>();
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
-            if (IsPaused)
-            {
-                return;
-            }
-
             if (_generator == null)
                 return;
 

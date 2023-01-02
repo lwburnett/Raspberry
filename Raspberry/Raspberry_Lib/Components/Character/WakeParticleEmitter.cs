@@ -9,7 +9,7 @@ using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class WakeParticleEmitter : RenderableComponent, IUpdatable, IPausable
+    internal class WakeParticleEmitter : PausableRenderableComponent
     {
         private static class Settings
         {
@@ -70,9 +70,6 @@ namespace Raspberry_Lib.Components
             _sprite = new Sprite(texture);
             _rng = new System.Random();
             _staticSpawnPoints = new List<Vector2>();
-
-            IsPaused = false;
-            _timeSpentPaused = 0f;
         }
         //public override Material Material => _material;
         public override float Width => 2000;
@@ -131,38 +128,31 @@ namespace Raspberry_Lib.Components
             }
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
-            if (IsPaused)
-            {
-                _timeSpentPaused += Time.DeltaTime;
-                return;
-            }
 
             // Skip update if need be
             if (!_shouldUpdateFunc())
                 return;
-
-            var adjustedTime = Time.TotalTime - _timeSpentPaused;
 
             // Update current list of particles
             for (var ii = _particles.Count - 1; ii >= 0; ii--)
             {
                 var thisParticle = _particles[ii];
 
-                if (adjustedTime - thisParticle.SpawnTime > thisParticle.TimeToLive)
+                if (iTotalPlayableTime - thisParticle.SpawnTime > thisParticle.TimeToLive)
                 {
                     Pool<WakeParticle>.Free(thisParticle);
                     _particles.RemoveAt(ii);
                     continue;
                 }
 
-                if (adjustedTime > thisParticle.SpawnTime + thisParticle.TimeToLive * Settings.OrthogonalEndPositionVariancePercentOfTtlStart)
+                if (iTotalPlayableTime > thisParticle.SpawnTime + thisParticle.TimeToLive * Settings.OrthogonalEndPositionVariancePercentOfTtlStart)
                     thisParticle.Velocity += thisParticle.DeltaVelocityPerFrame * Time.DeltaTime;
                 
                 thisParticle.Position += thisParticle.Velocity * Time.DeltaTime;
 
-                var lerpValue = (adjustedTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
+                var lerpValue = (iTotalPlayableTime - thisParticle.SpawnTime) / thisParticle.TimeToLive;
                 thisParticle.ColorAlpha = (byte)MathHelper.Lerp(Settings.TextureAlphaStart, Settings.TextureAlphaEnd, lerpValue);
             }
 
@@ -209,9 +199,6 @@ namespace Raspberry_Lib.Components
                 }
             }
         }
-
-        public bool IsPaused { get; set; }
-        private float _timeSpentPaused;
 
         private WakeParticle _lastParticleSpawned;
         private readonly List<WakeParticle> _particles;
@@ -330,7 +317,7 @@ namespace Raspberry_Lib.Components
                 particle.SpawnPosition = spawnPositionFinal;
 
                 particle.Velocity = iVelocity;
-                particle.SpawnTime = Time.TotalTime - _timeSpentPaused;
+                particle.SpawnTime = Time.TotalTime - TimeSpentPaused;
                 particle.TimeToLive = Settings.ParticleTtl;
 
                 var timeToVarySquared = Settings.ParticleTtl * Settings.ParticleTtl *

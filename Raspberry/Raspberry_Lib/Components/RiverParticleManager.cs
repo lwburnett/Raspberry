@@ -7,7 +7,7 @@ using Nez.Textures;
 
 namespace Raspberry_Lib.Components
 {
-    internal class RiverParticleManager : RenderableComponent, IUpdatable, IBeginPlay
+    internal class RiverParticleManager : PausableRenderableComponent, IBeginPlay
     {
         private static class Settings
         {
@@ -90,7 +90,7 @@ namespace Raspberry_Lib.Components
             System.Diagnostics.Debug.Assert(_playerProximityComponent != null);
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
             foreach (var particle in _particles)
             {

@@ -4,7 +4,7 @@ using Nez;
 
 namespace Raspberry_Lib.Components
 {
-    internal class PlayerProximityComponent : Component, IUpdatable, IBeginPlay, IPausable
+    internal class PlayerProximityComponent : PausableComponent
     {
         private static class Settings
         {
@@ -31,7 +31,6 @@ namespace Raspberry_Lib.Components
             _lastEnergyHitTime = 0;
             _lastObstacleHitTime = null;
             _decayMultiplier = null;
-            _timeSpentPaused = 0;
 
 #if VERBOSE
             _radiusDecayPerSecond = Settings.RadiusDecayPerSecondLower.Value;
@@ -41,48 +40,31 @@ namespace Raspberry_Lib.Components
 #endif
         }
 
-        public int BeginPlayOrder => 95;
-        public void OnBeginPlay()
-        {
-            var mapEntity = Entity.Scene.FindEntity("map");
-
-            System.Diagnostics.Debug.Assert(mapEntity != null);
-
-            _proceduralGenerator = mapEntity.GetComponent<ProceduralGeneratorComponent>();
-
-            System.Diagnostics.Debug.Assert(_proceduralGenerator != null);
-        }
-
-        public bool IsPaused { get; set; }
-
         public float Radius { get; private set; }
 
         public void OnEnergyHit()
         {
-            _lastEnergyHitTime = Time.TotalTime - _timeSpentPaused;
+            _lastEnergyHitTime = Time.TotalTime - TimeSpentPaused;
 
             _decayMultiplier = null;
             _lastObstacleHitTime = null;
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
-            if (IsPaused)
+            if (iTotalPlayableTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds + Settings.EnergyHitIncreaseOverTimeSeconds)
             {
-                _timeSpentPaused += Time.DeltaTime;
-                return;
-            }
+                if (_proceduralGenerator == null)
+                {
+                    var mapEntity = Entity.Scene.FindEntity("map");
 
-            if (_proceduralGenerator == null)
-            {
-                OnBeginPlay();
-                return;
-            }
+                    System.Diagnostics.Debug.Assert(mapEntity != null);
 
-            var adjustedTime = Time.TotalTime - _timeSpentPaused;
-            
-            if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds + Settings.EnergyHitIncreaseOverTimeSeconds)
-            {
+                    _proceduralGenerator = mapEntity.GetComponent<ProceduralGeneratorComponent>();
+
+                    System.Diagnostics.Debug.Assert(_proceduralGenerator != null);
+                }
+
                 var radiusDecayPerSecond = MathHelper.Lerp(
                     Settings.RadiusDecayPerSecondLower.Value,
                     Settings.RadiusDecayPerSecondUpper.Value,
@@ -98,7 +80,7 @@ namespace Raspberry_Lib.Components
                 }
                 else
                 {
-                    if (adjustedTime - _lastObstacleHitTime.Value < Settings.ImpactDecayTimespanSeconds)
+                    if (iTotalPlayableTime - _lastObstacleHitTime.Value < Settings.ImpactDecayTimespanSeconds)
                     {
                         Radius -= _decayMultiplier.Value * radiusDecayPerSecond * Time.DeltaTime;
                     }
@@ -116,7 +98,7 @@ namespace Raspberry_Lib.Components
                     _onRadiusTooLow();
                 }
             }
-            else if (adjustedTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds)
+            else if (iTotalPlayableTime - _lastEnergyHitTime > Settings.EnergyHitDelayDurationSeconds)
             {
                 Radius += Settings.EnergyHitIncrease.Value * Time.DeltaTime / Settings.EnergyHitIncreaseOverTimeSeconds;
                 if (Radius > Settings.MaximumRadius.Value)
@@ -126,7 +108,7 @@ namespace Raspberry_Lib.Components
 
         public void OnObstacleHit(float iImpactSpeed)
         {
-            var adjustedTime = Time.TotalTime - _timeSpentPaused;
+            var adjustedTime = Time.TotalTime - TimeSpentPaused;
 
             var impactSpeedMag = Math.Abs(iImpactSpeed);
             if (impactSpeedMag <= Settings.MinimumImpactSpeed.Value)
@@ -169,8 +151,6 @@ namespace Raspberry_Lib.Components
 
         private float? _lastObstacleHitTime;
         private float? _decayMultiplier;
-
-        private float _timeSpentPaused;
 
         private ProceduralGeneratorComponent _proceduralGenerator;
 

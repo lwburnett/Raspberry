@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Raspberry_Lib.Components
 {
-    internal class EnergyAnimationComponent: RenderableComponent, IUpdatable
+    internal class EnergyAnimationComponent: PausableRenderableComponent
     {
         private static class Settings
         {
@@ -94,7 +94,7 @@ namespace Raspberry_Lib.Components
             System.Diagnostics.Debug.Assert(_playerEntity != null);
         }
 
-        public void Update()
+        protected override void OnUpdate(float iTotalPlayableTime)
         {
             if (!_hasCollidedWithPlayer)
             {
@@ -155,7 +155,7 @@ namespace Raspberry_Lib.Components
             }
             else
             {
-                var timeSinceCollision = Time.TotalTime - _collisionTime;
+                var timeSinceCollision = iTotalPlayableTime - _collisionTime;
 
                 if (timeSinceCollision <= Settings.BlastDurationSeconds)
                 {
@@ -225,7 +225,7 @@ namespace Raspberry_Lib.Components
         public void OnPlayerHit()
         {
             _hasCollidedWithPlayer = true;
-            _collisionTime = Time.TotalTime;
+            _collisionTime = Time.TotalTime - TimeSpentPaused;
         }
 
         private class CollisionParticle
