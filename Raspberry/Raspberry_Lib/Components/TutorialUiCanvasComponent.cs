@@ -20,7 +20,7 @@ namespace Raspberry_Lib.Components
             public static readonly RenderSetting EnergyDisplayThickness = new(10);
             public const float EnergyDecayPercentLossPerSecond = .15f;
             public const float EnergyDecayMinimumScale = .33f;
-            public static readonly RenderSetting ObstacleAlertRadius = new(1000);
+            public static readonly RenderSetting ObstacleAlertRadius = new(600);
 
             public static readonly RenderSetting ObstacleAlertThickness = new(7.5f);
             public const float ObstacleCircleSizeMultiplier = .5f;
@@ -286,7 +286,7 @@ namespace Raspberry_Lib.Components
             }
             else if (_currentState == State.FirstPlay)
             {
-                if (Vector2.Distance(_characterProximity.Entity.Position, _firstRockLocation) <=
+                if (_firstRockLocation.X - _characterProximity.Entity.Position.X <=
                     Settings.ObstacleAlertRadius.Value)
                 {
                     OnNavigation();
