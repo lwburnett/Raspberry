@@ -59,7 +59,12 @@ namespace Raspberry_Lib.Components
         public void OnBeginPlay()
         {
             BeginPlayInternal();
-            _introMenu?.SetIsVisible(true);
+
+            if (_introMenu != null)
+            {
+                _introMenu.SetIsVisible(true);
+                _pauseButton.SetIsVisible(false);
+            }
         }
 
         public void Update()
@@ -195,6 +200,8 @@ namespace Raspberry_Lib.Components
 
             if (_scenario.IntroLines.Any())
             {
+                _pauseButton.SetIsVisible(false);
+
                 var introMenu = new PlayScreenIntroMenu(
                     (SceneBase)Entity.Scene,
                     menuBounds,
@@ -355,6 +362,7 @@ namespace Raspberry_Lib.Components
         protected void SetPauseMenuVisibility(bool iVisibility)
         {
             _pauseMenu.SetIsVisible(iVisibility);
+            _pauseButton.SetIsVisible(!iVisibility);
         }
     }
 }
