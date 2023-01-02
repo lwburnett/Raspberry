@@ -27,7 +27,7 @@ Could
 	x Feature: Rapids section where the water speed temporarily gets way faster???
 	o Art: Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 	o Bug: Pause boat rocking animation on death
-	- Bug: In the tutorial, highlight both the rock and energy before letting the player play again
+	o Bug: In the tutorial, highlight both the rock and energy before letting the player play again
 
 -------------------- Playtester Feedback --------------------
 
@@ -62,7 +62,6 @@ Art
 Bugs
 	- Row wakes look wrong when facing backwards
 	- The rock sprites has a few eroneous pixels on the edge
-	- *In the tutorial, highlight both the rock and energy before letting the player play again
 
 Balance
 
@@ -180,6 +179,7 @@ Bugs
 	- Increase pressable size of turning buttons
 	- Remove pressable area of row button on left half of screen
 	- Pause boat rocking animation on death
+	- In the tutorial, highlight both the rock and energy before letting the player play again
 
 Balance
 	- First half of rounds are kinda easy
