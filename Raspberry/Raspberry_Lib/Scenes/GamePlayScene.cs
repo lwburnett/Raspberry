@@ -162,6 +162,7 @@ namespace Raspberry_Lib.Scenes
         protected void OnResume()
         {
             _characterComponent.TogglePause(false);
+            _riverParticleManager.IsPaused = false;
             ToggleWakeAndEnergyAnimationPause(false);
             _isRunning = true;
         }
