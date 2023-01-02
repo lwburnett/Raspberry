@@ -37,6 +37,7 @@ namespace Raspberry_Lib.Components
             StoryIntro3,
             GameGoal1,
             DistanceDisplay,
+            TimeDisplay,
             EnergyDisplay,
             EnergyDecay1,
             EnergyDecay2,
@@ -79,7 +80,7 @@ namespace Raspberry_Lib.Components
 
         private float _energyDisplaySizeMultiplier;
 
-        private Nez.UI.IDrawable _distanceDisplayBackground;
+        private Nez.UI.IDrawable _displayLabelBackground;
         private Image _energyDisplay;
         private Image _obstacleAlert;
         private Vector2 _firstRockLocation;
@@ -110,8 +111,8 @@ namespace Raspberry_Lib.Components
                 SetAlignment(Align.TopLeft);
             _textBox.Add(_text).Pad(Settings.CellPadding.Value);
 
-            var distanceDisplayBackgroundTexture = CreateDistanceDisplayBackgroundTexture();
-            _distanceDisplayBackground = new SpriteDrawable(distanceDisplayBackgroundTexture);
+            var displayLabelBackgroundTexture = CreateDisplayLabelBackgroundTexture();
+            _displayLabelBackground = new SpriteDrawable(displayLabelBackgroundTexture);
         }
 
         protected sealed override void BeginPlayInternal()
@@ -162,8 +163,18 @@ namespace Raspberry_Lib.Components
                     {
                         _blinkToggle = !_blinkToggle;
                         _timeSinceLastBlinkToggle = 0;
-                        var drawable = _blinkToggle ? _distanceDisplayBackground : null;
+                        var drawable = _blinkToggle ? _displayLabelBackground : null;
                         DistanceLabel.SetBackground(drawable);
+                    }
+                }
+                else if (_currentState == State.TimeDisplay)
+                {
+                    if (_timeSinceLastBlinkToggle.Value >= Settings.BlinkPeriodSeconds)
+                    {
+                        _blinkToggle = !_blinkToggle;
+                        _timeSinceLastBlinkToggle = 0;
+                        var drawable = _blinkToggle ? _displayLabelBackground : null;
+                        TimeLabel.SetBackground(drawable);
                     }
                 }
                 else if (_currentState == State.EnergyDisplay)
@@ -305,7 +316,7 @@ namespace Raspberry_Lib.Components
             return CreateSolidColorTexture(width, height, Settings.TextBoxBackgroundTextureColor);
         }
 
-        private Texture2D CreateDistanceDisplayBackgroundTexture()
+        private Texture2D CreateDisplayLabelBackgroundTexture()
         {
             var width = (int)DistanceLabel.PreferredWidth;
             var height = (int)DistanceLabel.PreferredHeight;
@@ -371,6 +382,10 @@ namespace Raspberry_Lib.Components
                     DistanceLabel.SetBackground(null);
                     _timeSinceLastBlinkToggle = null;
                     break;
+                case State.TimeDisplay:
+                    TimeLabel.SetBackground(null);
+                    _timeSinceLastBlinkToggle = null;
+                    break;
                 case State.EnergyDisplay:
                     _energyDisplay.SetIsVisible(false);
                     _timeSinceLastBlinkToggle = null;
@@ -431,6 +446,9 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.DistanceDisplay:
                     HandleDistanceDisplay();
+                    break;
+                case State.TimeDisplay:
+                    HandleTimeDisplay();
                     break;
                 case State.EnergyDisplay:
                     HandleEnergyDisplay();
@@ -505,8 +523,16 @@ namespace Raspberry_Lib.Components
         {
             _blinkToggle = true;
             _timeSinceLastBlinkToggle = 0;
-            DistanceLabel.SetBackground(_distanceDisplayBackground);
+            DistanceLabel.SetBackground(_displayLabelBackground);
             HandleGenericTextChange("Distance is shown at the top of the screen.");
+        }
+
+        private void HandleTimeDisplay()
+        {
+            _blinkToggle = true;
+            _timeSinceLastBlinkToggle = 0;
+            TimeLabel.SetBackground(_displayLabelBackground);
+            HandleGenericTextChange("Time is shown under distance.");
         }
 
         private void HandleEnergyDisplay()
