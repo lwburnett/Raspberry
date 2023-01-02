@@ -50,8 +50,6 @@ namespace Raspberry_Lib.Components
             FirstPlay,
             Collision1,
             Collision2,
-            SecondPlayInstructions,
-            SecondPlay,
             Energy,
             GoodLuck,
             EndPlay
@@ -277,14 +275,6 @@ namespace Raspberry_Lib.Components
                     OnNavigation();
                 }
             }
-            else if (_currentState == State.SecondPlay)
-            {
-                if (Vector2.Distance(_characterProximity.Entity.Position, _firstEnergyLocation) <=
-                    Settings.ObstacleAlertRadius.Value)
-                {
-                    OnNavigation();
-                }
-            }
         }
 
         protected sealed override void OnPause(Button iButton)
@@ -414,8 +404,6 @@ namespace Raspberry_Lib.Components
                 case State.FirstPlayInstructions:
                 case State.FirstPlay:
                 case State.Collision1:
-                case State.SecondPlayInstructions:
-                case State.SecondPlay:
                 case State.GoodLuck:
                 case State.EndPlay:
                     break;
@@ -482,12 +470,6 @@ namespace Raspberry_Lib.Components
                     break;
                 case State.Collision2:
                     HandleGenericTextChange("Careful! The further you get, the more\nenergy will be lost by collisions.");
-                    break;
-                case State.SecondPlayInstructions:
-                    HandleSecondPlayInstruction();
-                    break;
-                case State.SecondPlay:
-                    HandlePlay();
                     break;
                 case State.Energy:
                     HandleEnergy();
@@ -620,22 +602,6 @@ namespace Raspberry_Lib.Components
             _timeSinceLastBlinkToggle = 0;
             _obstacleAlert.SetIsVisible(true);
             HandleGenericTextChange("You lose energy when colliding with rocks\nand the shoreline. The faster your speed\nat impact, the more energy is lost.");
-        }
-
-        private void HandleSecondPlayInstruction()
-        {
-            if (Input.Touch.IsConnected)
-            {
-                HandleGenericTextChange("Tap the screen to continue.");
-            }
-            else if (Input.GamePads.Any(gp => gp.IsConnected()))
-            {
-                HandleGenericTextChange("Press the A/X face button to continue.");
-            }
-            else
-            {
-                HandleGenericTextChange("Press left click or space to continue.");
-            }
         }
 
         private void HandleEnergy()
