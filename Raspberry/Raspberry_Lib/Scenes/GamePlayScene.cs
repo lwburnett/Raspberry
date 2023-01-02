@@ -2,6 +2,7 @@
 using Raspberry_Lib.Components;
 using Raspberry_Lib.Content;
 using System;
+using System.Linq;
 using Nez;
 
 namespace Raspberry_Lib.Scenes
@@ -26,7 +27,8 @@ namespace Raspberry_Lib.Scenes
             _scenario = iScenario;
 
             ClearColor = ContentData.ColorPallets.Desert.Color2;
-            _isRunning = true;
+            
+            _isRunning = !iScenario.IntroLines.Any();
             _runTime = 0f;
             _lost = false;
 
@@ -40,7 +42,10 @@ namespace Raspberry_Lib.Scenes
             base.Update();
 
             if (_isRunning)
+            {
                 _runTime += Time.DeltaTime;
+                _uiComponent.SetPlayTime(_runTime);
+            }
 
             if (_movementComponent == null)
             {

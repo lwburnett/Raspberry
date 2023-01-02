@@ -80,6 +80,11 @@ namespace Raspberry_Lib.Components
             _introMenu?.SetIsVisible(false);
         }
 
+        public void SetPlayTime(float iTime)
+        {
+            _runTime = iTime;
+        }
+
         private enum RowColor
         {
             White,
@@ -90,6 +95,7 @@ namespace Raspberry_Lib.Components
 
         protected CharacterMovementComponent MovementComponent;
         protected Label DistanceLabel;
+        protected Label TimeLabel;
 
         protected UICanvas Canvas;
 
@@ -126,6 +132,7 @@ namespace Raspberry_Lib.Components
         private Element _pauseMenu;
         private PlayScreenIntroMenu _introMenu;
         private TextButton _pauseButton;
+        private float _runTime;
 
         protected virtual void OnAddedToEntityInternal()
         {
@@ -133,10 +140,18 @@ namespace Raspberry_Lib.Components
             DistanceLabel = Canvas.Stage.AddElement(new Label("0 m"));
             DistanceLabel.SetBounds(
                 (Screen.Width - Settings.DistanceLabelWidth.Value) / 2f,
-                Settings.Margin.Value / 2f,
+                Settings.Margin.Value / 4f,
                 Settings.DistanceLabelWidth.Value,
                 Settings.DistanceLabelHeight.Value);
             DistanceLabel.SetFontScale(Settings.FontScale);
+
+            TimeLabel = Canvas.Stage.AddElement(new Label("0:00"));
+            TimeLabel.SetBounds(
+                (Screen.Width - Settings.DistanceLabelWidth.Value) / 2f,
+                Settings.Margin.Value / 4f + Settings.DistanceLabelHeight.Value,
+                Settings.DistanceLabelWidth.Value,
+                Settings.DistanceLabelHeight.Value);
+            TimeLabel.SetFontScale(Settings.FontScale);
 
             const int cellSize = 32;
             var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.IconsTileset, true);
@@ -185,7 +200,7 @@ namespace Raspberry_Lib.Components
 
             _pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", Skin.CreateDefaultSkin()));
             _pauseButton.OnClicked += OnPause;
-            _pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value / 2);
+            _pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value);
             _pauseButton.SetBounds(
                 Screen.Width - Settings.Margin.Value - Settings.DistanceLabelWidth.Value / 4,
                 Settings.Margin.Value / 2f,
@@ -248,6 +263,9 @@ namespace Raspberry_Lib.Components
             // Handle Distance Display
             var distanceTraveled = (int)Mathf.Round(MovementComponent.TotalDistanceTraveled);
             DistanceLabel.SetText($"{distanceTraveled} m");
+
+            // Handle Time Display
+            TimeLabel.SetText(TimeSpan.FromSeconds(_runTime).ToString("mm':'ss"));
 
             // Handle Turning Indicators
             var input = InputOverride ?? MovementComponent.CurrentInput;
