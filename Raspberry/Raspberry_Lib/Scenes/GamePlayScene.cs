@@ -41,7 +41,7 @@ namespace Raspberry_Lib.Scenes
         {
             base.Update();
 
-            if (_isRunning)
+            if (_isRunning && _uiComponent.ShouldBeAggregatingTime())
             {
                 _runTime += Time.DeltaTime;
                 _uiComponent.SetPlayTime(_runTime);

@@ -85,6 +85,11 @@ namespace Raspberry_Lib.Components
             _runTime = iTime;
         }
 
+        public virtual bool ShouldBeAggregatingTime()
+        {
+            return true;
+        }
+
         private enum RowColor
         {
             White,

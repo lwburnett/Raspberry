@@ -67,6 +67,12 @@ namespace Raspberry_Lib.Components
             _isPaused = false;
         }
 
+        public override bool ShouldBeAggregatingTime()
+        {
+            return _currentState == State.FirstPlay ||
+                   _currentState == State.EndPlay;
+        }
+
         private State _currentState;
         private PlayerProximityComponent _characterProximity;
         private CharacterInputController _characterInputController;
