@@ -24,10 +24,23 @@ namespace Raspberry_Lib.Components.UI
             _onTutorial = iOnTutorial;
         }
 
+        public override void Draw(Batcher iBatcher, float iParentAlpha)
+        {
+            var tomorrow = DateTime.Today + TimeSpan.FromDays(1);
+            var tomorrowMidnight = tomorrow.Date;
+            var diff = tomorrowMidnight - DateTime.Now;
+
+            _countdownLabel.SetText($"New maps in {diff:hh':'mm':'ss}");
+
+            base.Draw(iBatcher, iParentAlpha);
+        }
+
         private readonly Action<Button> _onDistanceChallenge;
         private readonly Action<Button> _onTimeChallenge;
         private readonly Action<Button> _onEndless;
         private readonly Action<Button> _onTutorial;
+
+        private Label _countdownLabel;
 
         protected override IEnumerable<Element> InitializeTableElements()
         {
@@ -38,13 +51,20 @@ namespace Raspberry_Lib.Components.UI
             var buttonTable = CreateButtonTable();
             var recordTable = CreateRecordTable();
 
-            parentTable.Add(buttonTable).
+            var upperTable = new Table();
+            upperTable.Add(buttonTable).
                 SetAlign(Align.TopRight).
                 SetPadRight(Settings.LabelTopPadding.Value);
-            parentTable.Add(recordTable).
+            upperTable.Add(recordTable).
                 SetAlign(Align.TopRight).
                 SetPadLeft(Settings.LabelTopPadding.Value).
                 SetPadRight(Settings.LabelTopPadding.Value);
+            parentTable.Add(upperTable);
+
+            parentTable.Row().SetPadTop(Settings.LabelTopPadding.Value);
+            _countdownLabel = new Label(string.Empty).
+                SetFontScale(Settings.FontScale.Value);
+            parentTable.Add(_countdownLabel).SetAlign(Align.Center);
 
             elements.Add(parentTable);
 
