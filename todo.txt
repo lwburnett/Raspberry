@@ -1,67 +1,54 @@
 ---------------------- Sprint Priority ----------------------
 
 Must
-	o Feature: Daily challenge map based on today's date
-	o Feature: Add Screens
-		o Main Menu
-		o Settings screen
-			o Music toggle
-			o SFX toggle
-			o Screen shake toggle
-			o Toggle vibration
-		x Stats screen? (With things like # of attempts, best run, average run, etc.)
-		o Pause menu in play screen
-			o Resume button
-			o Restart Button
-			o Quit button
-	x Balance: Remove rocks too close to an energy instead of trying to move the energy to the side
-
-Should
-	o Feature: Vibration on row and/or collision
-	o Feature: Screen shake on collision
-	x Balance: Increase turn speed when turning while rowing
-	o Bug: Increase pressable size of turning buttons
-	o Bug: Remove pressable area of row button on left half of screen
-
-Could
-	x Feature: Rapids section where the water speed temporarily gets way faster???
-	o Art: Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
-	o Bug: Pause boat rocking animation on death
-	o Bug: In the tutorial, highlight both the rock and energy before letting the player play again
-
--------------------- Playtester Feedback --------------------
-
-- Needs a restart button (Nolan)
-- RNG of energy spawns can place it too close to rocks, making it feel like the game is luck-based instead of skill-based (Nolan)
-- Collisions are too punishing. Perhaps remove the energy loss on collisions (Nolan)
-
-
------------------------- Outstanding ------------------------
-Features
-	- Hook up SFX setting to actual SFX
-	- Countdown for when new challenge maps are coming
-
-Optimization
-
-Art
-	- Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Sound effects
+	- Art: Sound effects
 		- Generic river
 		- Rowing
 		- Turning
 		- Picking up energy
 		- Bumping rocks
 		- Bumping shoreline
-	- More music
+	- Feature: Hook up SFX setting to actual SFX
+	- Art: New Font
+	- Art: Art of Menus, Buttons, and Tutorial dialogues
+Should
+	- Art: More music
 		- Multiple rotating songs for play screen
 		- Song for the tutorial mode
-	- New font
-	- Art of buttons & tutorial dialogue
-	- Color-independant icon for rowing
+
+Could
+	- Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	- Bug: Row wakes look wrong when facing backwards
+	- Bug: The rock sprites has a few eroneous pixels on the edge
+
+-------------------- Playtester Feedback --------------------
+
+
+------------------------ Outstanding ------------------------
+Features
+	- *Hook up SFX setting to actual SFX
+
+Optimization
+
+Art
+	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	- *Sound effects
+		- Generic river
+		- Rowing
+		- Turning
+		- Picking up energy
+		- Bumping rocks
+		- Bumping shoreline
+	- *More music
+		- Multiple rotating songs for play screen
+		- Song for the tutorial mode
+	- *New font
+	- *Art of menus, buttons, & tutorial dialogue
+	- *Color-independant icon for rowing
 
 Bugs
-	- Row wakes look wrong when facing backwards
-	- The rock sprites has a few eroneous pixels on the edge
+	- *Row wakes look wrong when facing backwards
+	- *The rock sprites has a few eroneous pixels on the edge
 
 Balance
 
@@ -135,6 +122,7 @@ Features
 	- While turning, add some lateral force to the boat that scales with speed relative to water
 	- Increase rotational force if turning while rowing
 	- Update tutorial to inform player how passive and collision energy decay scale with distance
+	- Countdown for when new challenge maps are coming
 
 Optimization
 	- Put generation in background thread
