@@ -133,6 +133,9 @@
     <AndroidAsset Include="Content\Audio\Hymn-To-The-Gods.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
+    <AndroidAsset Include="Content\Audio\Stream1.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidAsset>
     <Content Include="Content\Shaders\ProximityShader.fx" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_launcher.xml" />
     <AndroidResource Include="Resources\Drawable\Icon_Background.png">

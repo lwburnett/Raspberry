@@ -81,6 +81,7 @@ namespace Raspberry_Lib.Scenes
         private bool _lost;
         private CharacterMovementComponent _movementComponent;
         private readonly RiverParticleManager _riverParticleManager;
+        private StreamSoundComponent _streamSound;
 
         // Initialization needs to be after construction so that _seed is initialized
         private void PostConstructionInitialize()
@@ -95,6 +96,7 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent(proceduralGenerator);
             map.AddComponent<ProceduralRenderer>();
             map.AddComponent(_riverParticleManager);
+            _streamSound = map.AddComponent<StreamSoundComponent>();
 
             _uiComponent = InitializeUi(OnPlayAgain, OnMainMenu);
 
@@ -106,12 +108,14 @@ namespace Raspberry_Lib.Scenes
 
             if (new System.Random().Next() % 2 == 0)
             {
-                SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic1, .35f);
+                SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic1, .25f);
             }
             else
             {
-                SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic2, 1.0f);
+                SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic2, .8f);
             }
+
+            _streamSound.StartStreamSound();
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");
@@ -122,6 +126,7 @@ namespace Raspberry_Lib.Scenes
         private void OnLose()
         {
             _lost = true;
+            _streamSound.StopStreamSound();
         }
 
         private void OnPlayEnd(bool iUploadStats)
@@ -142,8 +147,9 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearCollidersToRender();
             Verbose.ClearMetrics();
 #endif
-            _onPlayAgain(_scenario);
 
+            _streamSound.StopStreamSound();
+            _onPlayAgain(_scenario);
         }
 
         private void OnMainMenu()
@@ -153,6 +159,7 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearMetrics();
 #endif
 
+            _streamSound.StopStreamSound();
             _onMainMenu();
         }
 
@@ -160,6 +167,7 @@ namespace Raspberry_Lib.Scenes
         {
             _characterComponent.TogglePause(true);
             _riverParticleManager.IsPaused = true;
+            _streamSound.IsPaused = true;
             ToggleWakeAndEnergyAnimationPause(true);
             _isRunning = false;
         }
@@ -168,6 +176,7 @@ namespace Raspberry_Lib.Scenes
         {
             _characterComponent.TogglePause(false);
             _riverParticleManager.IsPaused = false;
+            _streamSound.IsPaused = false;
             ToggleWakeAndEnergyAnimationPause(false);
             _isRunning = true;
         }

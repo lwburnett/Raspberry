@@ -40,7 +40,8 @@ namespace Raspberry_Lib.Scenes
             {
                 "Ocean Of Ice by McFunkypants",
                 "The Soul-Crushing Monotony Of Isolation (Instrumental Mix) by Punch Deck",
-                "Hymn To The Gods by Alexander Nakarada"
+                "Hymn To The Gods by Alexander Nakarada",
+                "Stream1 by mystiscool"
             };
 
             public static readonly RenderSetting CreditScrollPerSecond = new(20f);

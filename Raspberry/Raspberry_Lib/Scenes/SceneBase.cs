@@ -58,6 +58,8 @@ namespace Raspberry_Lib.Scenes
         public override void End()
         {
             StopBackgroundSong();
+
+            base.End();
         }
 
         public void PlayBackgroundSong()

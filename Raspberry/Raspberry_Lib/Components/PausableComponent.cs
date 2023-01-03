@@ -15,9 +15,23 @@ namespace Raspberry_Lib.Components
             OnUpdate(Time.TotalTime - TimeSpentPaused);
         }
 
-        public bool IsPaused { get; set; }
+        public bool IsPaused
+        {
+            get => _isPaused;
+            set
+            {
+                if (_isPaused == value)
+                    return;
 
-        protected abstract void OnUpdate(float iTotalPlayableTime);
+                _isPaused = value;
+                OnPauseSet(_isPaused);
+            }
+        }
+        private bool _isPaused;
+
+        protected virtual void OnUpdate(float iTotalPlayableTime) { }
+
+        protected virtual void OnPauseSet(bool iVal) { }
 
         protected float TimeSpentPaused { get; private set; }
     }

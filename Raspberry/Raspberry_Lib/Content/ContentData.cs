@@ -14,6 +14,7 @@ namespace Raspberry_Lib.Content
             public const string TitleScreenMusic = @"Content/Audio/ocean-of-ice.ogg";
             public const string PlayScreenMusic1 = @"Content/Audio/the-soul-crushing-monotony-of-isolation.ogg";
             public const string PlayScreenMusic2 = @"Content/Audio/Hymn-To-The-Gods.ogg";
+            public const string StreamSound = @"Content/Audio/Stream1.wav";
         }
 
         internal static class ColorPallets
