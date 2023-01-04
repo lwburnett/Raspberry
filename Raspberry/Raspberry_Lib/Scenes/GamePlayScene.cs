@@ -65,14 +65,16 @@ namespace Raspberry_Lib.Scenes
 
         public override void OnStart()
         {
-            AudioManager.PlaySound(_streamSoundId, true, 1, SoundStrategy.Overwrite);
+            if (_streamSoundId != null)
+                AudioManager.PlaySound(_streamSoundId.Value, true, .75f, SoundStrategy.Overwrite);
 
             base.OnStart();
         }
 
         public override void End()
         {
-            AudioManager.Unload(_streamSoundId);
+            if (_streamSoundId != null)
+                AudioManager.Unload(_streamSoundId.Value);
 
             base.End();
         }
@@ -96,7 +98,8 @@ namespace Raspberry_Lib.Scenes
         private CharacterMovementComponent _movementComponent;
         private readonly RiverParticleManager _riverParticleManager;
 
-        private int _streamSoundId;
+        private int? _streamSoundId;
+        private GameSettings _gameSettings;
 
         // Initialization needs to be after construction so that _seed is initialized
         private void PostConstructionInitialize()
@@ -129,7 +132,9 @@ namespace Raspberry_Lib.Scenes
                 SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic2, .8f);
             }
 
-            _streamSoundId = AudioManager.Load(Content, ContentData.AssetPaths.StreamSound);
+            _gameSettings = SettingsManager.GetGameSettings();
+            if (_gameSettings.Sfx)
+                _streamSoundId = AudioManager.Load(Content, ContentData.AssetPaths.StreamSound);
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");
@@ -140,7 +145,9 @@ namespace Raspberry_Lib.Scenes
         private void OnLose()
         {
             _lost = true;
-            AudioManager.StopSound(_streamSoundId);
+
+            if (_streamSoundId != null)
+                AudioManager.StopSound(_streamSoundId.Value);
         }
 
         private void OnPlayEnd(bool iUploadStats)
@@ -179,7 +186,10 @@ namespace Raspberry_Lib.Scenes
         {
             _characterComponent.IsPaused = true;
             _riverParticleManager.IsPaused = true;
-            AudioManager.PauseSound(_streamSoundId);
+
+            if (_streamSoundId != null)
+                AudioManager.PauseSound(_streamSoundId.Value);
+
             ToggleWakeAndEnergyAnimationPause(true);
             _isRunning = false;
         }
@@ -188,7 +198,10 @@ namespace Raspberry_Lib.Scenes
         {
             _characterComponent.IsPaused = false;
             _riverParticleManager.IsPaused = false;
-            AudioManager.ResumeSound(_streamSoundId);
+
+            if (_streamSoundId != null)
+                AudioManager.ResumeSound(_streamSoundId.Value);
+
             ToggleWakeAndEnergyAnimationPause(false);
             _isRunning = true;
         }

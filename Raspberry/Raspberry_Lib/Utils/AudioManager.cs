@@ -58,6 +58,7 @@ namespace Raspberry_Lib
                 else
                 {
                     instance = sSounds[iId].CreateInstance();
+                    sSoundInstances.Add(iId, instance);
                 }
 
                 PlaySoundEffect(ref instance, iLooping, iVolume);
