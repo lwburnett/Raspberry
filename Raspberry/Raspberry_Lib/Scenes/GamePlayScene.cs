@@ -63,6 +63,20 @@ namespace Raspberry_Lib.Scenes
             }
         }
 
+        public override void OnStart()
+        {
+            AudioManager.PlaySound(_streamSoundId, true, 1, SoundStrategy.Overwrite);
+
+            base.OnStart();
+        }
+
+        public override void End()
+        {
+            AudioManager.Unload(_streamSoundId);
+
+            base.End();
+        }
+
         protected virtual PlayUiCanvasComponent InitializeUi(Action iOnPlayAgain, Action iOnMainMenu)
         {
             var uiEntity = CreateEntity("ui");
@@ -81,7 +95,8 @@ namespace Raspberry_Lib.Scenes
         private bool _lost;
         private CharacterMovementComponent _movementComponent;
         private readonly RiverParticleManager _riverParticleManager;
-        private StreamSoundComponent _streamSound;
+
+        private int _streamSoundId;
 
         // Initialization needs to be after construction so that _seed is initialized
         private void PostConstructionInitialize()
@@ -96,7 +111,6 @@ namespace Raspberry_Lib.Scenes
             map.AddComponent(proceduralGenerator);
             map.AddComponent<ProceduralRenderer>();
             map.AddComponent(_riverParticleManager);
-            _streamSound = map.AddComponent<StreamSoundComponent>();
 
             _uiComponent = InitializeUi(OnPlayAgain, OnMainMenu);
 
@@ -115,7 +129,7 @@ namespace Raspberry_Lib.Scenes
                 SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic2, .8f);
             }
 
-            _streamSound.StartStreamSound();
+            _streamSoundId = AudioManager.Load(ContentData.AssetPaths.StreamSound);
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");
@@ -126,7 +140,7 @@ namespace Raspberry_Lib.Scenes
         private void OnLose()
         {
             _lost = true;
-            _streamSound.StopStreamSound();
+            AudioManager.StopSound(_streamSoundId);
         }
 
         private void OnPlayEnd(bool iUploadStats)
@@ -147,8 +161,7 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearCollidersToRender();
             Verbose.ClearMetrics();
 #endif
-
-            _streamSound.StopStreamSound();
+            
             _onPlayAgain(_scenario);
         }
 
@@ -158,8 +171,7 @@ namespace Raspberry_Lib.Scenes
             Verbose.ClearCollidersToRender();
             Verbose.ClearMetrics();
 #endif
-
-            _streamSound.StopStreamSound();
+            
             _onMainMenu();
         }
 
@@ -167,7 +179,7 @@ namespace Raspberry_Lib.Scenes
         {
             _characterComponent.IsPaused = true;
             _riverParticleManager.IsPaused = true;
-            _streamSound.IsPaused = true;
+            AudioManager.PauseSound(_streamSoundId);
             ToggleWakeAndEnergyAnimationPause(true);
             _isRunning = false;
         }
@@ -176,7 +188,7 @@ namespace Raspberry_Lib.Scenes
         {
             _characterComponent.IsPaused = false;
             _riverParticleManager.IsPaused = false;
-            _streamSound.IsPaused = false;
+            AudioManager.ResumeSound(_streamSoundId);
             ToggleWakeAndEnergyAnimationPause(false);
             _isRunning = true;
         }

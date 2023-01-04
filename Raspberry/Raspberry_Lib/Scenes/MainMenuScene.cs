@@ -111,7 +111,7 @@ namespace Raspberry_Lib.Scenes
                     Screen.Height - Settings.VersionInsetY.Value);
 
             canvas.SetRenderLayer(-1);
-
+            
             SetBackgroundSong(ContentData.AssetPaths.TitleScreenMusic, .6f);
 
             if (!Input.Touch.IsConnected)
