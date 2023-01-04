@@ -2,7 +2,7 @@
 
 namespace Raspberry_Lib.Components
 {
-    internal class BoatCharacterComponent : Component
+    internal class BoatCharacterComponent : PausableComponent
     {
         public BoatCharacterComponent(System.Action iOnMainMenu)
         {
@@ -26,16 +26,6 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(_oarComponent);
         }
 
-        public void TogglePause(bool iIsPaused)
-        {
-            _movementComponent.IsPaused = iIsPaused;
-            _playerProximityComponent.IsPaused = iIsPaused;
-            _inputController.IsPaused = iIsPaused;
-            _animationComponent.IsPaused = iIsPaused;
-            _wakeEmitter.IsPaused = iIsPaused;
-            _oarComponent.IsPaused = iIsPaused;
-        }
-
         private CharacterMovementComponent _movementComponent;
         private readonly CharacterCollisionComponent _collisionComponent;
         private readonly PlayerProximityComponent _playerProximityComponent;
@@ -43,6 +33,16 @@ namespace Raspberry_Lib.Components
         private readonly CharacterAnimationComponent _animationComponent;
         private readonly WakeParticleEmitter _wakeEmitter;
         private readonly OarPairComponent _oarComponent;
+
+        protected override void OnPauseSet(bool iVal)
+        {
+            _movementComponent.IsPaused = iVal;
+            _playerProximityComponent.IsPaused = iVal;
+            _inputController.IsPaused = iVal;
+            _animationComponent.IsPaused = iVal;
+            _wakeEmitter.IsPaused = iVal;
+            _oarComponent.IsPaused = iVal;
+        }
 
         private void OnPlayerInput(CharacterInputController.InputDescription iInputDescription)
         {

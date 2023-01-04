@@ -50,7 +50,7 @@ namespace Raspberry_Lib.Scenes
             if (_movementComponent == null)
             {
                 _movementComponent = _characterComponent.GetComponent<CharacterMovementComponent>();
-                _characterComponent.TogglePause(true);
+                _characterComponent.IsPaused = true;
             }
 
             if (_scenario.HaveLost(_movementComponent.TotalDistanceTraveled, _runTime, !_lost))
@@ -133,7 +133,7 @@ namespace Raspberry_Lib.Scenes
         {
             _isRunning = false;
             _uiComponent.OnPlayEnd(!iUploadStats, _runTime);
-            _characterComponent.TogglePause(true);
+            _characterComponent.IsPaused = true;
 
             if (iUploadStats)
             {
@@ -165,7 +165,7 @@ namespace Raspberry_Lib.Scenes
 
         protected void OnPause()
         {
-            _characterComponent.TogglePause(true);
+            _characterComponent.IsPaused = true;
             _riverParticleManager.IsPaused = true;
             _streamSound.IsPaused = true;
             ToggleWakeAndEnergyAnimationPause(true);
@@ -174,7 +174,7 @@ namespace Raspberry_Lib.Scenes
 
         protected void OnResume()
         {
-            _characterComponent.TogglePause(false);
+            _characterComponent.IsPaused = false;
             _riverParticleManager.IsPaused = false;
             _streamSound.IsPaused = false;
             ToggleWakeAndEnergyAnimationPause(false);
