@@ -58,32 +58,35 @@ namespace Raspberry_Lib.Scenes
         public override void End()
         {
             StopBackgroundSong();
-            AudioManager.Unload(_backgroundSong);
+
+            if (_backgroundSong.HasValue)
+                AudioManager.Unload(_backgroundSong.Value);
 
             base.End();
         }
 
         public void PlayBackgroundSong()
         {
-            if (SettingsManager.GetGameSettings().Music)
+            if (SettingsManager.GetGameSettings().Music && _backgroundSong.HasValue)
             {
-                AudioManager.PlaySound(_backgroundSong, true, _backgroundSongVolume, SoundStrategy.Overwrite);
+                AudioManager.PlaySound(_backgroundSong.Value, true, _backgroundSongVolume, SoundStrategy.Overwrite);
             }
         }
 
         public void StopBackgroundSong()
         {
-            AudioManager.StopSound(_backgroundSong);
+            if (_backgroundSong.HasValue)
+                AudioManager.StopSound(_backgroundSong.Value);
         }
 
         // Volume's domain is 0f to 1f
         protected void SetBackgroundSong(string iPath, float iVolume)
         {
-            _backgroundSong = AudioManager.Load(iPath);
+            _backgroundSong = AudioManager.Load(Content, iPath);
             _backgroundSongVolume = iVolume;
         }
 
-        private int _backgroundSong;
+        private int? _backgroundSong;
         private float _backgroundSongVolume;
         private bool _isFirstUpdate;
     }

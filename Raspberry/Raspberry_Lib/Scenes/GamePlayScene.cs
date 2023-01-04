@@ -129,7 +129,7 @@ namespace Raspberry_Lib.Scenes
                 SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic2, .8f);
             }
 
-            _streamSoundId = AudioManager.Load(ContentData.AssetPaths.StreamSound);
+            _streamSoundId = AudioManager.Load(Content, ContentData.AssetPaths.StreamSound);
 
 #if VERBOSE
             var debugMetricRenderer = CreateEntity("metrics");

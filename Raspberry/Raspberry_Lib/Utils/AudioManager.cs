@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
+using Nez.Systems;
 
 namespace Raspberry_Lib
 {
@@ -19,10 +20,10 @@ namespace Raspberry_Lib
             sSoundInstances = new Dictionary<int, SoundEffectInstance>();
         }
 
-        public static int Load(string iSoundPath)
+        public static int Load(NezContentManager iContentManager, string iSoundPath)
         {
             sIdCounter++;
-            sSounds.Add(sIdCounter, SoundEffect.FromFile(iSoundPath));
+            sSounds.Add(sIdCounter, iContentManager.LoadSoundEffect(iSoundPath));
             return sIdCounter;
         }
 
