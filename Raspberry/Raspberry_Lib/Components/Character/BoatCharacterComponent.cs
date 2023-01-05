@@ -1,10 +1,10 @@
-﻿using Nez;
+﻿using System;
 
 namespace Raspberry_Lib.Components
 {
     internal class BoatCharacterComponent : PausableComponent
     {
-        public BoatCharacterComponent(System.Action iOnMainMenu)
+        public BoatCharacterComponent(Action iOnMainMenu)
         {
             _collisionComponent = new CharacterCollisionComponent();
             _playerProximityComponent = new PlayerProximityComponent(iOnMainMenu);
@@ -24,6 +24,9 @@ namespace Raspberry_Lib.Components
             Entity.AddComponent(_wakeEmitter);
             Entity.AddComponent(_playerProximityComponent);
             Entity.AddComponent(_oarComponent);
+
+            if (SettingsManager.GetGameSettings().Sfx)
+                Entity.AddComponent<BoatAudioComponent>();
         }
 
         private CharacterMovementComponent _movementComponent;

@@ -15,6 +15,13 @@ namespace Raspberry_Lib.Content
             public const string PlayScreenMusic1 = @"Content/Audio/the-soul-crushing-monotony-of-isolation.wav";
             public const string PlayScreenMusic2 = @"Content/Audio/Hymn-To-The-Gods.wav";
             public const string StreamSound = @"Content/Audio/Stream1.wav";
+            public const string Row1 = @"Content/Audio/Row1.wav";
+            public const string Row2 = @"Content/Audio/Row2.wav";
+            public const string Row3 = @"Content/Audio/Row3.wav";
+            public const string Row4 = @"Content/Audio/Row4.wav";
+            public const string Row5 = @"Content/Audio/Row5.wav";
+            public const string Row6 = @"Content/Audio/Row6.wav";
+            public const string Row7 = @"Content/Audio/Row7.wav";
         }
 
         internal static class ColorPallets

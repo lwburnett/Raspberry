@@ -41,7 +41,8 @@ namespace Raspberry_Lib.Scenes
                 "Ocean Of Ice by McFunkypants",
                 "The Soul-Crushing Monotony Of Isolation (Instrumental Mix) by Punch Deck",
                 "Hymn To The Gods by Alexander Nakarada",
-                "Stream Running Over Rocks 1 by mhtaylor67"
+                "Stream Running Over Rocks 1 by mhtaylor67",
+                "Rame 80 % pistes.aif by godardt"
             };
 
             public static readonly RenderSetting CreditScrollPerSecond = new(20f);
