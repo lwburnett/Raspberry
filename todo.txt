@@ -3,7 +3,7 @@
 Must
 	- Art: Sound effects
 		o Generic river
-		- Rowing
+		o Rowing
 		- Turning
 		- Picking up energy
 		- Bumping rocks
@@ -33,7 +33,6 @@ Optimization
 Art
 	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- *Sound effects
-		- Rowing
 		- Turning
 		- Picking up energy
 		- Bumping rocks
@@ -148,6 +147,7 @@ Art
 	- Some sort of animated component for the title screen (maybe particles of sand blowing in the wind?)
 	- Sound effects
 		- Generic River
+		- Rowing
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
