@@ -14,6 +14,8 @@ namespace Raspberry_Lib.Scenes
             public static readonly RenderSetting MapScale = new(3);
             public static readonly RenderSetting CharacterStartPositionX = new(64 * 4);
             public static readonly RenderSetting CharacterStartPositionY = new(256 * 4);
+
+            public const float StreamSoundVolume = .25f;
         }
 
 
@@ -66,7 +68,7 @@ namespace Raspberry_Lib.Scenes
         public override void OnStart()
         {
             if (_streamSoundId != null)
-                AudioManager.PlaySound(_streamSoundId.Value, true, .75f, SoundStrategy.Overwrite);
+                AudioManager.PlaySound(_streamSoundId.Value, true, Settings.StreamSoundVolume, SoundStrategy.Overwrite);
 
             base.OnStart();
         }
