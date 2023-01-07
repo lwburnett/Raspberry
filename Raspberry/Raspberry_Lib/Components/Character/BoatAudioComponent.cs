@@ -20,11 +20,13 @@ internal class BoatAudioComponent : PausableComponent
         public const float RowVolumeNeutral = .75f;
 
         public const float SfxDuration = 1.0f;
+
+        public const float EnergyVolume = .5f;
     }
 
     public BoatAudioComponent()
     {
-        _sfxIds = new List<int>();
+        _rowIds = new List<int>();
         _sfxInstances = new List<Tuple<int, float>>();
         _secondsSinceLastRow = Settings.RowTransition3;
         _rng = new System.Random();
@@ -40,13 +42,15 @@ internal class BoatAudioComponent : PausableComponent
             ContentData.AssetPaths.Row4,
             ContentData.AssetPaths.Row5,
             ContentData.AssetPaths.Row6,
-            ContentData.AssetPaths.Row7,
+            ContentData.AssetPaths.Row7
         };
 
         foreach (var path in paths)
         {
-            _sfxIds.Add(AudioManager.Load(Entity.Scene.Content, path));
+            _rowIds.Add(AudioManager.Load(Entity.Scene.Content, path));
         }
+
+        _energyId = AudioManager.Load(Entity.Scene.Content, ContentData.AssetPaths.Energy);
 
         _characterMovementComponent = Entity.GetComponent<CharacterMovementComponent>();
         System.Diagnostics.Debug.Assert(_characterMovementComponent != null);
@@ -56,15 +60,23 @@ internal class BoatAudioComponent : PausableComponent
 
     public override void OnRemovedFromEntity()
     {
-        foreach (var sfxId in _sfxIds)
+        foreach (var sfxId in _rowIds)
         {
             AudioManager.Unload(sfxId);
         }
 
+        AudioManager.Unload(_energyId);
+
         base.OnRemovedFromEntity();
     }
 
-    private readonly List<int> _sfxIds;
+    public void OnEnergyHit()
+    {
+        AudioManager.PlaySound(_energyId, false, Settings.EnergyVolume, SoundStrategy.Overwrite);
+    }
+
+    private readonly List<int> _rowIds;
+    private int _energyId;
     private readonly List<Tuple<int, float>> _sfxInstances;
     private CharacterMovementComponent _characterMovementComponent;
 
@@ -102,10 +114,29 @@ internal class BoatAudioComponent : PausableComponent
             }
         }
 
+        if (iVal)
+        {
+            foreach (var sfxInstance in _sfxInstances)
+            {
+                AudioManager.PauseSound(sfxInstance.Item1);
+            }
+
+            AudioManager.PauseSound(_energyId);
+        }
+        else
+        {
+            foreach (var sfxInstance in _sfxInstances)
+            {
+                AudioManager.ResumeSound(sfxInstance.Item1);
+            }
+            AudioManager.ResumeSound(_energyId);
+
+        }
+
         base.OnPauseSet(iVal);
     }
 
-    private int GetRandomRowSfx() => _sfxIds[_rng.Next(_sfxIds.Count)];
+    private int GetRandomRowSfx() => _rowIds[_rng.Next(_rowIds.Count)];
 
     private void HandleRowSfx(bool iRowInput, float iTime)
     {

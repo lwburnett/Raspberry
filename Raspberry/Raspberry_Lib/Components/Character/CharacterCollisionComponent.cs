@@ -32,6 +32,11 @@ namespace Raspberry_Lib.Components
             _playerProximityComponent = Entity.GetComponent<PlayerProximityComponent>();
             _playerMovementComponent = Entity.GetComponent<CharacterMovementComponent>();
 
+            _gameSettings = SettingsManager.GetGameSettings();
+            
+            if (_gameSettings.Sfx)
+                _playerAudioComponent = Entity.GetComponent<BoatAudioComponent>();
+
 #if VERBOSE
             Verbose.RenderCollider(_collider);
 #endif
@@ -111,6 +116,9 @@ namespace Raspberry_Lib.Components
             {
                 _playerProximityComponent.OnEnergyHit();
                 energy.OnPlayerHit();
+
+                if (_gameSettings.Sfx)
+                    _playerAudioComponent.OnEnergyHit();
             }
         }
 
@@ -119,6 +127,9 @@ namespace Raspberry_Lib.Components
         private PlayerProximityComponent _playerProximityComponent;
         private CharacterMovementComponent _playerMovementComponent;
         private RiverCameraShake _cameraShakeComponent;
+        private BoatAudioComponent _playerAudioComponent;
+
+        private GameSettings _gameSettings;
 
         private void HandleShorelineCollision(Vector2 iShorelineSlope, float iMinYDistToMove)
         {

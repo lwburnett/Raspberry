@@ -22,6 +22,7 @@ namespace Raspberry_Lib.Content
             public const string Row5 = @"Content/Audio/Row5.wav";
             public const string Row6 = @"Content/Audio/Row6.wav";
             public const string Row7 = @"Content/Audio/Row7.wav";
+            public const string Energy = @"Content/Audio/Energy.wav";
         }
 
         internal static class ColorPallets
