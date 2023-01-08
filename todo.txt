@@ -5,7 +5,7 @@ Must
 		o Generic river
 		o Rowing
 		- Turning
-		- Picking up energy
+		o Picking up energy
 		- Bumping rocks
 		- Bumping shoreline
 	- Feature: Hook up SFX setting to actual SFX
@@ -34,7 +34,6 @@ Art
 	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- *Sound effects
 		- Turning
-		- Picking up energy
 		- Bumping rocks
 		- Bumping shoreline
 	- *More music
@@ -148,6 +147,7 @@ Art
 	- Sound effects
 		- Generic River
 		- Rowing
+		- Picking up energy
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
