@@ -111,6 +111,9 @@ namespace Raspberry_Lib.Components
 
                 var impactVelocity = speedOfImpact * -incidentVector;
                 _cameraShakeComponent.OnObstacleHit(impactVelocity);
+
+                if (_gameSettings.Sfx)
+                    _playerAudioComponent.OnCollision(speedOfImpact);
             }
             else if (collisionResult.Collider.Entity is EnergyEntity energy)
             {
@@ -149,6 +152,9 @@ namespace Raspberry_Lib.Components
 
             var impactVelocity = speedOfImpact * -normal;
             _cameraShakeComponent.OnObstacleHit(impactVelocity);
+
+            if (_gameSettings.Sfx)
+                _playerAudioComponent.OnCollision(speedOfImpact);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Nez;
 using Raspberry_Lib.Content;
 
@@ -22,11 +23,17 @@ internal class BoatAudioComponent : PausableComponent
         public const float SfxDuration = 1.0f;
 
         public const float EnergyVolume = .5f;
+
+        public static readonly RenderSetting MinimumImpactSpeed = new(10);
+        public static readonly RenderSetting MaximumImpactSpeed = new(150);
+        public const float MinimumCollisionVolume = .5f;
+        public const float MaximumCollisionVolume = 1.0f;
     }
 
     public BoatAudioComponent()
     {
         _rowIds = new List<int>();
+        _collisionIds = new List<int>();
         _sfxInstances = new List<Tuple<int, float>>();
         _secondsSinceLastRow = Settings.RowTransition3;
         _rng = new System.Random();
@@ -34,7 +41,7 @@ internal class BoatAudioComponent : PausableComponent
 
     public override void OnAddedToEntity()
     {
-        var paths = new[]
+        var rowPaths = new[]
         {
             ContentData.AssetPaths.Row1,
             ContentData.AssetPaths.Row2,
@@ -45,9 +52,21 @@ internal class BoatAudioComponent : PausableComponent
             ContentData.AssetPaths.Row7
         };
 
-        foreach (var path in paths)
+        foreach (var path in rowPaths)
         {
             _rowIds.Add(AudioManager.Load(Entity.Scene.Content, path));
+        }
+
+        var collisionPaths = new[]
+        {
+            ContentData.AssetPaths.Collision1,
+            ContentData.AssetPaths.Collision2,
+            ContentData.AssetPaths.Collision3
+        };
+
+        foreach (var path in collisionPaths)
+        {
+            _collisionIds.Add(AudioManager.Load(Entity.Scene.Content, path));
         }
 
         _energyId = AudioManager.Load(Entity.Scene.Content, ContentData.AssetPaths.Energy);
@@ -60,9 +79,14 @@ internal class BoatAudioComponent : PausableComponent
 
     public override void OnRemovedFromEntity()
     {
-        foreach (var sfxId in _rowIds)
+        foreach (var rowId in _rowIds)
         {
-            AudioManager.Unload(sfxId);
+            AudioManager.Unload(rowId);
+        }
+
+        foreach (var collisionId in _collisionIds)
+        {
+            AudioManager.Unload(collisionId);
         }
 
         AudioManager.Unload(_energyId);
@@ -75,7 +99,20 @@ internal class BoatAudioComponent : PausableComponent
         AudioManager.PlaySound(_energyId, false, Settings.EnergyVolume, SoundStrategy.Overwrite);
     }
 
+    public void OnCollision(float iImpactSpeed)
+    {
+        var speed = Math.Abs(iImpactSpeed);
+        var lerpValue = (speed - Settings.MinimumImpactSpeed.Value) / 
+                        (Settings.MaximumImpactSpeed.Value - Settings.MinimumImpactSpeed.Value);
+        var clampedLerpValue = MathHelper.Clamp(lerpValue, 0.0f, 1.0f);
+        var volume = MathHelper.Lerp(Settings.MinimumCollisionVolume, Settings.MaximumCollisionVolume, clampedLerpValue);
+
+        var collisionId = GetRandomCollisionSfx();
+        AudioManager.PlaySound(collisionId, false, volume, SoundStrategy.Overlap);
+    }
+
     private readonly List<int> _rowIds;
+    private readonly List<int> _collisionIds;
     private int _energyId;
     private readonly List<Tuple<int, float>> _sfxInstances;
     private CharacterMovementComponent _characterMovementComponent;
@@ -137,6 +174,8 @@ internal class BoatAudioComponent : PausableComponent
     }
 
     private int GetRandomRowSfx() => _rowIds[_rng.Next(_rowIds.Count)];
+
+    private int GetRandomCollisionSfx() => _collisionIds[_rng.Next(_collisionIds.Count)];
 
     private void HandleRowSfx(bool iRowInput, float iTime)
     {
