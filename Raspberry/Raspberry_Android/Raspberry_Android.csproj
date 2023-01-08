@@ -127,9 +127,6 @@
     <AndroidAsset Include="Content\Audio\Stream1.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
-    <AndroidAsset Include="Content\Audio\Hymn-To-The-Gods.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AndroidAsset>
     <AndroidAsset Include="Content\Audio\ocean-of-ice.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AndroidAsset>

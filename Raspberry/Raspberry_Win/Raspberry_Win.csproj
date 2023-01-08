@@ -59,9 +59,6 @@
     <None Update="Content\Audio\Hymn-To-The-Gods.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Audio\Hymn-To-The-Gods.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\Audio\ocean-of-ice.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

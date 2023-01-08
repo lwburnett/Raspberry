@@ -124,15 +124,8 @@ namespace Raspberry_Lib.Scenes
             _characterComponent = character.AddComponent(new BoatCharacterComponent(OnLose));
             Camera.Entity.AddComponent(new RiverFollowCamera(character, proceduralGenerator));
             Camera.Entity.AddComponent(new RiverCameraShake());
-
-            if (new System.Random().Next() % 2 == 0)
-            {
-                SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic1, .25f);
-            }
-            else
-            {
-                SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic2, .8f);
-            }
+            
+            SetBackgroundSong(ContentData.AssetPaths.PlayScreenMusic1, .25f);
 
             _gameSettings = SettingsManager.GetGameSettings();
             if (_gameSettings.Sfx)
