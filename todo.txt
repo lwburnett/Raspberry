@@ -6,27 +6,27 @@ Must
 		o Rowing
 		- Turning
 		o Picking up energy
-		- Bumping rocks
-		- Bumping shoreline
-	- Feature: Hook up SFX setting to actual SFX
+		o Bumping rocks
+		o Bumping shoreline
+	o Feature: Hook up SFX setting to actual SFX
 	- Art: New Font
 	- Art: Art of Menus, Buttons, and Tutorial dialogues
 Should
-	- Art: More music
-		- Multiple rotating songs for play screen
-		- Song for the tutorial mode
+	x Art: More music
+		x Multiple rotating songs for play screen
+		x Song for the tutorial mode
+	- Art: Color-independant icon for rowing
 
 Could
-	- Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
-	- Bug: Row wakes look wrong when facing backwards
-	- Bug: The rock sprites has a few eroneous pixels on the edge
+	x Art: Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
+	x Bug: Row wakes look wrong when facing backwards
+	x Bug: The rock sprites has a few eroneous pixels on the edge
 
 -------------------- Playtester Feedback --------------------
 
 
 ------------------------ Outstanding ------------------------
 Features
-	- *Hook up SFX setting to actual SFX
 
 Optimization
 
@@ -34,18 +34,11 @@ Art
 	- *Some sort of hazy effect or particle effect on the circumfrence of the player proximity ring
 	- *Sound effects
 		- Turning
-		- Bumping rocks
-		- Bumping shoreline
-	- *More music
-		- Multiple rotating songs for play screen
-		- Song for the tutorial mode
 	- *New font
 	- *Art of menus, buttons, & tutorial dialogue
 	- *Color-independant icon for rowing
 
 Bugs
-	- *Row wakes look wrong when facing backwards
-	- *The rock sprites has a few eroneous pixels on the edge
 
 Balance
 
@@ -68,6 +61,10 @@ Art
 		If I want to see something crashing a burning I can just look at my life
 	- Add in another (4th) unique rock sprite
 		Nobody will notice except me
+	- More music
+		- Multiple rotating songs for play screen
+		- Song for the tutorial mode
+		I'm running into size issues with the android apk and I'm running out of steam
 
 Bugs
 	- Rocks sometimes placed badly at transitions
@@ -80,6 +77,10 @@ Bugs
 		Ehh it looks good enough maybe?
 	- Android version crashes after making it a certain distance
 		Very few other people has experienced this
+	- Row wakes look wrong when facing backwards
+		Nobody else has really noticed
+	- The rock sprites has a few eroneous pixels on the edge
+		Nobody else has noticed
 
 Balance
 	- Remove rocks too close to an energy instead of trying to move the energy to the side
@@ -120,6 +121,7 @@ Features
 	- Increase rotational force if turning while rowing
 	- Update tutorial to inform player how passive and collision energy decay scale with distance
 	- Countdown for when new challenge maps are coming
+	- Hook up SFX setting to actual SFX
 
 Optimization
 	- Put generation in background thread
@@ -148,6 +150,8 @@ Art
 		- Generic River
 		- Rowing
 		- Picking up energy
+		- Bumping rocks
+		- Bumping shoreline
 
 Bugs
 	- Player can accelerate backwards when they turn around and row
