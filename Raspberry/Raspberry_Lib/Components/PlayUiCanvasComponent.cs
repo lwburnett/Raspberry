@@ -25,8 +25,8 @@ namespace Raspberry_Lib.Components
             public const float RowTransition2 = .9f;
             public const float RowTransition3 = 1.25f;
 
-            public static readonly RenderSetting PostPlayStatsPopupWidth = new(900);
-            public static readonly RenderSetting PostPlayStatsPopupHeight = new(500);
+            public static readonly RenderSetting MenuWidth = new(1050);
+            public static readonly RenderSetting MenuHeight = new(500);
 
             public static readonly RenderSetting PauseButtonFontScale = new(2.5f);
 
@@ -203,7 +203,7 @@ namespace Raspberry_Lib.Components
             _rowIndicator.SetScaling(Scaling.Fill);
             _rowIndicator.SetColor(drawColor);
 
-            _pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", Skin.CreateDefaultSkin()));
+            _pauseButton = Canvas.Stage.AddElement(new TextButton("Pause", SkinManager.GetGameUiSkin()));
             _pauseButton.OnClicked += OnPause;
             _pauseButton.GetLabel().SetFontScale(Settings.PauseButtonFontScale.Value);
             _pauseButton.SetBounds(
@@ -213,10 +213,10 @@ namespace Raspberry_Lib.Components
                 Settings.DistanceLabelHeight.Value / 2);
 
             // Intro, pause, and end menus
-            var menuBounds = new RectangleF((Screen.Width - Settings.PostPlayStatsPopupWidth.Value) / 2f,
-                (Screen.Height - Settings.PostPlayStatsPopupHeight.Value) / 2f,
-                Settings.PostPlayStatsPopupWidth.Value,
-                Settings.PostPlayStatsPopupHeight.Value);
+            var menuBounds = new RectangleF((Screen.Width - Settings.MenuWidth.Value) / 2f,
+                (Screen.Height - Settings.MenuHeight.Value) / 2f,
+                Settings.MenuWidth.Value,
+                Settings.MenuHeight.Value);
 
             if (_scenario.IntroLines.Any())
             {

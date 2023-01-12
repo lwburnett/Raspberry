@@ -24,23 +24,25 @@ namespace Raspberry_Lib.Components.UI
 
         protected override IEnumerable<Element> InitializeTableElements()
         {
+            var skin = SkinManager.GetGameUiSkin();
+
             var elements = new List<Element>();
 
-            var playButton = new TextButton("Play", Skin.CreateDefaultSkin());
+            var playButton = new TextButton("Play", skin);
             playButton.OnClicked += _onPlay;
             playButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             playButton.SetWidth(Settings.MinButtonWidth.Value);
             playButton.SetHeight(Settings.MinButtonHeight.Value);
             elements.Add(playButton);
 
-            var settingsButton = new TextButton("Settings", Skin.CreateDefaultSkin());
+            var settingsButton = new TextButton("Settings", skin);
             settingsButton.OnClicked += _onSettings;
             settingsButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             settingsButton.SetWidth(Settings.MinButtonWidth.Value);
             settingsButton.SetHeight(Settings.MinButtonHeight.Value);
             elements.Add(settingsButton);
 
-            var creditsButton = new TextButton("Credits", Skin.CreateDefaultSkin());
+            var creditsButton = new TextButton("Credits", skin);
             creditsButton.OnClicked += _onCredits;
             creditsButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             creditsButton.SetWidth(Settings.MinButtonWidth.Value);

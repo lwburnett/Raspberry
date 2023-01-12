@@ -73,9 +73,10 @@ namespace Raspberry_Lib.Components.UI
 
         private Element CreateButtonTable()
         {
+            var skin = SkinManager.GetGameUiSkin();
             var buttonTable = new Table();
 
-            var distButton = new TextButton("Distance", Skin.CreateDefaultSkin());
+            var distButton = new TextButton("Distance", skin);
             distButton.OnClicked += _onDistanceChallenge;
             distButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             buttonTable.Add(distButton).
@@ -83,7 +84,7 @@ namespace Raspberry_Lib.Components.UI
                 SetMinHeight(Settings.MinButtonHeight.Value);
             buttonTable.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
-            var timeButton = new TextButton("Time", Skin.CreateDefaultSkin());
+            var timeButton = new TextButton("Time", skin);
             timeButton.OnClicked += _onTimeChallenge;
             timeButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             buttonTable.Add(timeButton).
@@ -91,7 +92,7 @@ namespace Raspberry_Lib.Components.UI
                 SetMinHeight(Settings.MinButtonHeight.Value);
             buttonTable.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
-            var endlessButton = new TextButton("Endless", Skin.CreateDefaultSkin());
+            var endlessButton = new TextButton("Endless", skin);
             endlessButton.OnClicked += _onEndless;
             endlessButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             buttonTable.Add(endlessButton).
@@ -99,7 +100,7 @@ namespace Raspberry_Lib.Components.UI
                 SetMinHeight(Settings.MinButtonHeight.Value);
             buttonTable.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
-            var tutorialButton = new TextButton("Tutorial", Skin.CreateDefaultSkin());
+            var tutorialButton = new TextButton("Tutorial", skin);
             tutorialButton.OnClicked += _onTutorial;
             tutorialButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             buttonTable.Add(tutorialButton).

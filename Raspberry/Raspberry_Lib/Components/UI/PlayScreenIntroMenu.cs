@@ -53,8 +53,9 @@ namespace Raspberry_Lib.Components.UI
                 elements.Add(descriptionLine);
             }
 
+            var skin = SkinManager.GetGameUiSkin();
             var buttonTable = new Table();
-            var playAgainButton = new TextButton("Begin", Skin.CreateDefaultSkin());
+            var playAgainButton = new TextButton("Begin", skin);
             playAgainButton.OnClicked += _onBegin;
             playAgainButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             playAgainButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);
@@ -63,7 +64,7 @@ namespace Raspberry_Lib.Components.UI
                 SetMinWidth(Settings.MinButtonWidth.Value).
                 Pad(MySettings.CellPadding.Value);
 
-            var mainMenuButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
+            var mainMenuButton = new TextButton("Main Menu", skin);
             mainMenuButton.OnClicked += _onMainMenu;
             mainMenuButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             mainMenuButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.UI;
 using Raspberry_Lib.Scenes;
@@ -30,7 +29,8 @@ namespace Raspberry_Lib
             Owner = iOwner;
             _menu = new Table();
             _menu.SetBounds(iBounds.X, iBounds.Y, iBounds.Width, iBounds.Height);
-            _background = CreateBackgroundTexture(iBounds.Size);
+            _background = SkinManager.GetMenuBackgroundSprite();
+            _skin = SkinManager.GetGameUiSkin();
 
             _onBack = iOnBack;
         }
@@ -44,7 +44,7 @@ namespace Raspberry_Lib
 
             if (_onBack != null)
             {
-                _backButton = new TextButton("Back", Skin.CreateDefaultSkin());
+                _backButton = new TextButton("Back", _skin);
                 _backButton.OnClicked += _onBack;
                 _backButton.GetLabel().SetFontScale(Settings.FontScale.Value);
                 _backButton.SetBounds(
@@ -66,31 +66,17 @@ namespace Raspberry_Lib
 
         private readonly Table _menu;
         private TextButton _backButton;
-        private readonly Texture2D _background;
+        private readonly NinePatchDrawable _background;
         private readonly Action<Button> _onBack;
+        private readonly Skin _skin;
 
         protected SceneBase Owner;
 
         protected abstract IEnumerable<Element> InitializeTableElements();
 
-        private Texture2D CreateBackgroundTexture(Vector2 iSize)
+        private void LayoutTable(IEnumerable<Element> iElements, Nez.UI.IDrawable iBackground)
         {
-            var size = new Point((int)iSize.X, (int)iSize.Y);
-
-            var textureData = new Color[size.X * size.Y];
-            for (var ii = 0; ii < size.X * size.Y; ii++)
-            {
-                textureData[ii] = Settings.TextBoxBackgroundTextureColor;
-            }
-            var texture = new Texture2D(Graphics.Instance.Batcher.GraphicsDevice, size.X, size.Y);
-            texture.SetData(textureData);
-
-            return texture;
-        }
-
-        private void LayoutTable(IEnumerable<Element> iElements, Texture2D iBackground)
-        {
-            _menu.SetBackground(new SpriteDrawable(iBackground));
+            _menu.SetBackground(iBackground);
             _menu.Row().SetPadTop(Settings.LabelTopPadding.Value);
 
             foreach (var element in iElements)

@@ -71,8 +71,9 @@ namespace Raspberry_Lib.Components.UI
                 SetAlignment(Align.TopLeft);
             elements.Add(_distanceLabel);
 
+            var skin = SkinManager.GetGameUiSkin();
             var buttonTable = new Table();
-            var playAgainButton = new TextButton("Play Again", Skin.CreateDefaultSkin());
+            var playAgainButton = new TextButton("Play Again", skin);
             playAgainButton.OnClicked += _onPlayAgain;
             playAgainButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             playAgainButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);
@@ -81,7 +82,7 @@ namespace Raspberry_Lib.Components.UI
                 SetMinWidth(Settings.MinButtonWidth.Value).
                 Pad(MySettings.CellPadding.Value);
 
-            var mainMenuButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
+            var mainMenuButton = new TextButton("Main Menu", skin);
             mainMenuButton.OnClicked += _onMainMenu;
             mainMenuButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             mainMenuButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);

@@ -59,6 +59,17 @@ namespace Raspberry_Lib.Content
                 public static readonly Color Color5 = new(140, 51, 19);
                 // }
             }
+
+            internal static class Ui
+            {
+                // https://colorhunt.co/palette/fefbf6a6d1e67f52833d3c42
+                // {
+                public static readonly Color Menu = new(166, 209, 230);
+                public static readonly Color ButtonUp = new(127, 82, 131);
+                public static readonly Color ButtonOver = new(127, 82, 131);
+                public static readonly Color ButtonDown = new(61, 60, 66);
+                // }
+            }
         }
     }
 }

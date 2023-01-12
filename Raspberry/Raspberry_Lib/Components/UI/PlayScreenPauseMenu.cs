@@ -29,6 +29,8 @@ namespace Raspberry_Lib.Components.UI
 
         protected override IEnumerable<Element> InitializeTableElements()
         {
+            var skin = SkinManager.GetGameUiSkin();
+
             var elements = new List<Element>();
 
             var pauseTitle = new Label("Pause").
@@ -38,19 +40,19 @@ namespace Raspberry_Lib.Components.UI
             pauseTitle.SetAlignment(Align.Center);
             elements.Add(pauseTitle);
 
-            var resumeButton = new TextButton("Resume", Skin.CreateDefaultSkin());
+            var resumeButton = new TextButton("Resume", skin);
             resumeButton.OnClicked += _onResume;
             resumeButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             resumeButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);
             elements.Add(resumeButton);
 
-            var restartButton = new TextButton("Restart", Skin.CreateDefaultSkin());
+            var restartButton = new TextButton("Restart", skin);
             restartButton.OnClicked += _onRestart;
             restartButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             restartButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);
             elements.Add(restartButton);
 
-            var mainMenuButton = new TextButton("Main Menu", Skin.CreateDefaultSkin());
+            var mainMenuButton = new TextButton("Main Menu", skin);
             mainMenuButton.OnClicked += _onMainMenu;
             mainMenuButton.GetLabel().SetFontScale(Settings.FontScale.Value);
             mainMenuButton.SetSize(Settings.MinButtonHeight.Value, Settings.MinButtonWidth.Value);
