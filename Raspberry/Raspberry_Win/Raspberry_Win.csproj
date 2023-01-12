@@ -11,7 +11,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <PackageId>Concurrent.Streams</PackageId>
     <Title>Concurrent Streams</Title>
-    <Version>0.8.0</Version>
+    <Version>1.0.0</Version>
     <Authors>Luke Burnett</Authors>
     <Product>Concurrent Streams</Product>
     <AssemblyName>Concurrent Streams</AssemblyName>

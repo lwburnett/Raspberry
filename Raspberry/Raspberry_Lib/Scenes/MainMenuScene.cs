@@ -20,7 +20,7 @@ namespace Raspberry_Lib.Scenes
             
             public static readonly RenderSetting FontScale = new(5);
 
-            public const string Version = "Version 0.8.0";
+            public const string Version = "Version 1.0.0";
             public static readonly RenderSetting VersionInsetX = new(225);
             public static readonly RenderSetting VersionInsetY = new(50);
             public static readonly RenderSetting VersionFontScale = new(3);
