@@ -18,8 +18,8 @@ namespace Raspberry_Lib
             public static readonly RenderSetting MinButtonHeight = new(80);
 
 
-            public static readonly RenderSetting BackButtonXOffset = new(20);
-            public static readonly RenderSetting BackButtonYOffset = new(20);
+            public static readonly RenderSetting BackButtonXOffset = new(50);
+            public static readonly RenderSetting BackButtonYOffset = new(50);
         }
 
         protected MenuBase(SceneBase iOwner, RectangleF iBounds, Action<Button> iOnBack = null)

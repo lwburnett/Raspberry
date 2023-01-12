@@ -59,6 +59,7 @@ namespace Raspberry_Lib.Components.UI
                 SetAlign(Align.TopRight).
                 SetPadLeft(Settings.LabelTopPadding.Value).
                 SetPadRight(Settings.LabelTopPadding.Value);
+            upperTable.PadLeft(60);
             parentTable.Add(upperTable);
 
             parentTable.Row().SetPadTop(Settings.LabelTopPadding.Value);
