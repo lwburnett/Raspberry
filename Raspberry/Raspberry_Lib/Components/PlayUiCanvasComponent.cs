@@ -157,21 +157,19 @@ namespace Raspberry_Lib.Components
                 Settings.DistanceLabelWidth.Value,
                 Settings.DistanceLabelHeight.Value);
             TimeLabel.SetFontScale(Settings.FontScale);
-
-            const int cellSize = 32;
+            
             var textureAtlas = Entity.Scene.Content.LoadTexture(Content.ContentData.AssetPaths.IconsTileset, true);
-            var spriteList = Sprite.SpritesFromAtlas(textureAtlas, cellSize, cellSize);
+            
+            _upDefaultIcon = new SpriteDrawable(new Sprite(textureAtlas, 0, 32, 32, 32));
+            _upPressedIcon = new SpriteDrawable(new Sprite(textureAtlas, 32, 32, 32, 32));
+            
+            _downDefaultIcon = new SpriteDrawable(new Sprite(textureAtlas, 0, 64, 32, 32));
+            _downPressedIcon = new SpriteDrawable(new Sprite(textureAtlas, 32, 64, 32, 32));
 
-            _upDefaultIcon = new SpriteDrawable(spriteList[4]);
-            _upPressedIcon = new SpriteDrawable(spriteList[5]);
-
-            _downDefaultIcon = new SpriteDrawable(spriteList[8]);
-            _downPressedIcon = new SpriteDrawable(spriteList[9]);
-
-            _rowWhiteIcon = new SpriteDrawable(spriteList[0]);
-            _rowRedIcon = new SpriteDrawable(spriteList[1]);
-            _rowYellowIcon = new SpriteDrawable(spriteList[2]);
-            _rowGreenIcon = new SpriteDrawable(spriteList[3]);
+            _rowWhiteIcon = new SpriteDrawable(new Sprite(textureAtlas, 0, 0, 32, 32));
+            _rowRedIcon = new SpriteDrawable(new Sprite(textureAtlas, 32, 0, 32, 32));
+            _rowYellowIcon = new SpriteDrawable(new Sprite(textureAtlas, 64, 0, 32, 32));
+            _rowGreenIcon = new SpriteDrawable(new Sprite(textureAtlas, 96, 0, 32, 32));
 
             var drawColor = Color.White;
             drawColor.A = 127;
@@ -194,7 +192,7 @@ namespace Raspberry_Lib.Components
             _downIndicator.SetScaling(Scaling.Fill);
             _downIndicator.SetColor(drawColor);
 
-            _rowIndicator = Canvas.Stage.AddElement(new Image(spriteList[0]));
+            _rowIndicator = Canvas.Stage.AddElement(new Image(new Sprite(textureAtlas, 0, 0, 32, 32)));
             _rowIndicator.SetBounds(
                 Screen.Width - Settings.Margin.Value - Settings.IndicatorSizeX.Value,
                 Screen.Height * .5f - Settings.IndicatorSizeY.Value / 2f,
