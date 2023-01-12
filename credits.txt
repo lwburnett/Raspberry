@@ -13,3 +13,7 @@ Game play music
 SFX
 	Stream Running Over Rocks 1 by mhtaylor67 | https://freesound.org/people/mhtaylor67/sounds/236978/
 	Rame 80 % pistes.aif by godardt | https://freesound.org/people/godardt/sounds/563487/
+	7 Thump by numar | https://freesound.org/people/numar/sounds/118401/
+	thump1 by theshaggyfreak | https://freesound.org/people/theshaggyfreak/sounds/274934/
+	thump3 by theshaggyfreak | https://freesound.org/people/theshaggyfreak/sounds/274941/
+	Thump Bass by EminYILDIRIM | https://freesound.org/people/EminYILDIRIM/sounds/555521/

@@ -42,7 +42,10 @@ namespace Raspberry_Lib.Scenes
                 "The Soul-Crushing Monotony Of Isolation (Instrumental Mix) by Punch Deck",
                 "Hymn To The Gods by Alexander Nakarada",
                 "Stream Running Over Rocks 1 by mhtaylor67",
-                "Rame 80 % pistes.aif by godardt"
+                "Rame 80 % pistes.aif by godardt",
+                "7 Thump by numar",
+                "thump1 & thump3 by theshaggyfreak",
+                "Thump Bass by EminYILDIRIM"
             };
 
             public static readonly RenderSetting CreditScrollPerSecond = new(20f);
