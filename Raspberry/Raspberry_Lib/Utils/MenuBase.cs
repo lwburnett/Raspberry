@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Nez;
 using Nez.UI;
 using Raspberry_Lib.Scenes;
@@ -11,7 +10,6 @@ namespace Raspberry_Lib
     {
         protected static class Settings
         {
-            public static readonly Color TextBoxBackgroundTextureColor = new(112, 128, 144, 200);
             public static readonly RenderSetting LabelTopPadding = new(20);
 
             public static readonly RenderSetting TitleFontScale = new(6);
@@ -74,7 +72,7 @@ namespace Raspberry_Lib
 
         protected abstract IEnumerable<Element> InitializeTableElements();
 
-        private void LayoutTable(IEnumerable<Element> iElements, Nez.UI.IDrawable iBackground)
+        private void LayoutTable(IEnumerable<Element> iElements, IDrawable iBackground)
         {
             _menu.SetBackground(iBackground);
             _menu.Row().SetPadTop(Settings.LabelTopPadding.Value);
