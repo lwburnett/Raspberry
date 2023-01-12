@@ -62,12 +62,12 @@ namespace Raspberry_Lib.Content
 
             internal static class Ui
             {
-                // https://colorhunt.co/palette/fefbf6a6d1e67f52833d3c42
+                // https://colorhunt.co/palette/321f28734046a05344e79e4f
                 // {
-                public static readonly Color Menu = new(166, 209, 230);
-                public static readonly Color ButtonUp = new(127, 82, 131);
-                public static readonly Color ButtonOver = new(127, 82, 131);
-                public static readonly Color ButtonDown = new(61, 60, 66);
+                public static readonly Color Menu = new(231, 158, 79);
+                public static readonly Color ButtonUp = new(50, 31, 40);
+                public static readonly Color ButtonOver = new(160, 83, 68);
+                public static readonly Color ButtonDown = new(115, 64, 70);
                 // }
             }
         }
