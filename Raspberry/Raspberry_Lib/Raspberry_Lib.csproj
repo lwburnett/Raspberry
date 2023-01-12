@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -12,6 +12,7 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="StbVorbisSharp" Version="1.22.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nez\Nez.csproj" />

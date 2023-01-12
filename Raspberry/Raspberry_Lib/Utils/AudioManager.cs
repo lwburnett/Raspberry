@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using System.IO;
 using Microsoft.Xna.Framework.Audio;
 using Nez.Systems;
+using StbVorbisSharp;
 
 namespace Raspberry_Lib
 {
@@ -20,10 +23,26 @@ namespace Raspberry_Lib
             sSoundInstances = new Dictionary<int, SoundEffectInstance>();
         }
 
-        public static int Load(NezContentManager iContentManager, string iSoundPath)
+        public static int Load(NezContentManager iContent, string iSoundPath)
         {
+            SoundEffect soundEffect;
+            var extension = Path.GetExtension(iSoundPath);
+            switch (extension)
+            {
+                case ".wav":
+                    soundEffect = iContent.LoadSoundEffect(iSoundPath);
+                    break;
+                case ".ogg":
+                    soundEffect = LoadOggSoundEffect(iSoundPath);
+                    break;
+                default:
+                    System.Diagnostics.Debug.Fail($"Unsupported audio extension {extension}");
+                    return -1;
+            }
+
             sIdCounter++;
-            sSounds.Add(sIdCounter, iContentManager.LoadSoundEffect(iSoundPath));
+
+            sSounds.Add(sIdCounter, soundEffect);
             return sIdCounter;
         }
 
@@ -138,6 +157,36 @@ namespace Raspberry_Lib
             iInstance.IsLooped = iLooping;
             iInstance.Volume = iVolume;
             iInstance.Play();
+        }
+
+        // https://github.com/StbSharp/StbVorbisSharp/blob/master/samples/StbVorbisSharp.MonoGame.Test.Prerender/Game1.cs
+        private static SoundEffect LoadOggSoundEffect(string iPath)
+        {
+            byte[] bytes;
+            using (var stream = Path.IsPathRooted(iPath) ? File.OpenRead(iPath) : TitleContainer.OpenStream(iPath))
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+
+            var audioShort = StbVorbis.decode_vorbis_from_memory(bytes, out var sampleRate, out var channels);
+            var audioData = new byte[audioShort.Length * 2];
+            for (var i = 0; i < audioShort.Length; ++i)
+            {
+                if (i * 2 >= audioData.Length)
+                {
+                    break;
+                }
+
+                var b1 = (byte)(audioShort[i] >> 8);
+                var b2 = (byte)(audioShort[i] & 256);
+
+                audioData[i * 2 + 0] = b2;
+                audioData[i * 2 + 1] = b1;
+            }
+
+            return new SoundEffect(audioData, sampleRate, (AudioChannels)channels);
         }
     }
 }

@@ -11,8 +11,8 @@ namespace Raspberry_Lib.Content
             public const string TitleScreenBackground = @"Content/Levels/TitleScreen.png";
             public const string CharacterSpriteSheet = @"Content/Characters/Character.png";
             public const string ProximityShader = @"Content/Shaders/ProximityShader.mgfxo";
-            public const string TitleScreenMusic = @"Content/Audio/ocean-of-ice.wav";
-            public const string PlayScreenMusic1 = @"Content/Audio/the-soul-crushing-monotony-of-isolation.wav";
+            public const string TitleScreenMusic = @"Content/Audio/ocean-of-ice.ogg";
+            public const string PlayScreenMusic1 = @"Content/Audio/the-soul-crushing-monotony-of-isolation.ogg";
             public const string StreamSound = @"Content/Audio/Stream1.wav";
             public const string Row1 = @"Content/Audio/Row1.wav";
             public const string Row2 = @"Content/Audio/Row2.wav";
