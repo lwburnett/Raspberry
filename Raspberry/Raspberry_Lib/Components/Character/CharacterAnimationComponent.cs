@@ -19,7 +19,7 @@ namespace Raspberry_Lib.Components
             public const float WaveLengthSec = 2f;
             public const float DampingFactor = .5f;
 
-            public const float SpeedDiffTurnTorqueScalar = .2f;
+            public const float SpeedDiffTurnTorqueScalar = .005f;
         }
 
         public CharacterAnimationComponent()
@@ -152,6 +152,18 @@ namespace Raspberry_Lib.Components
             return iAmplitude * egt * cos;
         }
 
+        private float DampedOscillationPrimeFunction(float iTimeSec, float iAmplitude, float iPhase)
+        {
+            var sin = (float)Math.Sin(iTimeSec * _omega + iPhase);
+            var cos = (float)Math.Cos(iTimeSec * _omega + iPhase);
+            var egt = (float)Math.Pow(MathHelper.E, -Settings.DampingFactor * iTimeSec);
+
+            var term1 = -Settings.DampingFactor * egt * cos;
+            var term2 = -_omega * egt * sin;
+
+            return iAmplitude * (term1 + term2);
+        }
+
         private float DampedOscillationDoublePrimeFunction(float iTimeSec, float iAmplitude, float iPhase)
         {
             var sin = (float)Math.Sin(iTimeSec * _omega + iPhase);
@@ -171,11 +183,12 @@ namespace Raspberry_Lib.Components
 
             // ReSharper disable InconsistentNaming
             var f0t0 = DampedOscillationFunction(t0, _amplitude, _phase);
+            var f0t0Prime = DampedOscillationPrimeFunction(t0, _amplitude, _phase);
             var f0t0PrimePrime = DampedOscillationDoublePrimeFunction(t0, _amplitude, _phase);
             // ReSharper restore InconsistentNaming
             var forceSum = f0t0PrimePrime + iTorque;
 
-            var numerator = f0t0 + Time.DeltaTime * Time.DeltaTime * forceSum;
+            var numerator = f0t0 + Time.DeltaTime * f0t0Prime + Time.DeltaTime * Time.DeltaTime * forceSum;
             var denominator = (float)Math.Cos(iPhase);
 
             return numerator / denominator;
@@ -187,18 +200,20 @@ namespace Raspberry_Lib.Components
 
             // ReSharper disable InconsistentNaming
             var f0t0 = DampedOscillationFunction(t0, _amplitude, _phase);
+            var f0t0Prime = DampedOscillationPrimeFunction(t0, _amplitude, _phase);
             var f0t0PrimePrime = DampedOscillationDoublePrimeFunction(t0, _amplitude, _phase);
             // ReSharper restore InconsistentNaming
             var forceSum = f0t0PrimePrime + iTorque;
 
             var nTerm1 = Settings.DampingFactor * f0t0;
             var nTerm2 = Settings.DampingFactor * Time.DeltaTime * Time.DeltaTime * forceSum;
-            var nTerm3 = Time.DeltaTime * forceSum;
+            var nTerm3 = f0t0Prime;
+            var nTerm4 = Time.DeltaTime * forceSum;
 
             var dTerm1 = _omega * f0t0;
             var dTerm2 = _omega * Time.DeltaTime * Time.DeltaTime * forceSum;
 
-            var numerator = nTerm1 + nTerm2 + nTerm3;
+            var numerator = nTerm1 + nTerm2 + nTerm3 + nTerm4;
             var denominator = dTerm1 + dTerm2;
 
             var fraction = -numerator / denominator;
